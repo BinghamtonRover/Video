@@ -1,12 +1,21 @@
+// ignore_for_file: avoid_print
+
 import "package:opencv_ffi/opencv_ffi.dart";
 
-void main() async {
-  final camera = Camera(0);
+void main(List<String> args) async {
+  final cameraName = args.first;
+  final index = int.tryParse(cameraName);
+  if (index == null) {
+    print("Non-integer camera names are not yet supported");
+    return;
+  }
+
+  final camera = Camera(index);
+  print("Displaying camera $cameraName");
+  print("Press Ctrl+C to quit");
   try {
     while (true) {
-      if (!camera.read()) { throw Exception("Camera read failed"); }
-      camera.display();
-      await Future<void>.delayed(Duration(milliseconds: (1000/60).round()));
+      camera.showFrame();
     }
   } finally {
     camera.dispose();    
