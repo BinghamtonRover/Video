@@ -1,7 +1,5 @@
 import "package:opencv_ffi/opencv_ffi.dart";
 
-import 'package:video/video.dart' as video;
-
 void main() async {
   final camera = Camera(0);
   try {
