@@ -1,0 +1,19 @@
+name: video
+description: A sample command-line application.
+version: 1.0.0
+# repository: https://github.com/my_org/my_repo
+
+environment:
+  sdk: ^3.0.5
+
+# Add regular dependencies here.
+dependencies:
+  opencv_ffi: 
+    git: https://github.com/BinghamtonRover/OpenCV-FFI
+  burt_network: 
+    git: https://github.com/BinghamtonRover/Dart-Networking
+
+dev_dependencies:
+  lints: ^2.0.0
+  test: ^1.21.0
+  very_good_analysis: ^5.0.0+1
