@@ -13,7 +13,7 @@ This repository holds our Dart-based implementation of the Video program. In a n
 
 ### Setting up FFI
 
-This repository uses Dart's FFI, which means it needs to compile C/C++ code into dynamic libraries, which need to be put in the root of this repository. So far the project only uses [`opencv_ffi`](), which has setup instructions in its repository. The necessary DLL files have already been copied over for testing on Windows devices.
+This repository uses Dart's FFI, which means it needs to compile C/C++ code into dynamic libraries, which need to be put in the root of this repository. So far the project only uses [`opencv_ffi`](https://github.com/BinghamtonRover/OpenCV-FFI), which has setup instructions in its repository. The necessary DLL files have already been copied over for testing on Windows devices.
 
 ### Running the Dart code
 
