@@ -4,7 +4,7 @@ import "package:burt_network/burt_network.dart";
 import "package:burt_network/generated.dart";
 
 final hearbeat = Connect(sender: Device.DASHBOARD, receiver: Device.VIDEO);
-
+/*
 class VideoServer extends ProtoSocket{
 
   VideoServer({required super.port}): super(device: Device.DASHBOARD, destination: SocketInfo(address: InternetAddress("127.0.0.1"), port: 8002));
@@ -34,3 +34,4 @@ class VideoServer extends ProtoSocket{
     // TODO: implement updateSettings
   }
 }
+*/

@@ -10,7 +10,7 @@ void main(List<String> args) async {
     return;
   }
 
-  final camera = Camera(index);
+  final camera = Camera.fromIndex(index);
   print("Displaying camera $cameraName");
   print("Press Ctrl+C to quit");
   try {

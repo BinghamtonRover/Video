@@ -1,6 +1,5 @@
-// ignore_for_file: avoid_print
-import "package:video/video.dart";
+import "package:video/src/collection.dart";
 
 void main() async{
-	await collection.init();
+  await collection.init();
 }
