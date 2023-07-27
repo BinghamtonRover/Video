@@ -1,43 +1,39 @@
 // ignore_for_file: avoid_print
+import "dart:io";
+import "dart:async";
 import "package:burt_network/burt_network.dart";
 import "package:opencv_ffi/opencv_ffi.dart";
 import "udp.dart";
-import "dart:async";
+import "constants.dart";
+import "camera.dart";
+
+
+
 
 class VideoCollection{
   /// Holds a list of available cameras
-  final cameras = <Camera>[];
+  Map<String, CameraManager> cameras = {};
 
   int cameraCount = 0; 
 
   final videoServer = VideoServer(port: 8002);
 
-  void addCamera(int index){
-    final camera = Camera.fromIndex(index);
-    cameras.add(camera);
-    cameraCount++;
-  }
-
-  void runCameras(){
-    Timer.periodic(const Duration(milliseconds: 100), (run) {
-      print("There are ${cameraCount + 1} running");
-      for(int i = 0; i < cameraCount; i++){
-        //cameras[i].showFrame();
-        final frame = cameras[i].getJpg();
-        if(frame == null){
-          videoServer.sendMessage(VideoData(details: CameraDetails(name: CameraName.ROVER_FRONT, status: CameraStatus.CAMERA_NOT_RESPONDING)));
-        } else {
-          videoServer.sendMessage(VideoData(frame: frame.data, details: CameraDetails(name: CameraName.ROVER_FRONT, status: CameraStatus.CAMERA_ENABLED)));
-          frame.dispose();
-        }
-      }
-    });
-  }
-
   Future<void> init() async{
     await videoServer.init();
     print("Starting Cameras...");
-    runCameras();
+    connectCameras();
+  }
+
+  void connectCameras(){
+    final cameraDetails = CameraDetails(resolutionWidth: 300, resolutionHeight: 300, quality: 50, fps: 24, status: CameraStatus.CAMERA_ENABLED);
+    for(int i = 0; i < cameraNames.length; ++i){
+      cameraDetails.mergeFromMessage(CameraDetails(name: cameraIndexes.values.elementAt(i)));
+      if(Platform.isWindows){
+        cameras[cameraIndexes.keys.elementAt(i)] = CameraManager(camera: Camera.fromIndex(int.parse(cameraIndexes.keys.elementAt(i))), details: cameraDetails);
+      } else {
+        cameras[cameraNames.keys.elementAt(i)] = CameraManager(camera: Camera.fromName(cameraNames.keys.elementAt(i)), details: cameraDetails);   
+      }
+    }
   }
 }
 

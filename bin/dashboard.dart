@@ -1,5 +1,3 @@
-import "dart:io";
-
 import "package:burt_network/burt_network.dart";
 import "package:burt_network/generated.dart";
 
