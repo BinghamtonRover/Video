@@ -1,7 +1,9 @@
 import "package:burt_network/burt_network.dart";
 import "collection.dart";
 
+/// Class for the video program to interact with the dashboard
 class VideoServer extends ServerSocket{
+  /// Requires a port to communicate through
   VideoServer({required super.port}) : super(device: Device.VIDEO);
 
   @override
@@ -14,8 +16,6 @@ class VideoServer extends ServerSocket{
     // Send LOADING before making any changes
     sendMessage(VideoData(id: command.id, details: CameraDetails(status: CameraStatus.CAMERA_LOADING)));
     // Change the settings
-    if(collection.cameras[command.id]!.isOpened){
-      collection.cameras[command.id]!.updateDetails(details: command.details);
-    }
+    collection.cameras[command.details.name]!.updateDetails(details: command.details);    
   }
 }
