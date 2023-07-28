@@ -9,7 +9,15 @@ import "camera.dart";
 /// Default details for a camera
 /// 
 /// Used when first creating the camera objects
-final defaultDetails = CameraDetails(resolutionWidth: 300, resolutionHeight: 300, quality: 50, fps: 24, status: CameraStatus.CAMERA_ENABLED);
+CameraDetails getDefaultDetails(CameraName name) => CameraDetails(
+  name: name,
+  resolutionWidth: 300, 
+  resolutionHeight: 300, 
+  quality: 50, 
+  fps: 24, 
+  status: 
+  CameraStatus.CAMERA_ENABLED,
+);
 
 /// Returns the camera depending on device program is running
 /// 
@@ -23,10 +31,11 @@ class VideoCollection{
   /// Holds a list of available cameras
   Map<CameraName, CameraManager> cameras = {
     for (final name in CameraName.values) 
-      name: CameraManager(
-        camera: getCamera(name),
-        details: defaultDetails,
-      )
+      if (name != CameraName.CAMERA_NAME_UNDEFINED)
+        name: CameraManager(
+          camera: getCamera(name),
+          details: getDefaultDetails(name),
+        )
   };
 
   /// [VideoServer] to send messages through
@@ -36,16 +45,12 @@ class VideoCollection{
 
   /// Function to initiliaze cameras
   Future<void> init() async{
+    BurtLogger.level = LogLevel.debug;
     await videoServer.init();
-    logger.info("Starting Cameras...");
-    await connectCameras();
-  }
-
-  /// Connects to all [cameras]
-  Future<void> connectCameras() async{
-    for(final camera in cameras.values){
+    for (final camera in cameras.values) {
       await camera.init();
     }
+    logger.info("Video program initialized");
   }
 }
 

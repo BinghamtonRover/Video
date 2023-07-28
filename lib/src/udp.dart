@@ -10,9 +10,9 @@ class VideoServer extends ServerSocket{
   void onMessage(WrappedMessage wrapper) {
     // ignore message if not a video message
     if(wrapper.name != VideoCommand().messageName) return;
-    // Return the message to tell dashboard the message was received
-    sendMessage(wrapper);
     final command = VideoCommand.fromBuffer(wrapper.data);
+    // Return the message to tell dashboard the message was received
+    sendMessage(command);
     // Send LOADING before making any changes
     sendMessage(VideoData(id: command.id, details: CameraDetails(status: CameraStatus.CAMERA_LOADING)));
     // Change the settings
