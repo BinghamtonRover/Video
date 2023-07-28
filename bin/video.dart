@@ -1,5 +1,5 @@
-// ignore_for_file: avoid_print
+import "package:video/src/collection.dart";
 
-void main() {
-	print("The main program has not yet been implemented");
+void main() async{
+  await collection.init();
 }
