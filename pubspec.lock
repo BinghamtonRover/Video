@@ -215,7 +215,7 @@ packages:
     description:
       path: "."
       ref: HEAD
-      resolved-ref: b1693813bbd4a6a59eb413721e997e0b9e8c3d31
+      resolved-ref: "118f073e4502ad38273e6c875bcd3e32dc0a4306"
       url: "https://github.com/BinghamtonRover/OpenCV-FFI"
     source: git
     version: "1.0.0"
