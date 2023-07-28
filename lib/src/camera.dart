@@ -7,17 +7,15 @@ class CameraManager {
   late final Camera camera;
   late final CameraDetails details;
   Timer? timer;
-  
-  CameraManager({required this.camera, required this.details}){ 
-    init();
-  }
 
-  void init(){  // init the timer 
+  CameraManager({required this.camera, required this.details});
+
+  Future<void> init() async{  // init the timer 
+    if(!camera.isOpened){
+      details.mergeFromMessage(CameraDetails(status: CameraStatus.CAMERA_DISCONNECTED));
+      return;
+    }
     timer = Timer.periodic(Duration(milliseconds: 1000 ~/ details.fps), (runner) {
-      if(!camera.isOpened){
-        runner.cancel();
-        details.mergeFromMessage(CameraDetails(status: CameraStatus.CAMERA_DISCONNECTED));
-      }
       sendFrame();
     });
   }
@@ -34,7 +32,9 @@ class CameraManager {
   void sendFrame(){  // run this with the timer. Read frame, send to dashboard, handle errors
     final frame = camera.getJpg();
     if(frame == null){
-      collection.videoServer.sendMessage(VideoData(details: CameraDetails(name: CameraName.ROVER_FRONT, status: CameraStatus.CAMERA_NOT_RESPONDING)));
+      updateDetails(details: CameraDetails(status: CameraStatus.CAMERA_NOT_RESPONDING));
+      collection.videoServer.sendMessage(VideoData(details: details));
+      timer?.cancel();
     } else {
       collection.videoServer.sendMessage(VideoData(frame: frame.data, details: CameraDetails(name: CameraName.ROVER_FRONT, status: CameraStatus.CAMERA_ENABLED)));
       frame.dispose();

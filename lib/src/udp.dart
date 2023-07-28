@@ -6,9 +6,8 @@ class VideoServer extends ServerSocket{
 
   @override
   void onMessage(WrappedMessage wrapper) {
-    if(wrapper.name != VideoCommand().messageName){ // Can ignore message if not a video message
-      return;
-    }
+    // ignore message if not a video message
+    if(wrapper.name != VideoCommand().messageName) return;
     // Return the message to tell dashboard the message was received
     sendMessage(wrapper);
     final command = VideoCommand.fromBuffer(wrapper.data);
@@ -18,11 +17,5 @@ class VideoServer extends ServerSocket{
     if(collection.cameras[command.id]!.isOpened){
       collection.cameras[command.id]!.updateDetails(details: command.details);
     }
-  }
-
-  @override
-  void sendMessage(Message message, {SocketInfo? socketOverride}) {
-    if(!isConnected) return;
-    super.sendMessage(message);
   }
 }
