@@ -1,3 +1,5 @@
+import "dart:io";
+
 import "package:burt_network/burt_network.dart";
 import "package:opencv_ffi/opencv_ffi.dart";
 import "dart:async";
@@ -73,7 +75,22 @@ class CameraManager {
       collection.videoServer.sendMessage(VideoData(details: details));
       timer?.cancel();
     } else {
-      collection.videoServer.sendMessage(VideoData(frame: frame.data, details: CameraDetails(name: CameraName.ROVER_FRONT, status: CameraStatus.CAMERA_ENABLED)));
+      
+      if(frame.data.length < 60000){
+        collection.videoServer.sendMessage(VideoData(frame: frame.data, details: CameraDetails(name: name, status: CameraStatus.CAMERA_ENABLED)));
+      } else {
+        collection.videoServer.sendMessage(VideoData(details: CameraDetails(name: name, status: CameraStatus.FRAME_TOO_LARGE)));
+        if(details.quality > 80){
+          details.quality--;
+        } else if(details.resolutionHeight > 500){
+          details.resolutionHeight--;
+        } else if(details.resolutionWidth > 500){
+          details.resolutionWidth--;
+        } else {
+          // THROW SOME ERROR?
+        }
+        
+      }
       frame.dispose();
     }
     _isLoading = false;
