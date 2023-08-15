@@ -57,7 +57,10 @@ class CameraManager {
   /// 
   /// reset the timer for FPS if needed, change resolution, enable or disable
   void updateDetails({required CameraDetails details}){  
-    this.details = details;
+    for(int i = 1; i <= 6; i++){ // [CameraDetails] has fields [1, 6]
+      this.details.setField(i, details.getField(i) ?? this.details.getField(i)); 
+    }
+    //this.details = details;
     startTimer();
   }
 
@@ -77,9 +80,11 @@ class CameraManager {
     } else {
       
       if(frame.data.length < 60000){
-        collection.videoServer.sendMessage(VideoData(frame: frame.data, details: CameraDetails(name: name, status: CameraStatus.CAMERA_ENABLED)));
+        collection.videoServer.sendMessage(VideoData(frame: frame.data, details: details));
       } else {
-        collection.videoServer.sendMessage(VideoData(details: CameraDetails(name: name, status: CameraStatus.FRAME_TOO_LARGE)));
+        details.status = CameraStatus.FRAME_TOO_LARGE;
+        collection.videoServer.sendMessage(VideoData(details: details));
+        details.status = CameraStatus.CAMERA_ENABLED;
         if(details.quality > 80){
           details.quality--;
         } else if(details.resolutionHeight > 500){
