@@ -41,7 +41,7 @@ class CameraManager {
       startTimer();      
     } else {
       logger.verbose("Camera $name is not connected");
-      details.mergeFromMessage(CameraDetails(status: CameraStatus.CAMERA_DISCONNECTED));
+      details.status = CameraStatus.CAMERA_DISCONNECTED;
     }
   }
 
@@ -69,20 +69,21 @@ class CameraManager {
     final frame = camera.getJpg(quality: details.quality);
     collection.videoServer.sendMessage(VideoData(details: details));
     if (frame == null) {
-      updateDetails(details: CameraDetails(status: CameraStatus.CAMERA_NOT_RESPONDING));
+      details.status = CameraStatus.CAMERA_NOT_RESPONDING;
       collection.videoServer.sendMessage(VideoData(details: details));
       timer?.cancel();
     } else {
       if(frame.data.length < 60000){
-        updateDetails(details: CameraDetails(status: CameraStatus.CAMERA_ENABLED));
+        details.status = CameraStatus.CAMERA_ENABLED;
         collection.videoServer.sendMessage(VideoData(frame: frame.data, details: details));
       } else {
-        updateDetails(details: CameraDetails(status: CameraStatus.FRAME_TOO_LARGE));
+        details.status = CameraStatus.FRAME_TOO_LARGE;
         collection.videoServer.sendMessage(VideoData(details: details));
         if(details.quality > 25){
           details.quality--;
         } else {
-          updateDetails(details: CameraDetails(status: CameraStatus.FRAME_TOO_LARGE));
+          timer?.cancel();
+          details.status = CameraStatus.FRAME_TOO_LARGE;
         }
       }
       frame.dispose();
