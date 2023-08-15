@@ -1,5 +1,3 @@
-import "dart:io";
-
 import "package:burt_network/burt_network.dart";
 import "package:opencv_ffi/opencv_ffi.dart";
 import "dart:async";
@@ -57,10 +55,7 @@ class CameraManager {
   /// 
   /// reset the timer for FPS if needed, change resolution, enable or disable
   void updateDetails({required CameraDetails details}){  
-    for(int i = 1; i <= 6; i++){ // [CameraDetails] has fields [1, 6]
-      this.details.setField(i, details.getField(i) ?? this.details.getField(i)); 
-    }
-    //this.details = details;
+    this.details.mergeFromMessage(details);
     startTimer();
   }
 
@@ -78,23 +73,17 @@ class CameraManager {
       collection.videoServer.sendMessage(VideoData(details: details));
       timer?.cancel();
     } else {
-      
       if(frame.data.length < 60000){
+        updateDetails(details: CameraDetails(status: CameraStatus.CAMERA_ENABLED));
         collection.videoServer.sendMessage(VideoData(frame: frame.data, details: details));
       } else {
-        details.status = CameraStatus.FRAME_TOO_LARGE;
+        updateDetails(details: CameraDetails(status: CameraStatus.FRAME_TOO_LARGE));
         collection.videoServer.sendMessage(VideoData(details: details));
-        details.status = CameraStatus.CAMERA_ENABLED;
-        if(details.quality > 80){
+        if(details.quality > 25){
           details.quality--;
-        } else if(details.resolutionHeight > 500){
-          details.resolutionHeight--;
-        } else if(details.resolutionWidth > 500){
-          details.resolutionWidth--;
         } else {
-          // THROW SOME ERROR?
+          updateDetails(details: CameraDetails(status: CameraStatus.FRAME_TOO_LARGE));
         }
-        
       }
       frame.dispose();
     }
