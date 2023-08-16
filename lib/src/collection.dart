@@ -2,7 +2,8 @@ import "dart:io";
 import "dart:async";
 import "package:burt_network/burt_network.dart";
 import "package:opencv_ffi/opencv_ffi.dart";
-import "udp.dart";
+
+import "server.dart";
 import "constants.dart";
 import "camera.dart";
 
@@ -15,8 +16,7 @@ CameraDetails getDefaultDetails(CameraName name) => CameraDetails(
   resolutionHeight: 300, 
   quality: 50, 
   fps: 24, 
-  status: 
-  CameraStatus.CAMERA_ENABLED,
+  status: CameraStatus.CAMERA_ENABLED,
 );
 
 /// Returns the camera depending on device program is running
@@ -45,7 +45,6 @@ class VideoCollection{
 
   /// Function to initiliaze cameras
   Future<void> init() async{
-    BurtLogger.level = LogLevel.debug;
     await videoServer.init();
     for (final camera in cameras.values) {
       await camera.init();

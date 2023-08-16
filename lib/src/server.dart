@@ -7,6 +7,22 @@ class VideoServer extends ServerSocket{
   VideoServer({required super.port}) : super(device: Device.VIDEO);
 
   @override
+  void onConnect(SocketInfo source) {
+    super.onConnect(source);
+    for (final camera in collection.cameras.values) {
+      camera.start();
+    }
+  }
+
+  @override
+  void onDisconnect() {
+    super.onDisconnect();
+    for (final camera in collection.cameras.values) {
+      camera.stop();
+    }
+  }
+
+  @override
   void onMessage(WrappedMessage wrapper) {
     // ignore message if not a video message
     if(wrapper.name != VideoCommand().messageName) return;
@@ -16,6 +32,6 @@ class VideoServer extends ServerSocket{
     // Send LOADING before making any changes
     sendMessage(VideoData(id: command.id, details: CameraDetails(status: CameraStatus.CAMERA_LOADING)));
     // Change the settings
-    collection.cameras[command.details.name]!.updateDetails(details: command.details);    
+    collection.cameras[command.details.name]!.updateDetails(command.details);    
   }
 }
