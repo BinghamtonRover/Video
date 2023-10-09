@@ -17,4 +17,4 @@ This repository uses Dart's FFI, which means it needs to compile C/C++ code into
 
 ### Running the Dart code
 
-To run the main program, simply run `dart run`. To test an individual camera, run `dart run :camera <camera-name>`, replacing `<camera-name>` with either an index, like `0` or `1`, or the name of a camera device, like `/dev/video0` or `/dev/rear-camera`.
+To run the main program, simply run `dart run`. You may also wish to compile this program using `dart compile exe bin/video.dart`.
