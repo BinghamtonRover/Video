@@ -1,36 +1,37 @@
-import "dart:io";
 import "dart:async";
+import "dart:io";
+
 import "package:burt_network/burt_network.dart";
 import "package:opencv_ffi/opencv_ffi.dart";
 
-import "server.dart";
-import "constants.dart";
 import "camera.dart";
+import "constants.dart";
+import "server.dart";
 
 /// Default details for a camera
-/// 
+///
 /// Used when first creating the camera objects
 CameraDetails getDefaultDetails(CameraName name) => CameraDetails(
-  name: name,
-  resolutionWidth: 300, 
-  resolutionHeight: 300, 
-  quality: 50, 
-  fps: 24, 
-  status: CameraStatus.CAMERA_ENABLED,
-);
+      name: name,
+      resolutionWidth: 300,
+      resolutionHeight: 300,
+      quality: 50,
+      fps: 24,
+      status: CameraStatus.CAMERA_ENABLED,
+    );
 
 /// Returns the camera depending on device program is running
-/// 
+///
 /// Uses [cameraNames] or [cameraIndexes]
 Camera getCamera(CameraName name) => Platform.isWindows
-  ? Camera.fromIndex(cameraIndexes[name]!)  
-  : Camera.fromName(cameraNames[name]!);
+    ? Camera.fromIndex(cameraIndexes[name]!)
+    : Camera.fromName(cameraNames[name]!);
 
-/// Class to cotain all video devices
-class VideoCollection{
+/// Class to contain all video devices
+class VideoCollection {
   /// Holds a list of available cameras
   Map<CameraName, CameraManager> cameras = {
-    for (final name in CameraName.values) 
+    for (final name in CameraName.values)
       if (name != CameraName.CAMERA_NAME_UNDEFINED)
         name: CameraManager(
           camera: getCamera(name),
@@ -39,12 +40,12 @@ class VideoCollection{
   };
 
   /// [VideoServer] to send messages through
-  /// 
-  /// Defaualt port is 8002 for video 
+  ///
+  /// Default port is 8002 for video
   final videoServer = VideoServer(port: 8002);
 
-  /// Function to initiliaze cameras
-  Future<void> init() async{
+  /// Function to initialize cameras
+  Future<void> init() async {
     await videoServer.init();
     for (final camera in cameras.values) {
       await camera.init();
