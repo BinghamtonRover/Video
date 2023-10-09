@@ -1,9 +1,9 @@
 import "package:burt_network/burt_network.dart";
 
-/// These list maps OpenCV IDs (index) to [CameraName]s. 
-/// 
+/// These list maps OpenCV IDs (index) to [CameraName]s.
+///
 /// This is HIGHLY dependent on the EXACT order of the USB ports.
-/// 
+///
 /// Map for MAC or LINUX devices
 Map<CameraName, String> cameraNames = {
   CameraName.ROVER_FRONT: "/dev/realsense_rgb",
@@ -17,7 +17,7 @@ Map<CameraName, String> cameraNames = {
 /// Map for WINDOWS devices
 Map<CameraName, int> cameraIndexes = {
   CameraName.ROVER_FRONT: 0,
-  CameraName.ROVER_REAR: 1, 
+  CameraName.ROVER_REAR: 1,
   CameraName.AUTONOMY_DEPTH: 1,
   CameraName.SUBSYSTEM1: 2,
   CameraName.SUBSYSTEM2: 3,
