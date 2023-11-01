@@ -19,12 +19,12 @@ class FrontIsolate extends IsolateChild<List<int>, VideoCommand>{
     for(int i = 0; i < 10; i++){ //TRY THIS 10x
       final frame = camera.getJpg();
       if (frame != null){
-        //send([frame.pointer.value, frame.data.length]);
-        print("${frame.pointer.value}");
-        final newframe = OpenCVImage(pointer: Pointer.fromAddress(frame.pointer.value), length: frame.data.length);
+        //send([frame.pointer.address, frame.data.length]);
+        print("${frame.pointer.address}");
+        final newframe = OpenCVImage(pointer: Pointer.fromAddress(frame.pointer.address), length: frame.data.length);
         print("Wait");
         //print("New Frame ${frame.data}");
-        if(frame.data == newframe.data){
+        if(frame.data[45] == newframe.data[45]){
           print("Frames are the same");
         } else {
           print("How in the hell are they different");
@@ -37,7 +37,7 @@ class FrontIsolate extends IsolateChild<List<int>, VideoCommand>{
 
     /*
       if(frame != null){
-        send([frame.pointer.value, frame.data.length]);
+        send([frame.pointer.address, frame.data.length]);
       } else {
         print("why is the frame null?");
       }
