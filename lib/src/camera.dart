@@ -76,8 +76,6 @@ class CameraManager {
   void start() {
     if (isRunning || details.status != CameraStatus.CAMERA_ENABLED) return;
     logger.verbose("Starting camera $name");
-    camera.setResolution(details.resolutionWidth, details.resolutionHeight);
-    camera.zoom = details.zoom;
     final interval = details.fps == 0
         ? Duration.zero
         : Duration(milliseconds: 1000 ~/ details.fps);
@@ -104,8 +102,14 @@ class CameraManager {
   void updateDetails(CameraDetails newDetails) {
     details.mergeFromMessage(newDetails);
     collection.videoServer.sendMessage(VideoData(details: details));
-    stop();
-    start();
+    camera.setResolution(details.resolutionWidth, details.resolutionHeight);
+    camera.zoom = details.zoom;
+    camera.pan = details.pan;
+    camera.tilt = details.tilt;
+    camera.focus = details.focus;
+    camera.autofocus = details.focus;
+    // stop();
+    // start();
   }
 
   /// Reads a frame from the [camera] and sends it to the dashboard.
