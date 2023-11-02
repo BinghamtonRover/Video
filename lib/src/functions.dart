@@ -26,22 +26,21 @@ Map<CameraName, int> cameraIndexes = {
   CameraName.SUBSYSTEM3: 4,
 };
 
-
 /// Default details for a camera
 ///
 /// Used when first creating the camera objects
 CameraDetails getDefaultDetails(CameraName name) => CameraDetails(
-      name: name,
-      resolutionWidth: 300,
-      resolutionHeight: 300,
-      quality: 50,
-      fps: 24,
-      status: CameraStatus.CAMERA_ENABLED,
-    );
+  name: name,
+  resolutionWidth: 300,
+  resolutionHeight: 300,
+  quality: 50,
+  fps: 24,
+  status: CameraStatus.CAMERA_ENABLED,
+);
 
 /// Returns the camera depending on device program is running
 ///
 /// Uses [cameraNames] or [cameraIndexes]
 Camera getCamera(CameraName name) => Platform.isWindows
-    ? Camera.fromIndex(cameraIndexes[name]!)
-    : Camera.fromName(cameraNames[name]!);
+  ? Camera.fromIndex(cameraIndexes[name]!)
+  : Camera.fromName(cameraNames[name]!);
