@@ -9,9 +9,9 @@ environment:
 # Add regular dependencies here.
 dependencies:
   opencv_ffi: 
-    git: https://github.com/BinghamtonRover/OpenCV-FFI
+    git: https://github.com/Levi-Lesches/opencv_ffi
   burt_network: 
-    git: https://github.com/BinghamtonRover/Dart-Networking
+    git: https://github.com/BinghamtonRover/Networking
   typed_isolate: ^1.0.1
 
 dev_dependencies:
