@@ -108,7 +108,7 @@ class CameraIsolate extends IsolateChild<FrameData, VideoCommand>{
     final frame = camera.getJpg(quality: details.quality);
     if (frame == null) {
       updateDetails(CameraDetails(status: CameraStatus.CAMERA_NOT_RESPONDING));
-    } else if (frame.data.length < 60000) {
+    } else if (frame.data.length < 60000 && frame.data.isNotEmpty) {
       send(FrameData(address: frame.pointer.address, length: frame.data.length, details: details));
       fpsCount++;
     } else if (details.quality > 25) {
