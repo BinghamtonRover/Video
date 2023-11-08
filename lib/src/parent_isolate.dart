@@ -22,7 +22,6 @@ class VideoController extends IsolateParent<VideoCommand, FrameData>{
       collection.videoServer.sendMessage(VideoData(frame: frame.data, details: data.details));
       frame.dispose();
     } else {
-      print(data.details);
       collection.videoServer.sendMessage(VideoData(details: data.details));
     }
   }

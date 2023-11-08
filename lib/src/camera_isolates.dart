@@ -47,7 +47,7 @@ class CameraIsolate extends IsolateChild<FrameData, VideoCommand>{
     camera = getCamera(name);
     statusTimer = Timer.periodic(
       const Duration(seconds: 5),
-      (_) => send(FrameData(details: details, address: 0, length: 0)),
+      (_) => send(FrameData(details: details, address: 1, length: 0)),
     );
     if (!camera.isOpened) {
       logger.verbose("Camera $name is not connected");

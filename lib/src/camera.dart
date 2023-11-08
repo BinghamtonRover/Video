@@ -56,7 +56,10 @@ class CameraManager {
     logger.verbose("Initializing camera: ${details.name}");
     statusTimer = Timer.periodic(
       const Duration(seconds: 5),
-      (_) => collection.videoServer.sendMessage(VideoData(details: details)),
+      (_) {
+        updateDetails(CameraDetails(status: CameraStatus.CAMERA_ENABLED));
+        collection.videoServer.sendMessage(VideoData(details: details));
+      }
     );
     if (!camera.isOpened) {
       logger.verbose("Camera $name is not connected");
