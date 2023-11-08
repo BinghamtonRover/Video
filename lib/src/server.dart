@@ -8,36 +8,11 @@ class VideoServer extends ServerSocket {
   VideoServer({required super.port}) : super(device: Device.VIDEO);
 
   @override
-  void onConnect(SocketInfo source) {
-    super.onConnect(source);
-    for (final camera in collection.cameras.values) {
-      camera.start();
-    }
-  }
-
-  @override
-  void onDisconnect() {
-    super.onDisconnect();
-    for (final camera in collection.cameras.values) {
-      camera.stop();
-    }
-  }
-
-  @override
   void onMessage(WrappedMessage wrapper) {
     // ignore message if not a video message
     if (wrapper.name != VideoCommand().messageName) return;
     final command = VideoCommand.fromBuffer(wrapper.data);
-    // Return the message to tell dashboard the message was received
-    sendMessage(command);
-    // Send LOADING before making any changes
-    sendMessage(
-      VideoData(
-        id: command.id,
-        details: CameraDetails(status: CameraStatus.CAMERA_LOADING),
-      ),
-    );
-    // Change the settings
-    collection.cameras[command.details.name]!.updateDetails(command.details);
+    sendMessage(command);  // Echo the request
+    collection.parent.send(command, command.details.name);
   }
 }
