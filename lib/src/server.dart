@@ -10,16 +10,14 @@ class VideoServer extends ServerSocket {
   @override
   void onConnect(SocketInfo source) {
     super.onConnect(source);
-    for (final camera in collection.cameras.values) {
-      camera.start();
-    }
+    collection.init();
   }
 
   @override
   void onDisconnect() {
     super.onDisconnect();
     for (final camera in collection.cameras.values) {
-      camera.stop();
+      camera.kill();
     }
   }
 
@@ -38,6 +36,6 @@ class VideoServer extends ServerSocket {
       ),
     );
     // Change the settings
-    collection.cameras[command.details.name]!.updateDetails(command.details);
+    collection.parent.send(command, command.details.name);
   }
 }
