@@ -39,7 +39,7 @@ class Collection {
   
   /// Function to initialize cameras
   Future<void> init() async {
-    logger.debug("Running in debug mode");
+    logger..trace("Running in trace mode")..debug("Running in debug mode");
     await videoServer.init();
     await parent.run();
     logger.info("Video program initialized");

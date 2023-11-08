@@ -41,8 +41,8 @@ class CameraIsolate extends IsolateChild<FrameData, VideoCommand>{
 
   @override
   Future<void> run() async {
-    BurtLogger.level = logLevel;
-    logger.verbose("Initializing camera: $name");
+    Logger.level = logLevel;
+    logger.debug("Initializing camera: $name");
     camera = getCamera(name);
     statusTimer = Timer.periodic(const Duration(seconds: 5), sendStatus);
     if (!camera.isOpened) {
@@ -74,18 +74,18 @@ class CameraIsolate extends IsolateChild<FrameData, VideoCommand>{
   /// Starts the camera and timers.
   void start() {
     if (details.status != CameraStatus.CAMERA_ENABLED) return;
-    logger.verbose("Starting camera $name. Status=${details.status}");
+    logger.debug("Starting camera $name. Status=${details.status}");
     final interval = details.fps == 0 ? Duration.zero : Duration(milliseconds: 1000 ~/ details.fps);
     frameTimer = PeriodicTimer(interval, sendFrame);
     fpsTimer = Timer.periodic(const Duration(seconds: 5), (_) {
-      logger.debug("Camera $name sent ${fpsCount ~/ 5} frames");
+      logger.trace("Camera $name sent ${fpsCount ~/ 5} frames");
       fpsCount = 0;
     });
   }
 
   /// Cancels all timers and stops reading the camera.
   void stop() {
-    logger.verbose("Stopping camera $name");
+    logger.debug("Stopping camera $name");
     frameTimer?.cancel();
     fpsTimer?.cancel();
   }
@@ -105,7 +105,7 @@ class CameraIsolate extends IsolateChild<FrameData, VideoCommand>{
       send(FrameData(address: frame.pointer.address, length: frame.data.length, details: details));
       fpsCount++;
     } else if (details.quality > 25) {  // Frame too large, try lowering quality
-      logger.verbose("Lowering quality for $name from ${details.quality}");
+      logger.debug("Lowering quality for $name from ${details.quality}");
       updateDetails(CameraDetails(quality: details.quality - 1));
     } else {  // Frame too large, cannot lower quality anymore
       logger.warning("$name's frames are too large (${frame.data.length} bytes, quality=${details.quality})");

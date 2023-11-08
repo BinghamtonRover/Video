@@ -23,7 +23,7 @@ class VideoController extends IsolateParent<VideoCommand, FrameData>{
       if (name == CameraName.CAMERA_NAME_UNDEFINED) continue;
       await spawn(
         CameraIsolate(
-          logLevel: BurtLogger.level, 
+          logLevel: Logger.level, 
           details: getDefaultDetails(name),
         ),
       );
