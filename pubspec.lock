@@ -44,11 +44,9 @@ packages:
   burt_network:
     dependency: "direct main"
     description:
-      path: "."
-      ref: HEAD
-      resolved-ref: ab3c4681fddd2cb316cee5cfbbfada2c88a5f622
-      url: "https://github.com/BinghamtonRover/Dart-Networking"
-    source: git
+      path: "../burt_network"
+      relative: true
+    source: path
     version: "1.0.0"
   collection:
     dependency: transitive
@@ -94,10 +92,10 @@ packages:
     dependency: transitive
     description:
       name: ffi
-      sha256: ed5337a5660c506388a9f012be0288fb38b49020ce2b45fe1f8b8323fe429f99
+      sha256: "7bf0adc28a23d395f19f3f1eb21dd7cfd1dd9f8e1c50051c069122e6853bc878"
       url: "https://pub.dev"
     source: hosted
-    version: "2.0.2"
+    version: "2.1.0"
   file:
     dependency: transitive
     description:
@@ -166,10 +164,10 @@ packages:
     dependency: transitive
     description:
       name: logger
-      sha256: "6bbb9d6f7056729537a4309bda2e74e18e5d9f14302489cc1e93f33b3fe32cac"
+      sha256: "7ad7215c15420a102ec687bb320a7312afd449bac63bfb1c60d9787c27b9767f"
       url: "https://pub.dev"
     source: hosted
-    version: "2.0.2+1"
+    version: "1.4.0"
   logging:
     dependency: transitive
     description:
@@ -213,11 +211,9 @@ packages:
   opencv_ffi:
     dependency: "direct main"
     description:
-      path: "."
-      ref: HEAD
-      resolved-ref: "3a8214578d91e7f9796f2b6209fc6cdf867a98e6"
-      url: "https://github.com/BinghamtonRover/OpenCV-FFI"
-    source: git
+      path: "../opencv_ffi"
+      relative: true
+    source: path
     version: "1.1.0"
   package_config:
     dependency: transitive
@@ -247,10 +243,10 @@ packages:
     dependency: transitive
     description:
       name: protobuf
-      sha256: "4034a02b7e231e7e60bff30a8ac13a7347abfdac0798595fae0b90a3f0afe759"
+      sha256: "68645b24e0716782e58948f8467fd42a880f255096a821f9e7d0ec625b00c84d"
       url: "https://pub.dev"
     source: hosted
-    version: "3.0.0"
+    version: "3.1.0"
   pub_semver:
     dependency: transitive
     description:
