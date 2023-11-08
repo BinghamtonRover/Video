@@ -1,29 +1,19 @@
+// ignore_for_file: avoid_print
+
 import "dart:async";
+import "dart:ffi";
+import "dart:typed_data";
 
-import "package:burt_network/burt_network.dart";
 import "package:opencv_ffi/opencv_ffi.dart";
-
+import "package:typed_isolate/typed_isolate.dart";
+import "package:burt_network/burt_network.dart";
 import "collection.dart";
+import "frame.dart";
 import "periodic_timer.dart";
 
-/// Reads from a camera and streams its data and [CameraDetails] to the dashboard.
-///
-/// This class uses a few timers to keep track of everything:
-/// - `frameTimer` is used to read the camera with an FPS of [CameraDetails.fps]
-/// - `fpsTimer` reports the FPS using [LoggerUtils.debug]
-/// - `statusTimer` to periodically send the camera's status to the dashboard
-///
-/// To use this class,
-/// - Call [init] to initialize the camera and [dispose] when you're finished
-/// - Use [isRunning] and [details] to see the state of the camera
-/// - Use [start] and [stop] to control whether the camera is running
-/// - Call [updateDetails] when you want to update the camera's [CameraDetails]
-///
-/// This class does not start itself, and can be started and stopped when the dashboard
-/// connects or disconnects using [VideoCollection.videoServer].
-class CameraManager {
+class CameraIsolate extends IsolateChild<FrameData, VideoCommand>{
   /// The native camera object from OpenCV.
-  final Camera camera;
+  late final Camera camera;
 
   /// Holds the current details of the camera.
   ///
@@ -43,7 +33,7 @@ class CameraManager {
   int fpsCount = 0;
 
   /// Creates a new manager for the given camera and default details.
-  CameraManager({required this.camera, required this.details});
+  CameraIsolate({required CameraDetails this.details}) : super(id: details.name); 
 
   /// Whether the camera is running.
   bool get isRunning => frameTimer != null;
@@ -51,20 +41,39 @@ class CameraManager {
   /// The name of this camera (where it is on the rover).
   CameraName get name => details.name;
 
-  /// Initializes the camera but does not call [start].
-  Future<void> init() async {
+  @override
+  Future<void> run() async {
     logger.verbose("Initializing camera: ${details.name}");
+    camera = getCamera(name);
     statusTimer = Timer.periodic(
       const Duration(seconds: 5),
       (_) {
         updateDetails(CameraDetails(status: CameraStatus.CAMERA_ENABLED));
-        collection.videoServer.sendMessage(VideoData(details: details));
-      }
+        send(FrameData(details: details, address: 0, length: 0));
+      } 
     );
     if (!camera.isOpened) {
       logger.verbose("Camera $name is not connected");
       updateDetails(CameraDetails(status: CameraStatus.CAMERA_DISCONNECTED));
     }
+    start();
+  }
+
+  @override
+  void onData(VideoCommand data){
+    updateDetails(data.details);
+  }
+
+  /// Updates the camera's [details], which will take effect on the next [sendFrame] call.
+  ///
+  /// This function echoes the details to the dashboard as part of the handshake protocol, and
+  /// resets the timers in case the FPS has changed. Always use this function instead of modifying
+  /// [details] directly so these steps are not forgotten.
+  void updateDetails(CameraDetails newDetails) {
+    details.mergeFromMessage(newDetails);
+    send(FrameData(details: details, address: 0, length: 0));
+    stop();
+    start();
   }
 
   /// Disposes of the camera and the timers.
@@ -98,30 +107,12 @@ class CameraManager {
     frameTimer = null; // easy way to check if you're stopped
   }
 
-  /// Updates the camera's [details], which will take effect on the next [sendFrame] call.
-  ///
-  /// This function echoes the details to the dashboard as part of the handshake protocol, and
-  /// resets the timers in case the FPS has changed. Always use this function instead of modifying
-  /// [details] directly so these steps are not forgotten.
-  void updateDetails(CameraDetails newDetails) {
-    details.mergeFromMessage(newDetails);
-    collection.videoServer.sendMessage(VideoData(details: details));
-    stop();
-    start();
-  }
-
-  /// Reads a frame from the [camera] and sends it to the dashboard.
-  ///
-  /// - If the camera could not read the frame, sets the status to [CameraStatus.CAMERA_NOT_RESPONDING]
-  /// - If the frame was too large to send, calls [updateDetails] with a lower [CameraDetails.quality]
-  /// - If the quality is already too low, sets the status to [CameraStatus.FRAME_TOO_LARGE]
   Future<void> sendFrame() async {
     final frame = camera.getJpg(quality: details.quality);
     if (frame == null) {
       updateDetails(CameraDetails(status: CameraStatus.CAMERA_NOT_RESPONDING));
-    } else if (frame.data.length < 60000) {
-      collection.videoServer
-          .sendMessage(VideoData(frame: frame.data, details: details));
+    } else if (frame.data.length < 60000 && frame.data.isNotEmpty) {
+      send(FrameData(address: frame.pointer.address, length: frame.data.length, details: details));
       fpsCount++;
     } else if (details.quality > 25) {
       logger.verbose("Lowering quality for $name");
@@ -132,6 +123,5 @@ class CameraManager {
       );
       updateDetails(CameraDetails(status: CameraStatus.FRAME_TOO_LARGE));
     }
-    frame?.dispose();
   }
 }

@@ -6,8 +6,7 @@ import "package:burt_network/burt_network.dart";
 import "package:opencv_ffi/opencv_ffi.dart";
 import "package:typed_isolate/typed_isolate.dart";
 
-import "camera.dart";
-import "camera_isolates.dart";
+import "camera_isolate.dart";
 import "constants.dart";
 import "parent_isolate.dart";
 import "server.dart";
