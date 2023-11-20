@@ -13,7 +13,9 @@ dependencies:
   burt_network: 
     git: https://github.com/BinghamtonRover/Networking
   typed_isolate: ^1.0.1
+  ffi: ^2.1.0
 
 dev_dependencies:
+  ffigen: ^9.0.1
   test: ^1.21.0
   very_good_analysis: ^5.0.0+1
