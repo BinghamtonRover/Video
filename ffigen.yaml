@@ -4,7 +4,7 @@ description: |
   Bindings for `src/opencv_ffi.h`.
 
   Regenerate bindings with `dart run ffigen --config ffigen.yaml -v severe`.
-output: "lib/src/generated/librealsense_ffi_bindings.dart"
+output: "src/generated/librealsense_ffi_bindings.dart"
 headers:
   entry-points:
     - 'src/librealsense/include/librealsense2/rs.h'
