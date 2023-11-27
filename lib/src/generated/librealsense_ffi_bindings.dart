@@ -5,7 +5,7 @@
 import 'dart:ffi' as ffi;
 import 'package:ffi/ffi.dart' as pkg_ffi;
 
-/// Bindings for `src/opencv_ffi.h`.
+/// Bindings for the RealSense SDK.
 ///
 /// Regenerate bindings with `dart run ffigen --config ffigen.yaml -v severe`.
 ///
@@ -23,1349 +23,6 @@ class LibRealSenseBindings {
       ffi.Pointer<T> Function<T extends ffi.NativeType>(String symbolName)
           lookup)
       : _lookup = lookup;
-
-  /// get the size of rs2_raw_data_buffer
-  /// \param[in] buffer  pointer to rs2_raw_data_buffer returned by rs2_send_and_receive_raw_data
-  /// \param[out] error  if non-null, receives any error that occurs during this call, otherwise, errors are ignored
-  /// \return size of rs2_raw_data_buffer
-  int rs2_get_raw_data_size(
-    ffi.Pointer<rs2_raw_data_buffer> buffer,
-    ffi.Pointer<ffi.Pointer<rs2_error>> error,
-  ) {
-    return _rs2_get_raw_data_size(
-      buffer,
-      error,
-    );
-  }
-
-  late final _rs2_get_raw_data_sizePtr = _lookup<
-      ffi.NativeFunction<
-          ffi.Int Function(ffi.Pointer<rs2_raw_data_buffer>,
-              ffi.Pointer<ffi.Pointer<rs2_error>>)>>('rs2_get_raw_data_size');
-  late final _rs2_get_raw_data_size = _rs2_get_raw_data_sizePtr.asFunction<
-      int Function(ffi.Pointer<rs2_raw_data_buffer>,
-          ffi.Pointer<ffi.Pointer<rs2_error>>)>();
-
-  /// Delete rs2_raw_data_buffer
-  /// \param[in] buffer        rs2_raw_data_buffer returned by rs2_send_and_receive_raw_data
-  void rs2_delete_raw_data(
-    ffi.Pointer<rs2_raw_data_buffer> buffer,
-  ) {
-    return _rs2_delete_raw_data(
-      buffer,
-    );
-  }
-
-  late final _rs2_delete_raw_dataPtr = _lookup<
-      ffi.NativeFunction<
-          ffi.Void Function(
-              ffi.Pointer<rs2_raw_data_buffer>)>>('rs2_delete_raw_data');
-  late final _rs2_delete_raw_data = _rs2_delete_raw_dataPtr
-      .asFunction<void Function(ffi.Pointer<rs2_raw_data_buffer>)>();
-
-  /// Retrieve char array from rs2_raw_data_buffer
-  /// \param[in] buffer   rs2_raw_data_buffer returned by rs2_send_and_receive_raw_data
-  /// \param[out] error   if non-null, receives any error that occurs during this call, otherwise, errors are ignored
-  /// \return raw data
-  ffi.Pointer<ffi.UnsignedChar> rs2_get_raw_data(
-    ffi.Pointer<rs2_raw_data_buffer> buffer,
-    ffi.Pointer<ffi.Pointer<rs2_error>> error,
-  ) {
-    return _rs2_get_raw_data(
-      buffer,
-      error,
-    );
-  }
-
-  late final _rs2_get_raw_dataPtr = _lookup<
-      ffi.NativeFunction<
-          ffi.Pointer<ffi.UnsignedChar> Function(
-              ffi.Pointer<rs2_raw_data_buffer>,
-              ffi.Pointer<ffi.Pointer<rs2_error>>)>>('rs2_get_raw_data');
-  late final _rs2_get_raw_data = _rs2_get_raw_dataPtr.asFunction<
-      ffi.Pointer<ffi.UnsignedChar> Function(ffi.Pointer<rs2_raw_data_buffer>,
-          ffi.Pointer<ffi.Pointer<rs2_error>>)>();
-
-  /// Retrieve the API version from the source code. Evaluate that the value is conformant to the established policies
-  /// \param[out] error  if non-null, receives any error that occurs during this call, otherwise, errors are ignored
-  /// \return            the version API encoded into integer value "1.9.3" -> 10903
-  int rs2_get_api_version(
-    ffi.Pointer<ffi.Pointer<rs2_error>> error,
-  ) {
-    return _rs2_get_api_version(
-      error,
-    );
-  }
-
-  late final _rs2_get_api_versionPtr = _lookup<
-      ffi.NativeFunction<
-          ffi.Int Function(
-              ffi.Pointer<ffi.Pointer<rs2_error>>)>>('rs2_get_api_version');
-  late final _rs2_get_api_version = _rs2_get_api_versionPtr
-      .asFunction<int Function(ffi.Pointer<ffi.Pointer<rs2_error>>)>();
-
-  void rs2_log_to_console(
-    int min_severity,
-    ffi.Pointer<ffi.Pointer<rs2_error>> error,
-  ) {
-    return _rs2_log_to_console(
-      min_severity,
-      error,
-    );
-  }
-
-  late final _rs2_log_to_consolePtr = _lookup<
-      ffi.NativeFunction<
-          ffi.Void Function(ffi.Int32,
-              ffi.Pointer<ffi.Pointer<rs2_error>>)>>('rs2_log_to_console');
-  late final _rs2_log_to_console = _rs2_log_to_consolePtr
-      .asFunction<void Function(int, ffi.Pointer<ffi.Pointer<rs2_error>>)>();
-
-  void rs2_log_to_file(
-    int min_severity,
-    ffi.Pointer<pkg_ffi.Utf8> file_path,
-    ffi.Pointer<ffi.Pointer<rs2_error>> error,
-  ) {
-    return _rs2_log_to_file(
-      min_severity,
-      file_path,
-      error,
-    );
-  }
-
-  late final _rs2_log_to_filePtr = _lookup<
-      ffi.NativeFunction<
-          ffi.Void Function(ffi.Int32, ffi.Pointer<pkg_ffi.Utf8>,
-              ffi.Pointer<ffi.Pointer<rs2_error>>)>>('rs2_log_to_file');
-  late final _rs2_log_to_file = _rs2_log_to_filePtr.asFunction<
-      void Function(int, ffi.Pointer<pkg_ffi.Utf8>,
-          ffi.Pointer<ffi.Pointer<rs2_error>>)>();
-
-  void rs2_log_to_callback_cpp(
-    int min_severity,
-    ffi.Pointer<rs2_log_callback> callback,
-    ffi.Pointer<ffi.Pointer<rs2_error>> error,
-  ) {
-    return _rs2_log_to_callback_cpp(
-      min_severity,
-      callback,
-      error,
-    );
-  }
-
-  late final _rs2_log_to_callback_cppPtr = _lookup<
-      ffi.NativeFunction<
-          ffi.Void Function(ffi.Int32, ffi.Pointer<rs2_log_callback>,
-              ffi.Pointer<ffi.Pointer<rs2_error>>)>>('rs2_log_to_callback_cpp');
-  late final _rs2_log_to_callback_cpp = _rs2_log_to_callback_cppPtr.asFunction<
-      void Function(int, ffi.Pointer<rs2_log_callback>,
-          ffi.Pointer<ffi.Pointer<rs2_error>>)>();
-
-  void rs2_log_to_callback(
-    int min_severity,
-    rs2_log_callback_ptr callback,
-    ffi.Pointer<ffi.Void> arg,
-    ffi.Pointer<ffi.Pointer<rs2_error>> error,
-  ) {
-    return _rs2_log_to_callback(
-      min_severity,
-      callback,
-      arg,
-      error,
-    );
-  }
-
-  late final _rs2_log_to_callbackPtr = _lookup<
-      ffi.NativeFunction<
-          ffi.Void Function(
-              ffi.Int32,
-              rs2_log_callback_ptr,
-              ffi.Pointer<ffi.Void>,
-              ffi.Pointer<ffi.Pointer<rs2_error>>)>>('rs2_log_to_callback');
-  late final _rs2_log_to_callback = _rs2_log_to_callbackPtr.asFunction<
-      void Function(int, rs2_log_callback_ptr, ffi.Pointer<ffi.Void>,
-          ffi.Pointer<ffi.Pointer<rs2_error>>)>();
-
-  void rs2_reset_logger(
-    ffi.Pointer<ffi.Pointer<rs2_error>> error,
-  ) {
-    return _rs2_reset_logger(
-      error,
-    );
-  }
-
-  late final _rs2_reset_loggerPtr = _lookup<
-      ffi.NativeFunction<
-          ffi.Void Function(
-              ffi.Pointer<ffi.Pointer<rs2_error>>)>>('rs2_reset_logger');
-  late final _rs2_reset_logger = _rs2_reset_loggerPtr
-      .asFunction<void Function(ffi.Pointer<ffi.Pointer<rs2_error>>)>();
-
-  /// Enable rolling log file when used with rs2_log_to_file:
-  /// Upon reaching (max_size/2) bytes, the log will be renamed with an ".old" suffix and a new log created. Any
-  /// previous .old file will be erased.
-  /// Must have permissions to remove/rename files in log file directory.
-  /// \param[in] max_size   max file size in megabytes
-  /// \param[out] error     if non-null, receives any error that occurs during this call, otherwise, errors are ignored
-  void rs2_enable_rolling_log_file(
-    int max_size,
-    ffi.Pointer<ffi.Pointer<rs2_error>> error,
-  ) {
-    return _rs2_enable_rolling_log_file(
-      max_size,
-      error,
-    );
-  }
-
-  late final _rs2_enable_rolling_log_filePtr = _lookup<
-          ffi.NativeFunction<
-              ffi.Void Function(
-                  ffi.UnsignedInt, ffi.Pointer<ffi.Pointer<rs2_error>>)>>(
-      'rs2_enable_rolling_log_file');
-  late final _rs2_enable_rolling_log_file = _rs2_enable_rolling_log_filePtr
-      .asFunction<void Function(int, ffi.Pointer<ffi.Pointer<rs2_error>>)>();
-
-  int rs2_get_log_message_line_number(
-    ffi.Pointer<rs2_log_message> msg,
-    ffi.Pointer<ffi.Pointer<rs2_error>> error,
-  ) {
-    return _rs2_get_log_message_line_number(
-      msg,
-      error,
-    );
-  }
-
-  late final _rs2_get_log_message_line_numberPtr = _lookup<
-          ffi.NativeFunction<
-              ffi.UnsignedInt Function(ffi.Pointer<rs2_log_message>,
-                  ffi.Pointer<ffi.Pointer<rs2_error>>)>>(
-      'rs2_get_log_message_line_number');
-  late final _rs2_get_log_message_line_number =
-      _rs2_get_log_message_line_numberPtr.asFunction<
-          int Function(ffi.Pointer<rs2_log_message>,
-              ffi.Pointer<ffi.Pointer<rs2_error>>)>();
-
-  ffi.Pointer<pkg_ffi.Utf8> rs2_get_log_message_filename(
-    ffi.Pointer<rs2_log_message> msg,
-    ffi.Pointer<ffi.Pointer<rs2_error>> error,
-  ) {
-    return _rs2_get_log_message_filename(
-      msg,
-      error,
-    );
-  }
-
-  late final _rs2_get_log_message_filenamePtr = _lookup<
-          ffi.NativeFunction<
-              ffi.Pointer<pkg_ffi.Utf8> Function(ffi.Pointer<rs2_log_message>,
-                  ffi.Pointer<ffi.Pointer<rs2_error>>)>>(
-      'rs2_get_log_message_filename');
-  late final _rs2_get_log_message_filename =
-      _rs2_get_log_message_filenamePtr.asFunction<
-          ffi.Pointer<pkg_ffi.Utf8> Function(ffi.Pointer<rs2_log_message>,
-              ffi.Pointer<ffi.Pointer<rs2_error>>)>();
-
-  ffi.Pointer<pkg_ffi.Utf8> rs2_get_raw_log_message(
-    ffi.Pointer<rs2_log_message> msg,
-    ffi.Pointer<ffi.Pointer<rs2_error>> error,
-  ) {
-    return _rs2_get_raw_log_message(
-      msg,
-      error,
-    );
-  }
-
-  late final _rs2_get_raw_log_messagePtr = _lookup<
-      ffi.NativeFunction<
-          ffi.Pointer<pkg_ffi.Utf8> Function(ffi.Pointer<rs2_log_message>,
-              ffi.Pointer<ffi.Pointer<rs2_error>>)>>('rs2_get_raw_log_message');
-  late final _rs2_get_raw_log_message = _rs2_get_raw_log_messagePtr.asFunction<
-      ffi.Pointer<pkg_ffi.Utf8> Function(
-          ffi.Pointer<rs2_log_message>, ffi.Pointer<ffi.Pointer<rs2_error>>)>();
-
-  ffi.Pointer<pkg_ffi.Utf8> rs2_get_full_log_message(
-    ffi.Pointer<rs2_log_message> msg,
-    ffi.Pointer<ffi.Pointer<rs2_error>> error,
-  ) {
-    return _rs2_get_full_log_message(
-      msg,
-      error,
-    );
-  }
-
-  late final _rs2_get_full_log_messagePtr = _lookup<
-          ffi.NativeFunction<
-              ffi.Pointer<pkg_ffi.Utf8> Function(ffi.Pointer<rs2_log_message>,
-                  ffi.Pointer<ffi.Pointer<rs2_error>>)>>(
-      'rs2_get_full_log_message');
-  late final _rs2_get_full_log_message =
-      _rs2_get_full_log_messagePtr.asFunction<
-          ffi.Pointer<pkg_ffi.Utf8> Function(ffi.Pointer<rs2_log_message>,
-              ffi.Pointer<ffi.Pointer<rs2_error>>)>();
-
-  /// Add custom message into librealsense log
-  /// \param[in] severity  The log level for the message to be written under
-  /// \param[in] message   Message to be logged
-  /// \param[out] error  if non-null, receives any error that occurs during this call, otherwise, errors are ignored
-  void rs2_log(
-    int severity,
-    ffi.Pointer<pkg_ffi.Utf8> message,
-    ffi.Pointer<ffi.Pointer<rs2_error>> error,
-  ) {
-    return _rs2_log(
-      severity,
-      message,
-      error,
-    );
-  }
-
-  late final _rs2_logPtr = _lookup<
-      ffi.NativeFunction<
-          ffi.Void Function(ffi.Int32, ffi.Pointer<pkg_ffi.Utf8>,
-              ffi.Pointer<ffi.Pointer<rs2_error>>)>>('rs2_log');
-  late final _rs2_log = _rs2_logPtr.asFunction<
-      void Function(int, ffi.Pointer<pkg_ffi.Utf8>,
-          ffi.Pointer<ffi.Pointer<rs2_error>>)>();
-
-  /// Given the 2D depth coordinate (x,y) provide the corresponding depth in metric units
-  /// \param[in] frame_ref  2D depth pixel coordinates (Left-Upper corner origin)
-  /// \param[in] x,y  2D depth pixel coordinates (Left-Upper corner origin)
-  /// \param[out] error  if non-null, receives any error that occurs during this call, otherwise, errors are ignored
-  double rs2_depth_frame_get_distance(
-    ffi.Pointer<rs2_frame> frame_ref,
-    int x,
-    int y,
-    ffi.Pointer<ffi.Pointer<rs2_error>> error,
-  ) {
-    return _rs2_depth_frame_get_distance(
-      frame_ref,
-      x,
-      y,
-      error,
-    );
-  }
-
-  late final _rs2_depth_frame_get_distancePtr = _lookup<
-          ffi.NativeFunction<
-              ffi.Float Function(ffi.Pointer<rs2_frame>, ffi.Int, ffi.Int,
-                  ffi.Pointer<ffi.Pointer<rs2_error>>)>>(
-      'rs2_depth_frame_get_distance');
-  late final _rs2_depth_frame_get_distance =
-      _rs2_depth_frame_get_distancePtr.asFunction<
-          double Function(ffi.Pointer<rs2_frame>, int, int,
-              ffi.Pointer<ffi.Pointer<rs2_error>>)>();
-
-  /// return the time at specific time point
-  /// \param[out] error  if non-null, receives any error that occurs during this call, otherwise, errors are ignored
-  /// \return            the time at specific time point, in live and record mode it will return the system time and in playback mode it will return the recorded time
-  double rs2_get_time(
-    ffi.Pointer<ffi.Pointer<rs2_error>> error,
-  ) {
-    return _rs2_get_time(
-      error,
-    );
-  }
-
-  late final _rs2_get_timePtr = _lookup<
-      ffi.NativeFunction<
-          rs2_time_t Function(
-              ffi.Pointer<ffi.Pointer<rs2_error>>)>>('rs2_get_time');
-  late final _rs2_get_time = _rs2_get_timePtr
-      .asFunction<double Function(ffi.Pointer<ffi.Pointer<rs2_error>>)>();
-
-  /// Create a pipeline instance
-  /// The pipeline simplifies the user interaction with the device and computer vision processing modules.
-  /// The class abstracts the camera configuration and streaming, and the vision modules triggering and threading.
-  /// It lets the application focus on the computer vision output of the modules, or the device output data.
-  /// The pipeline can manage computer vision modules, which are implemented as a processing blocks.
-  /// The pipeline is the consumer of the processing block interface, while the application consumes the
-  /// computer vision interface.
-  /// \param[in]  ctx    context
-  /// \param[out] error  if non-null, receives any error that occurs during this call, otherwise, errors are ignored
-  ffi.Pointer<rs2_pipeline> rs2_create_pipeline(
-    ffi.Pointer<rs2_context> ctx,
-    ffi.Pointer<ffi.Pointer<rs2_error>> error,
-  ) {
-    return _rs2_create_pipeline(
-      ctx,
-      error,
-    );
-  }
-
-  late final _rs2_create_pipelinePtr = _lookup<
-      ffi.NativeFunction<
-          ffi.Pointer<rs2_pipeline> Function(ffi.Pointer<rs2_context>,
-              ffi.Pointer<ffi.Pointer<rs2_error>>)>>('rs2_create_pipeline');
-  late final _rs2_create_pipeline = _rs2_create_pipelinePtr.asFunction<
-      ffi.Pointer<rs2_pipeline> Function(
-          ffi.Pointer<rs2_context>, ffi.Pointer<ffi.Pointer<rs2_error>>)>();
-
-  /// Stop the pipeline streaming.
-  /// The pipeline stops delivering samples to the attached computer vision modules and processing blocks, stops the device streaming
-  /// and releases the device resources used by the pipeline. It is the application's responsibility to release any frame reference it owns.
-  /// The method takes effect only after \c start() was called, otherwise an exception is raised.
-  /// \param[in] pipe  pipeline
-  /// \param[out] error  if non-null, receives any error that occurs during this call, otherwise, errors are ignored
-  void rs2_pipeline_stop(
-    ffi.Pointer<rs2_pipeline> pipe,
-    ffi.Pointer<ffi.Pointer<rs2_error>> error,
-  ) {
-    return _rs2_pipeline_stop(
-      pipe,
-      error,
-    );
-  }
-
-  late final _rs2_pipeline_stopPtr = _lookup<
-      ffi.NativeFunction<
-          ffi.Void Function(ffi.Pointer<rs2_pipeline>,
-              ffi.Pointer<ffi.Pointer<rs2_error>>)>>('rs2_pipeline_stop');
-  late final _rs2_pipeline_stop = _rs2_pipeline_stopPtr.asFunction<
-      void Function(
-          ffi.Pointer<rs2_pipeline>, ffi.Pointer<ffi.Pointer<rs2_error>>)>();
-
-  /// Wait until a new set of frames becomes available.
-  /// The frames set includes time-synchronized frames of each enabled stream in the pipeline.
-  /// The method blocks the calling thread, and fetches the latest unread frames set.
-  /// Device frames, which were produced while the function wasn't called, are dropped. To avoid frame drops, this method should be called
-  /// as fast as the device frame rate.
-  /// The application can maintain the frames handles to defer processing. However, if the application maintains too long history, the device
-  /// may lack memory resources to produce new frames, and the following call to this method shall fail to retrieve new frames, until resources
-  /// are retained.
-  /// \param[in] pipe the pipeline
-  /// \param[in] timeout_ms   Max time in milliseconds to wait until an exception will be thrown
-  /// \param[out] error         if non-null, receives any error that occurs during this call, otherwise, errors are ignored
-  /// \return Set of coherent frames
-  ffi.Pointer<rs2_frame> rs2_pipeline_wait_for_frames(
-    ffi.Pointer<rs2_pipeline> pipe,
-    int timeout_ms,
-    ffi.Pointer<ffi.Pointer<rs2_error>> error,
-  ) {
-    return _rs2_pipeline_wait_for_frames(
-      pipe,
-      timeout_ms,
-      error,
-    );
-  }
-
-  late final _rs2_pipeline_wait_for_framesPtr = _lookup<
-          ffi.NativeFunction<
-              ffi.Pointer<rs2_frame> Function(ffi.Pointer<rs2_pipeline>,
-                  ffi.UnsignedInt, ffi.Pointer<ffi.Pointer<rs2_error>>)>>(
-      'rs2_pipeline_wait_for_frames');
-  late final _rs2_pipeline_wait_for_frames =
-      _rs2_pipeline_wait_for_framesPtr.asFunction<
-          ffi.Pointer<rs2_frame> Function(ffi.Pointer<rs2_pipeline>, int,
-              ffi.Pointer<ffi.Pointer<rs2_error>>)>();
-
-  /// Check if a new set of frames is available and retrieve the latest undelivered set.
-  /// The frames set includes time-synchronized frames of each enabled stream in the pipeline.
-  /// The method returns without blocking the calling thread, with status of new frames available or not. If available, it fetches the
-  /// latest frames set.
-  /// Device frames, which were produced while the function wasn't called, are dropped. To avoid frame drops, this method should be called
-  /// as fast as the device frame rate.
-  /// The application can maintain the frames handles to defer processing. However, if the application maintains too long history, the device
-  /// may lack memory resources to produce new frames, and the following calls to this method shall return no new frames, until resources are
-  /// retained.
-  /// \param[in] pipe the pipeline
-  /// \param[out] output_frame frame handle to be released using rs2_release_frame
-  /// \param[out] error  if non-null, receives any error that occurs during this call, otherwise, errors are ignored
-  /// \return true if new frame was stored to output_frame
-  int rs2_pipeline_poll_for_frames(
-    ffi.Pointer<rs2_pipeline> pipe,
-    ffi.Pointer<ffi.Pointer<rs2_frame>> output_frame,
-    ffi.Pointer<ffi.Pointer<rs2_error>> error,
-  ) {
-    return _rs2_pipeline_poll_for_frames(
-      pipe,
-      output_frame,
-      error,
-    );
-  }
-
-  late final _rs2_pipeline_poll_for_framesPtr = _lookup<
-          ffi.NativeFunction<
-              ffi.Int Function(
-                  ffi.Pointer<rs2_pipeline>,
-                  ffi.Pointer<ffi.Pointer<rs2_frame>>,
-                  ffi.Pointer<ffi.Pointer<rs2_error>>)>>(
-      'rs2_pipeline_poll_for_frames');
-  late final _rs2_pipeline_poll_for_frames =
-      _rs2_pipeline_poll_for_framesPtr.asFunction<
-          int Function(
-              ffi.Pointer<rs2_pipeline>,
-              ffi.Pointer<ffi.Pointer<rs2_frame>>,
-              ffi.Pointer<ffi.Pointer<rs2_error>>)>();
-
-  /// Wait until a new set of frames becomes available.
-  /// The frames set includes time-synchronized frames of each enabled stream in the pipeline.
-  /// The method blocks the calling thread, and fetches the latest unread frames set.
-  /// Device frames, which were produced while the function wasn't called, are dropped. To avoid frame drops, this method should be called
-  /// as fast as the device frame rate.
-  /// The application can maintain the frames handles to defer processing. However, if the application maintains too long history, the device
-  /// may lack memory resources to produce new frames, and the following call to this method shall fail to retrieve new frames, until resources
-  /// are retained.
-  /// \param[in] pipe           the pipeline
-  /// \param[in] timeout_ms     max time in milliseconds to wait until a frame becomes available
-  /// \param[out] output_frame  frame handle to be released using rs2_release_frame
-  /// \param[out] error         if non-null, receives any error that occurs during this call, otherwise, errors are ignored
-  /// \return true if new frame was stored to output_frame
-  int rs2_pipeline_try_wait_for_frames(
-    ffi.Pointer<rs2_pipeline> pipe,
-    ffi.Pointer<ffi.Pointer<rs2_frame>> output_frame,
-    int timeout_ms,
-    ffi.Pointer<ffi.Pointer<rs2_error>> error,
-  ) {
-    return _rs2_pipeline_try_wait_for_frames(
-      pipe,
-      output_frame,
-      timeout_ms,
-      error,
-    );
-  }
-
-  late final _rs2_pipeline_try_wait_for_framesPtr = _lookup<
-          ffi.NativeFunction<
-              ffi.Int Function(
-                  ffi.Pointer<rs2_pipeline>,
-                  ffi.Pointer<ffi.Pointer<rs2_frame>>,
-                  ffi.UnsignedInt,
-                  ffi.Pointer<ffi.Pointer<rs2_error>>)>>(
-      'rs2_pipeline_try_wait_for_frames');
-  late final _rs2_pipeline_try_wait_for_frames =
-      _rs2_pipeline_try_wait_for_framesPtr.asFunction<
-          int Function(
-              ffi.Pointer<rs2_pipeline>,
-              ffi.Pointer<ffi.Pointer<rs2_frame>>,
-              int,
-              ffi.Pointer<ffi.Pointer<rs2_error>>)>();
-
-  /// Delete a pipeline instance.
-  /// Upon destruction, the pipeline will implicitly stop itself
-  /// \param[in] pipe to delete
-  void rs2_delete_pipeline(
-    ffi.Pointer<rs2_pipeline> pipe,
-  ) {
-    return _rs2_delete_pipeline(
-      pipe,
-    );
-  }
-
-  late final _rs2_delete_pipelinePtr =
-      _lookup<ffi.NativeFunction<ffi.Void Function(ffi.Pointer<rs2_pipeline>)>>(
-          'rs2_delete_pipeline');
-  late final _rs2_delete_pipeline = _rs2_delete_pipelinePtr
-      .asFunction<void Function(ffi.Pointer<rs2_pipeline>)>();
-
-  /// Start the pipeline streaming with its default configuration.
-  /// The pipeline streaming loop captures samples from the device, and delivers them to the attached computer vision modules
-  /// and processing blocks, according to each module requirements and threading model.
-  /// During the loop execution, the application can access the camera streams by calling \c wait_for_frames() or \c poll_for_frames().
-  /// The streaming loop runs until the pipeline is stopped.
-  /// Starting the pipeline is possible only when it is not started. If the pipeline was started, an exception is raised.
-  ///
-  /// \param[in] pipe    a pointer to an instance of the pipeline
-  /// \param[out] error  if non-null, receives any error that occurs during this call, otherwise, errors are ignored
-  /// \return             The actual pipeline device and streams profile, which was successfully configured to the streaming device.
-  ffi.Pointer<rs2_pipeline_profile> rs2_pipeline_start(
-    ffi.Pointer<rs2_pipeline> pipe,
-    ffi.Pointer<ffi.Pointer<rs2_error>> error,
-  ) {
-    return _rs2_pipeline_start(
-      pipe,
-      error,
-    );
-  }
-
-  late final _rs2_pipeline_startPtr = _lookup<
-      ffi.NativeFunction<
-          ffi.Pointer<rs2_pipeline_profile> Function(ffi.Pointer<rs2_pipeline>,
-              ffi.Pointer<ffi.Pointer<rs2_error>>)>>('rs2_pipeline_start');
-  late final _rs2_pipeline_start = _rs2_pipeline_startPtr.asFunction<
-      ffi.Pointer<rs2_pipeline_profile> Function(
-          ffi.Pointer<rs2_pipeline>, ffi.Pointer<ffi.Pointer<rs2_error>>)>();
-
-  /// Start the pipeline streaming according to the configuraion.
-  /// The pipeline streaming loop captures samples from the device, and delivers them to the attached computer vision modules
-  /// and processing blocks, according to each module requirements and threading model.
-  /// During the loop execution, the application can access the camera streams by calling \c wait_for_frames() or \c poll_for_frames().
-  /// The streaming loop runs until the pipeline is stopped.
-  /// Starting the pipeline is possible only when it is not started. If the pipeline was started, an exception is raised.
-  /// The pipeline selects and activates the device upon start, according to configuration or a default configuration.
-  /// When the rs2::config is provided to the method, the pipeline tries to activate the config \c resolve() result. If the application
-  /// requests are conflicting with pipeline computer vision modules or no matching device is available on the platform, the method fails.
-  /// Available configurations and devices may change between config \c resolve() call and pipeline start, in case devices are connected
-  /// or disconnected, or another application acquires ownership of a device.
-  ///
-  /// \param[in] pipe    a pointer to an instance of the pipeline
-  /// \param[in] config   A rs2::config with requested filters on the pipeline configuration. By default no filters are applied.
-  /// \param[out] error  if non-null, receives any error that occurs during this call, otherwise, errors are ignored
-  /// \return             The actual pipeline device and streams profile, which was successfully configured to the streaming device.
-  ffi.Pointer<rs2_pipeline_profile> rs2_pipeline_start_with_config(
-    ffi.Pointer<rs2_pipeline> pipe,
-    ffi.Pointer<rs2_config> config,
-    ffi.Pointer<ffi.Pointer<rs2_error>> error,
-  ) {
-    return _rs2_pipeline_start_with_config(
-      pipe,
-      config,
-      error,
-    );
-  }
-
-  late final _rs2_pipeline_start_with_configPtr = _lookup<
-          ffi.NativeFunction<
-              ffi.Pointer<rs2_pipeline_profile> Function(
-                  ffi.Pointer<rs2_pipeline>,
-                  ffi.Pointer<rs2_config>,
-                  ffi.Pointer<ffi.Pointer<rs2_error>>)>>(
-      'rs2_pipeline_start_with_config');
-  late final _rs2_pipeline_start_with_config =
-      _rs2_pipeline_start_with_configPtr.asFunction<
-          ffi.Pointer<rs2_pipeline_profile> Function(ffi.Pointer<rs2_pipeline>,
-              ffi.Pointer<rs2_config>, ffi.Pointer<ffi.Pointer<rs2_error>>)>();
-
-  /// Start the pipeline streaming with its default configuration.
-  /// The pipeline captures samples from the device, and delivers them to the through the provided frame callback.
-  /// Starting the pipeline is possible only when it is not started. If the pipeline was started, an exception is raised.
-  /// When starting the pipeline with a callback both \c wait_for_frames() or \c poll_for_frames() will throw exception.
-  ///
-  /// \param[in] pipe     A pointer to an instance of the pipeline
-  /// \param[in] on_frame function pointer to register as per-frame callback
-  /// \param[in] user auxiliary  data the user wishes to receive together with every frame callback
-  /// \param[out] error   If non-null, receives any error that occurs during this call, otherwise, errors are ignored
-  /// \return             The actual pipeline device and streams profile, which was successfully configured to the streaming device.
-  ffi.Pointer<rs2_pipeline_profile> rs2_pipeline_start_with_callback(
-    ffi.Pointer<rs2_pipeline> pipe,
-    rs2_frame_callback_ptr on_frame,
-    ffi.Pointer<ffi.Void> user,
-    ffi.Pointer<ffi.Pointer<rs2_error>> error,
-  ) {
-    return _rs2_pipeline_start_with_callback(
-      pipe,
-      on_frame,
-      user,
-      error,
-    );
-  }
-
-  late final _rs2_pipeline_start_with_callbackPtr = _lookup<
-          ffi.NativeFunction<
-              ffi.Pointer<rs2_pipeline_profile> Function(
-                  ffi.Pointer<rs2_pipeline>,
-                  rs2_frame_callback_ptr,
-                  ffi.Pointer<ffi.Void>,
-                  ffi.Pointer<ffi.Pointer<rs2_error>>)>>(
-      'rs2_pipeline_start_with_callback');
-  late final _rs2_pipeline_start_with_callback =
-      _rs2_pipeline_start_with_callbackPtr.asFunction<
-          ffi.Pointer<rs2_pipeline_profile> Function(
-              ffi.Pointer<rs2_pipeline>,
-              rs2_frame_callback_ptr,
-              ffi.Pointer<ffi.Void>,
-              ffi.Pointer<ffi.Pointer<rs2_error>>)>();
-
-  /// Start the pipeline streaming with its default configuration.
-  /// The pipeline captures samples from the device, and delivers them to the through the provided frame callback.
-  /// Starting the pipeline is possible only when it is not started. If the pipeline was started, an exception is raised.
-  /// When starting the pipeline with a callback both \c wait_for_frames() or \c poll_for_frames() will throw exception.
-  ///
-  /// \param[in] pipe     A pointer to an instance of the pipeline
-  /// \param[in] callback callback object created from c++ application. ownership over the callback object is moved into the relevant streaming lock
-  /// \param[out] error   If non-null, receives any error that occurs during this call, otherwise, errors are ignored
-  /// \return             The actual pipeline device and streams profile, which was successfully configured to the streaming device.
-  ffi.Pointer<rs2_pipeline_profile> rs2_pipeline_start_with_callback_cpp(
-    ffi.Pointer<rs2_pipeline> pipe,
-    ffi.Pointer<rs2_frame_callback> callback,
-    ffi.Pointer<ffi.Pointer<rs2_error>> error,
-  ) {
-    return _rs2_pipeline_start_with_callback_cpp(
-      pipe,
-      callback,
-      error,
-    );
-  }
-
-  late final _rs2_pipeline_start_with_callback_cppPtr = _lookup<
-          ffi.NativeFunction<
-              ffi.Pointer<rs2_pipeline_profile> Function(
-                  ffi.Pointer<rs2_pipeline>,
-                  ffi.Pointer<rs2_frame_callback>,
-                  ffi.Pointer<ffi.Pointer<rs2_error>>)>>(
-      'rs2_pipeline_start_with_callback_cpp');
-  late final _rs2_pipeline_start_with_callback_cpp =
-      _rs2_pipeline_start_with_callback_cppPtr.asFunction<
-          ffi.Pointer<rs2_pipeline_profile> Function(
-              ffi.Pointer<rs2_pipeline>,
-              ffi.Pointer<rs2_frame_callback>,
-              ffi.Pointer<ffi.Pointer<rs2_error>>)>();
-
-  /// Start the pipeline streaming according to the configuraion.
-  /// The pipeline captures samples from the device, and delivers them to the through the provided frame callback.
-  /// Starting the pipeline is possible only when it is not started. If the pipeline was started, an exception is raised.
-  /// When starting the pipeline with a callback both \c wait_for_frames() or \c poll_for_frames() will throw exception.
-  /// The pipeline selects and activates the device upon start, according to configuration or a default configuration.
-  /// When the rs2::config is provided to the method, the pipeline tries to activate the config \c resolve() result. If the application
-  /// requests are conflicting with pipeline computer vision modules or no matching device is available on the platform, the method fails.
-  /// Available configurations and devices may change between config \c resolve() call and pipeline start, in case devices are connected
-  /// or disconnected, or another application acquires ownership of a device.
-  ///
-  /// \param[in] pipe     A pointer to an instance of the pipeline
-  /// \param[in] config   A rs2::config with requested filters on the pipeline configuration. By default no filters are applied.
-  /// \param[in] on_frame function pointer to register as per-frame callback
-  /// \param[in] user auxiliary  data the user wishes to receive together with every frame callback
-  /// \param[out] error   If non-null, receives any error that occurs during this call, otherwise, errors are ignored
-  /// \return             The actual pipeline device and streams profile, which was successfully configured to the streaming device.
-  ffi.Pointer<rs2_pipeline_profile> rs2_pipeline_start_with_config_and_callback(
-    ffi.Pointer<rs2_pipeline> pipe,
-    ffi.Pointer<rs2_config> config,
-    rs2_frame_callback_ptr on_frame,
-    ffi.Pointer<ffi.Void> user,
-    ffi.Pointer<ffi.Pointer<rs2_error>> error,
-  ) {
-    return _rs2_pipeline_start_with_config_and_callback(
-      pipe,
-      config,
-      on_frame,
-      user,
-      error,
-    );
-  }
-
-  late final _rs2_pipeline_start_with_config_and_callbackPtr = _lookup<
-          ffi.NativeFunction<
-              ffi.Pointer<rs2_pipeline_profile> Function(
-                  ffi.Pointer<rs2_pipeline>,
-                  ffi.Pointer<rs2_config>,
-                  rs2_frame_callback_ptr,
-                  ffi.Pointer<ffi.Void>,
-                  ffi.Pointer<ffi.Pointer<rs2_error>>)>>(
-      'rs2_pipeline_start_with_config_and_callback');
-  late final _rs2_pipeline_start_with_config_and_callback =
-      _rs2_pipeline_start_with_config_and_callbackPtr.asFunction<
-          ffi.Pointer<rs2_pipeline_profile> Function(
-              ffi.Pointer<rs2_pipeline>,
-              ffi.Pointer<rs2_config>,
-              rs2_frame_callback_ptr,
-              ffi.Pointer<ffi.Void>,
-              ffi.Pointer<ffi.Pointer<rs2_error>>)>();
-
-  /// Start the pipeline streaming according to the configuraion.
-  /// The pipeline captures samples from the device, and delivers them to the through the provided frame callback.
-  /// Starting the pipeline is possible only when it is not started. If the pipeline was started, an exception is raised.
-  /// When starting the pipeline with a callback both \c wait_for_frames() or \c poll_for_frames() will throw exception.
-  /// The pipeline selects and activates the device upon start, according to configuration or a default configuration.
-  /// When the rs2::config is provided to the method, the pipeline tries to activate the config \c resolve() result. If the application
-  /// requests are conflicting with pipeline computer vision modules or no matching device is available on the platform, the method fails.
-  /// Available configurations and devices may change between config \c resolve() call and pipeline start, in case devices are connected
-  /// or disconnected, or another application acquires ownership of a device.
-  ///
-  /// \param[in] pipe     A pointer to an instance of the pipeline
-  /// \param[in] config   A rs2::config with requested filters on the pipeline configuration. By default no filters are applied.
-  /// \param[in] callback callback object created from c++ application. ownership over the callback object is moved into the relevant streaming lock
-  /// \param[out] error   If non-null, receives any error that occurs during this call, otherwise, errors are ignored
-  /// \return             The actual pipeline device and streams profile, which was successfully configured to the streaming device.
-  ffi.Pointer<rs2_pipeline_profile>
-      rs2_pipeline_start_with_config_and_callback_cpp(
-    ffi.Pointer<rs2_pipeline> pipe,
-    ffi.Pointer<rs2_config> config,
-    ffi.Pointer<rs2_frame_callback> callback,
-    ffi.Pointer<ffi.Pointer<rs2_error>> error,
-  ) {
-    return _rs2_pipeline_start_with_config_and_callback_cpp(
-      pipe,
-      config,
-      callback,
-      error,
-    );
-  }
-
-  late final _rs2_pipeline_start_with_config_and_callback_cppPtr = _lookup<
-          ffi.NativeFunction<
-              ffi.Pointer<rs2_pipeline_profile> Function(
-                  ffi.Pointer<rs2_pipeline>,
-                  ffi.Pointer<rs2_config>,
-                  ffi.Pointer<rs2_frame_callback>,
-                  ffi.Pointer<ffi.Pointer<rs2_error>>)>>(
-      'rs2_pipeline_start_with_config_and_callback_cpp');
-  late final _rs2_pipeline_start_with_config_and_callback_cpp =
-      _rs2_pipeline_start_with_config_and_callback_cppPtr.asFunction<
-          ffi.Pointer<rs2_pipeline_profile> Function(
-              ffi.Pointer<rs2_pipeline>,
-              ffi.Pointer<rs2_config>,
-              ffi.Pointer<rs2_frame_callback>,
-              ffi.Pointer<ffi.Pointer<rs2_error>>)>();
-
-  /// Return the active device and streams profiles, used by the pipeline.
-  /// The pipeline streams profiles are selected during \c start(). The method returns a valid result only when the pipeline is active -
-  /// between calls to \c start() and \c stop().
-  /// After \c stop() is called, the pipeline doesn't own the device, thus, the pipeline selected device may change in subsequent activations.
-  ///
-  /// \param[in] pipe    a pointer to an instance of the pipeline
-  /// \param[out] error  if non-null, receives any error that occurs during this call, otherwise, errors are ignored
-  /// \return  The actual pipeline device and streams profile, which was successfully configured to the streaming device on start.
-  ffi.Pointer<rs2_pipeline_profile> rs2_pipeline_get_active_profile(
-    ffi.Pointer<rs2_pipeline> pipe,
-    ffi.Pointer<ffi.Pointer<rs2_error>> error,
-  ) {
-    return _rs2_pipeline_get_active_profile(
-      pipe,
-      error,
-    );
-  }
-
-  late final _rs2_pipeline_get_active_profilePtr = _lookup<
-          ffi.NativeFunction<
-              ffi.Pointer<rs2_pipeline_profile> Function(
-                  ffi.Pointer<rs2_pipeline>,
-                  ffi.Pointer<ffi.Pointer<rs2_error>>)>>(
-      'rs2_pipeline_get_active_profile');
-  late final _rs2_pipeline_get_active_profile =
-      _rs2_pipeline_get_active_profilePtr.asFunction<
-          ffi.Pointer<rs2_pipeline_profile> Function(ffi.Pointer<rs2_pipeline>,
-              ffi.Pointer<ffi.Pointer<rs2_error>>)>();
-
-  /// Retrieve the device used by the pipeline.
-  /// The device class provides the application access to control camera additional settings -
-  /// get device information, sensor options information, options value query and set, sensor specific extensions.
-  /// Since the pipeline controls the device streams configuration, activation state and frames reading, calling
-  /// the device API functions, which execute those operations, results in unexpected behavior.
-  /// The pipeline streaming device is selected during pipeline \c start(). Devices of profiles, which are not returned by
-  /// pipeline \c start() or \c get_active_profile(), are not guaranteed to be used by the pipeline.
-  ///
-  /// \param[in] profile    A pointer to an instance of a pipeline profile
-  /// \param[out] error     if non-null, receives any error that occurs during this call, otherwise, errors are ignored
-  /// \return rs2_device* The pipeline selected device
-  ffi.Pointer<rs2_device> rs2_pipeline_profile_get_device(
-    ffi.Pointer<rs2_pipeline_profile> profile,
-    ffi.Pointer<ffi.Pointer<rs2_error>> error,
-  ) {
-    return _rs2_pipeline_profile_get_device(
-      profile,
-      error,
-    );
-  }
-
-  late final _rs2_pipeline_profile_get_devicePtr = _lookup<
-          ffi.NativeFunction<
-              ffi.Pointer<rs2_device> Function(
-                  ffi.Pointer<rs2_pipeline_profile>,
-                  ffi.Pointer<ffi.Pointer<rs2_error>>)>>(
-      'rs2_pipeline_profile_get_device');
-  late final _rs2_pipeline_profile_get_device =
-      _rs2_pipeline_profile_get_devicePtr.asFunction<
-          ffi.Pointer<rs2_device> Function(ffi.Pointer<rs2_pipeline_profile>,
-              ffi.Pointer<ffi.Pointer<rs2_error>>)>();
-
-  /// Return the selected streams profiles, which are enabled in this profile.
-  ///
-  /// \param[in] profile    A pointer to an instance of a pipeline profile
-  /// \param[out] error     if non-null, receives any error that occurs during this call, otherwise, errors are ignored
-  /// \return   list of stream profiles
-  ffi.Pointer<rs2_stream_profile_list> rs2_pipeline_profile_get_streams(
-    ffi.Pointer<rs2_pipeline_profile> profile,
-    ffi.Pointer<ffi.Pointer<rs2_error>> error,
-  ) {
-    return _rs2_pipeline_profile_get_streams(
-      profile,
-      error,
-    );
-  }
-
-  late final _rs2_pipeline_profile_get_streamsPtr = _lookup<
-          ffi.NativeFunction<
-              ffi.Pointer<rs2_stream_profile_list> Function(
-                  ffi.Pointer<rs2_pipeline_profile>,
-                  ffi.Pointer<ffi.Pointer<rs2_error>>)>>(
-      'rs2_pipeline_profile_get_streams');
-  late final _rs2_pipeline_profile_get_streams =
-      _rs2_pipeline_profile_get_streamsPtr.asFunction<
-          ffi.Pointer<rs2_stream_profile_list> Function(
-              ffi.Pointer<rs2_pipeline_profile>,
-              ffi.Pointer<ffi.Pointer<rs2_error>>)>();
-
-  /// Deletes an instance of a pipeline profile
-  ///
-  /// \param[in] profile    A pointer to an instance of a pipeline profile
-  void rs2_delete_pipeline_profile(
-    ffi.Pointer<rs2_pipeline_profile> profile,
-  ) {
-    return _rs2_delete_pipeline_profile(
-      profile,
-    );
-  }
-
-  late final _rs2_delete_pipeline_profilePtr = _lookup<
-          ffi.NativeFunction<
-              ffi.Void Function(ffi.Pointer<rs2_pipeline_profile>)>>(
-      'rs2_delete_pipeline_profile');
-  late final _rs2_delete_pipeline_profile = _rs2_delete_pipeline_profilePtr
-      .asFunction<void Function(ffi.Pointer<rs2_pipeline_profile>)>();
-
-  /// This function is being deprecated. For existing options it will return option name, but for future API additions the user should call rs2_get_option_name instead.
-  ffi.Pointer<pkg_ffi.Utf8> rs2_option_to_string(
-    int option,
-  ) {
-    return _rs2_option_to_string(
-      option,
-    );
-  }
-
-  late final _rs2_option_to_stringPtr = _lookup<
-          ffi.NativeFunction<ffi.Pointer<pkg_ffi.Utf8> Function(ffi.Int32)>>(
-      'rs2_option_to_string');
-  late final _rs2_option_to_string = _rs2_option_to_stringPtr
-      .asFunction<ffi.Pointer<pkg_ffi.Utf8> Function(int)>();
-
-  ffi.Pointer<pkg_ffi.Utf8> rs2_sr300_visual_preset_to_string(
-    int preset,
-  ) {
-    return _rs2_sr300_visual_preset_to_string(
-      preset,
-    );
-  }
-
-  late final _rs2_sr300_visual_preset_to_stringPtr = _lookup<
-          ffi.NativeFunction<ffi.Pointer<pkg_ffi.Utf8> Function(ffi.Int32)>>(
-      'rs2_sr300_visual_preset_to_string');
-  late final _rs2_sr300_visual_preset_to_string =
-      _rs2_sr300_visual_preset_to_stringPtr
-          .asFunction<ffi.Pointer<pkg_ffi.Utf8> Function(int)>();
-
-  ffi.Pointer<pkg_ffi.Utf8> rs2_rs400_visual_preset_to_string(
-    int preset,
-  ) {
-    return _rs2_rs400_visual_preset_to_string(
-      preset,
-    );
-  }
-
-  late final _rs2_rs400_visual_preset_to_stringPtr = _lookup<
-          ffi.NativeFunction<ffi.Pointer<pkg_ffi.Utf8> Function(ffi.Int32)>>(
-      'rs2_rs400_visual_preset_to_string');
-  late final _rs2_rs400_visual_preset_to_string =
-      _rs2_rs400_visual_preset_to_stringPtr
-          .asFunction<ffi.Pointer<pkg_ffi.Utf8> Function(int)>();
-
-  ffi.Pointer<pkg_ffi.Utf8> rs2_l500_visual_preset_to_string(
-    int preset,
-  ) {
-    return _rs2_l500_visual_preset_to_string(
-      preset,
-    );
-  }
-
-  late final _rs2_l500_visual_preset_to_stringPtr = _lookup<
-          ffi.NativeFunction<ffi.Pointer<pkg_ffi.Utf8> Function(ffi.Int32)>>(
-      'rs2_l500_visual_preset_to_string');
-  late final _rs2_l500_visual_preset_to_string =
-      _rs2_l500_visual_preset_to_stringPtr
-          .asFunction<ffi.Pointer<pkg_ffi.Utf8> Function(int)>();
-
-  ffi.Pointer<pkg_ffi.Utf8> rs2_sensor_mode_to_string(
-    int preset,
-  ) {
-    return _rs2_sensor_mode_to_string(
-      preset,
-    );
-  }
-
-  late final _rs2_sensor_mode_to_stringPtr = _lookup<
-          ffi.NativeFunction<ffi.Pointer<pkg_ffi.Utf8> Function(ffi.Int32)>>(
-      'rs2_sensor_mode_to_string');
-  late final _rs2_sensor_mode_to_string = _rs2_sensor_mode_to_stringPtr
-      .asFunction<ffi.Pointer<pkg_ffi.Utf8> Function(int)>();
-
-  ffi.Pointer<pkg_ffi.Utf8> rs2_ambient_light_to_string(
-    int preset,
-  ) {
-    return _rs2_ambient_light_to_string(
-      preset,
-    );
-  }
-
-  late final _rs2_ambient_light_to_stringPtr = _lookup<
-          ffi.NativeFunction<ffi.Pointer<pkg_ffi.Utf8> Function(ffi.Int32)>>(
-      'rs2_ambient_light_to_string');
-  late final _rs2_ambient_light_to_string = _rs2_ambient_light_to_stringPtr
-      .asFunction<ffi.Pointer<pkg_ffi.Utf8> Function(int)>();
-
-  ffi.Pointer<pkg_ffi.Utf8> rs2_digital_gain_to_string(
-    int preset,
-  ) {
-    return _rs2_digital_gain_to_string(
-      preset,
-    );
-  }
-
-  late final _rs2_digital_gain_to_stringPtr = _lookup<
-          ffi.NativeFunction<ffi.Pointer<pkg_ffi.Utf8> Function(ffi.Int32)>>(
-      'rs2_digital_gain_to_string');
-  late final _rs2_digital_gain_to_string = _rs2_digital_gain_to_stringPtr
-      .asFunction<ffi.Pointer<pkg_ffi.Utf8> Function(int)>();
-
-  ffi.Pointer<pkg_ffi.Utf8> rs2_host_perf_mode_to_string(
-    int perf,
-  ) {
-    return _rs2_host_perf_mode_to_string(
-      perf,
-    );
-  }
-
-  late final _rs2_host_perf_mode_to_stringPtr = _lookup<
-          ffi.NativeFunction<ffi.Pointer<pkg_ffi.Utf8> Function(ffi.Int32)>>(
-      'rs2_host_perf_mode_to_string');
-  late final _rs2_host_perf_mode_to_string = _rs2_host_perf_mode_to_stringPtr
-      .asFunction<ffi.Pointer<pkg_ffi.Utf8> Function(int)>();
-
-  ffi.Pointer<pkg_ffi.Utf8> rs2_emitter_frequency_mode_to_string(
-    int mode,
-  ) {
-    return _rs2_emitter_frequency_mode_to_string(
-      mode,
-    );
-  }
-
-  late final _rs2_emitter_frequency_mode_to_stringPtr = _lookup<
-          ffi.NativeFunction<ffi.Pointer<pkg_ffi.Utf8> Function(ffi.Int32)>>(
-      'rs2_emitter_frequency_mode_to_string');
-  late final _rs2_emitter_frequency_mode_to_string =
-      _rs2_emitter_frequency_mode_to_stringPtr
-          .asFunction<ffi.Pointer<pkg_ffi.Utf8> Function(int)>();
-
-  ffi.Pointer<pkg_ffi.Utf8> rs2_depth_auto_exposure_mode_to_string(
-    int mode,
-  ) {
-    return _rs2_depth_auto_exposure_mode_to_string(
-      mode,
-    );
-  }
-
-  late final _rs2_depth_auto_exposure_mode_to_stringPtr = _lookup<
-          ffi.NativeFunction<ffi.Pointer<pkg_ffi.Utf8> Function(ffi.Int32)>>(
-      'rs2_depth_auto_exposure_mode_to_string');
-  late final _rs2_depth_auto_exposure_mode_to_string =
-      _rs2_depth_auto_exposure_mode_to_stringPtr
-          .asFunction<ffi.Pointer<pkg_ffi.Utf8> Function(int)>();
-
-  /// check if an option is read-only
-  /// \param[in] options  the options container
-  /// \param[in] option   option id to be checked
-  /// \param[out] error   if non-null, receives any error that occurs during this call, otherwise, errors are ignored
-  /// \return true if option is read-only
-  int rs2_is_option_read_only(
-    ffi.Pointer<rs2_options> options,
-    int option,
-    ffi.Pointer<ffi.Pointer<rs2_error>> error,
-  ) {
-    return _rs2_is_option_read_only(
-      options,
-      option,
-      error,
-    );
-  }
-
-  late final _rs2_is_option_read_onlyPtr = _lookup<
-      ffi.NativeFunction<
-          ffi.Int Function(ffi.Pointer<rs2_options>, ffi.Int32,
-              ffi.Pointer<ffi.Pointer<rs2_error>>)>>('rs2_is_option_read_only');
-  late final _rs2_is_option_read_only = _rs2_is_option_read_onlyPtr.asFunction<
-      int Function(ffi.Pointer<rs2_options>, int,
-          ffi.Pointer<ffi.Pointer<rs2_error>>)>();
-
-  /// read option value from the sensor
-  /// \param[in] options  the options container
-  /// \param[in] option   option id to be queried
-  /// \param[out] error   if non-null, receives any error that occurs during this call, otherwise, errors are ignored
-  /// \return value of the option
-  double rs2_get_option(
-    ffi.Pointer<rs2_options> options,
-    int option,
-    ffi.Pointer<ffi.Pointer<rs2_error>> error,
-  ) {
-    return _rs2_get_option(
-      options,
-      option,
-      error,
-    );
-  }
-
-  late final _rs2_get_optionPtr = _lookup<
-      ffi.NativeFunction<
-          ffi.Float Function(ffi.Pointer<rs2_options>, ffi.Int32,
-              ffi.Pointer<ffi.Pointer<rs2_error>>)>>('rs2_get_option');
-  late final _rs2_get_option = _rs2_get_optionPtr.asFunction<
-      double Function(ffi.Pointer<rs2_options>, int,
-          ffi.Pointer<ffi.Pointer<rs2_error>>)>();
-
-  /// write new value to sensor option
-  /// \param[in] options    the options container
-  /// \param[in] option     option id to be queried
-  /// \param[in] value      new value for the option
-  /// \param[out] error     if non-null, receives any error that occurs during this call, otherwise, errors are ignored
-  void rs2_set_option(
-    ffi.Pointer<rs2_options> options,
-    int option,
-    double value,
-    ffi.Pointer<ffi.Pointer<rs2_error>> error,
-  ) {
-    return _rs2_set_option(
-      options,
-      option,
-      value,
-      error,
-    );
-  }
-
-  late final _rs2_set_optionPtr = _lookup<
-      ffi.NativeFunction<
-          ffi.Void Function(ffi.Pointer<rs2_options>, ffi.Int32, ffi.Float,
-              ffi.Pointer<ffi.Pointer<rs2_error>>)>>('rs2_set_option');
-  late final _rs2_set_option = _rs2_set_optionPtr.asFunction<
-      void Function(ffi.Pointer<rs2_options>, int, double,
-          ffi.Pointer<ffi.Pointer<rs2_error>>)>();
-
-  /// get the list of supported options of options container
-  /// \param[in] options    the options container
-  /// \param[out] error     if non-null, receives any error that occurs during this call, otherwise, errors are ignored
-  ffi.Pointer<rs2_options_list> rs2_get_options_list(
-    ffi.Pointer<rs2_options> options,
-    ffi.Pointer<ffi.Pointer<rs2_error>> error,
-  ) {
-    return _rs2_get_options_list(
-      options,
-      error,
-    );
-  }
-
-  late final _rs2_get_options_listPtr = _lookup<
-      ffi.NativeFunction<
-          ffi.Pointer<rs2_options_list> Function(ffi.Pointer<rs2_options>,
-              ffi.Pointer<ffi.Pointer<rs2_error>>)>>('rs2_get_options_list');
-  late final _rs2_get_options_list = _rs2_get_options_listPtr.asFunction<
-      ffi.Pointer<rs2_options_list> Function(
-          ffi.Pointer<rs2_options>, ffi.Pointer<ffi.Pointer<rs2_error>>)>();
-
-  /// get the size of options list
-  /// \param[in] options    the option list
-  /// \param[out] error     if non-null, receives any error that occurs during this call, otherwise, errors are ignored
-  int rs2_get_options_list_size(
-    ffi.Pointer<rs2_options_list> options,
-    ffi.Pointer<ffi.Pointer<rs2_error>> error,
-  ) {
-    return _rs2_get_options_list_size(
-      options,
-      error,
-    );
-  }
-
-  late final _rs2_get_options_list_sizePtr = _lookup<
-          ffi.NativeFunction<
-              ffi.Int Function(ffi.Pointer<rs2_options_list>,
-                  ffi.Pointer<ffi.Pointer<rs2_error>>)>>(
-      'rs2_get_options_list_size');
-  late final _rs2_get_options_list_size =
-      _rs2_get_options_list_sizePtr.asFunction<
-          int Function(ffi.Pointer<rs2_options_list>,
-              ffi.Pointer<ffi.Pointer<rs2_error>>)>();
-
-  /// get option name
-  /// \param[in] options    the options container
-  /// \param[in] option     option id to be checked
-  /// \param[out] error     if non-null, receives any error that occurs during this call, otherwise, errors are ignored
-  /// \return human-readable option name
-  ffi.Pointer<pkg_ffi.Utf8> rs2_get_option_name(
-    ffi.Pointer<rs2_options> options,
-    int option,
-    ffi.Pointer<ffi.Pointer<rs2_error>> error,
-  ) {
-    return _rs2_get_option_name(
-      options,
-      option,
-      error,
-    );
-  }
-
-  late final _rs2_get_option_namePtr = _lookup<
-      ffi.NativeFunction<
-          ffi.Pointer<pkg_ffi.Utf8> Function(
-              ffi.Pointer<rs2_options>,
-              ffi.Int32,
-              ffi.Pointer<ffi.Pointer<rs2_error>>)>>('rs2_get_option_name');
-  late final _rs2_get_option_name = _rs2_get_option_namePtr.asFunction<
-      ffi.Pointer<pkg_ffi.Utf8> Function(ffi.Pointer<rs2_options>, int,
-          ffi.Pointer<ffi.Pointer<rs2_error>>)>();
-
-  /// get the specific option from options list
-  /// \param[in] i    the index of the option
-  /// \param[out] error     if non-null, receives any error that occurs during this call, otherwise, errors are ignored
-  int rs2_get_option_from_list(
-    ffi.Pointer<rs2_options_list> options,
-    int i,
-    ffi.Pointer<ffi.Pointer<rs2_error>> error,
-  ) {
-    return _rs2_get_option_from_list(
-      options,
-      i,
-      error,
-    );
-  }
-
-  late final _rs2_get_option_from_listPtr = _lookup<
-          ffi.NativeFunction<
-              ffi.Int32 Function(ffi.Pointer<rs2_options_list>, ffi.Int,
-                  ffi.Pointer<ffi.Pointer<rs2_error>>)>>(
-      'rs2_get_option_from_list');
-  late final _rs2_get_option_from_list =
-      _rs2_get_option_from_listPtr.asFunction<
-          int Function(ffi.Pointer<rs2_options_list>, int,
-              ffi.Pointer<ffi.Pointer<rs2_error>>)>();
-
-  /// Deletes options list
-  /// \param[in] list list to delete
-  void rs2_delete_options_list(
-    ffi.Pointer<rs2_options_list> list,
-  ) {
-    return _rs2_delete_options_list(
-      list,
-    );
-  }
-
-  late final _rs2_delete_options_listPtr = _lookup<
-          ffi.NativeFunction<ffi.Void Function(ffi.Pointer<rs2_options_list>)>>(
-      'rs2_delete_options_list');
-  late final _rs2_delete_options_list = _rs2_delete_options_listPtr
-      .asFunction<void Function(ffi.Pointer<rs2_options_list>)>();
-
-  /// check if particular option is supported by a subdevice
-  /// \param[in] options    the options container
-  /// \param[in] option     option id to be checked
-  /// \param[out] error     if non-null, receives any error that occurs during this call, otherwise, errors are ignored
-  /// \return true if option is supported
-  int rs2_supports_option(
-    ffi.Pointer<rs2_options> options,
-    int option,
-    ffi.Pointer<ffi.Pointer<rs2_error>> error,
-  ) {
-    return _rs2_supports_option(
-      options,
-      option,
-      error,
-    );
-  }
-
-  late final _rs2_supports_optionPtr = _lookup<
-      ffi.NativeFunction<
-          ffi.Int Function(ffi.Pointer<rs2_options>, ffi.Int32,
-              ffi.Pointer<ffi.Pointer<rs2_error>>)>>('rs2_supports_option');
-  late final _rs2_supports_option = _rs2_supports_optionPtr.asFunction<
-      int Function(ffi.Pointer<rs2_options>, int,
-          ffi.Pointer<ffi.Pointer<rs2_error>>)>();
-
-  /// retrieve the available range of values of a supported option
-  /// \param[in] sensor  the RealSense device
-  /// \param[in] option  the option whose range should be queried
-  /// \param[out] min    the minimum value which will be accepted for this option
-  /// \param[out] max    the maximum value which will be accepted for this option
-  /// \param[out] step   the granularity of options which accept discrete values, or zero if the option accepts continuous values
-  /// \param[out] def    the default value of the option
-  /// \param[out] error  if non-null, receives any error that occurs during this call, otherwise, errors are ignored
-  void rs2_get_option_range(
-    ffi.Pointer<rs2_options> sensor,
-    int option,
-    ffi.Pointer<ffi.Float> min,
-    ffi.Pointer<ffi.Float> max,
-    ffi.Pointer<ffi.Float> step,
-    ffi.Pointer<ffi.Float> def,
-    ffi.Pointer<ffi.Pointer<rs2_error>> error,
-  ) {
-    return _rs2_get_option_range(
-      sensor,
-      option,
-      min,
-      max,
-      step,
-      def,
-      error,
-    );
-  }
-
-  late final _rs2_get_option_rangePtr = _lookup<
-      ffi.NativeFunction<
-          ffi.Void Function(
-              ffi.Pointer<rs2_options>,
-              ffi.Int32,
-              ffi.Pointer<ffi.Float>,
-              ffi.Pointer<ffi.Float>,
-              ffi.Pointer<ffi.Float>,
-              ffi.Pointer<ffi.Float>,
-              ffi.Pointer<ffi.Pointer<rs2_error>>)>>('rs2_get_option_range');
-  late final _rs2_get_option_range = _rs2_get_option_rangePtr.asFunction<
-      void Function(
-          ffi.Pointer<rs2_options>,
-          int,
-          ffi.Pointer<ffi.Float>,
-          ffi.Pointer<ffi.Float>,
-          ffi.Pointer<ffi.Float>,
-          ffi.Pointer<ffi.Float>,
-          ffi.Pointer<ffi.Pointer<rs2_error>>)>();
-
-  /// get option description
-  /// \param[in] options    the options container
-  /// \param[in] option     option id to be checked
-  /// \param[out] error     if non-null, receives any error that occurs during this call, otherwise, errors are ignored
-  /// \return human-readable option description
-  ffi.Pointer<pkg_ffi.Utf8> rs2_get_option_description(
-    ffi.Pointer<rs2_options> options,
-    int option,
-    ffi.Pointer<ffi.Pointer<rs2_error>> error,
-  ) {
-    return _rs2_get_option_description(
-      options,
-      option,
-      error,
-    );
-  }
-
-  late final _rs2_get_option_descriptionPtr = _lookup<
-          ffi.NativeFunction<
-              ffi.Pointer<pkg_ffi.Utf8> Function(ffi.Pointer<rs2_options>,
-                  ffi.Int32, ffi.Pointer<ffi.Pointer<rs2_error>>)>>(
-      'rs2_get_option_description');
-  late final _rs2_get_option_description =
-      _rs2_get_option_descriptionPtr.asFunction<
-          ffi.Pointer<pkg_ffi.Utf8> Function(ffi.Pointer<rs2_options>, int,
-              ffi.Pointer<ffi.Pointer<rs2_error>>)>();
-
-  /// get option value description (in case specific option value hold special meaning)
-  /// \param[in] options    the options container
-  /// \param[in] option     option id to be checked
-  /// \param[in] value      value of the option
-  /// \param[out] error     if non-null, receives any error that occurs during this call, otherwise, errors are ignored
-  /// \return human-readable description of a specific value of an option or null if no special meaning
-  ffi.Pointer<pkg_ffi.Utf8> rs2_get_option_value_description(
-    ffi.Pointer<rs2_options> options,
-    int option,
-    double value,
-    ffi.Pointer<ffi.Pointer<rs2_error>> error,
-  ) {
-    return _rs2_get_option_value_description(
-      options,
-      option,
-      value,
-      error,
-    );
-  }
-
-  late final _rs2_get_option_value_descriptionPtr = _lookup<
-          ffi.NativeFunction<
-              ffi.Pointer<pkg_ffi.Utf8> Function(ffi.Pointer<rs2_options>,
-                  ffi.Int32, ffi.Float, ffi.Pointer<ffi.Pointer<rs2_error>>)>>(
-      'rs2_get_option_value_description');
-  late final _rs2_get_option_value_description =
-      _rs2_get_option_value_descriptionPtr.asFunction<
-          ffi.Pointer<pkg_ffi.Utf8> Function(ffi.Pointer<rs2_options>, int,
-              double, ffi.Pointer<ffi.Pointer<rs2_error>>)>();
 
   ffi.Pointer<pkg_ffi.Utf8> rs2_timestamp_domain_to_string(
     int info,
@@ -2254,69 +911,1659 @@ class LibRealSenseBindings {
       _rs2_extract_target_dimensionsPtr.asFunction<
           void Function(ffi.Pointer<rs2_frame>, int, ffi.Pointer<ffi.Float>,
               int, ffi.Pointer<ffi.Pointer<rs2_error>>)>();
+
+  /// This function is being deprecated. For existing options it will return option name, but for future API additions the user should call rs2_get_option_name instead.
+  ffi.Pointer<pkg_ffi.Utf8> rs2_option_to_string(
+    int option,
+  ) {
+    return _rs2_option_to_string(
+      option,
+    );
+  }
+
+  late final _rs2_option_to_stringPtr = _lookup<
+          ffi.NativeFunction<ffi.Pointer<pkg_ffi.Utf8> Function(ffi.Int32)>>(
+      'rs2_option_to_string');
+  late final _rs2_option_to_string = _rs2_option_to_stringPtr
+      .asFunction<ffi.Pointer<pkg_ffi.Utf8> Function(int)>();
+
+  ffi.Pointer<pkg_ffi.Utf8> rs2_sr300_visual_preset_to_string(
+    int preset,
+  ) {
+    return _rs2_sr300_visual_preset_to_string(
+      preset,
+    );
+  }
+
+  late final _rs2_sr300_visual_preset_to_stringPtr = _lookup<
+          ffi.NativeFunction<ffi.Pointer<pkg_ffi.Utf8> Function(ffi.Int32)>>(
+      'rs2_sr300_visual_preset_to_string');
+  late final _rs2_sr300_visual_preset_to_string =
+      _rs2_sr300_visual_preset_to_stringPtr
+          .asFunction<ffi.Pointer<pkg_ffi.Utf8> Function(int)>();
+
+  ffi.Pointer<pkg_ffi.Utf8> rs2_rs400_visual_preset_to_string(
+    int preset,
+  ) {
+    return _rs2_rs400_visual_preset_to_string(
+      preset,
+    );
+  }
+
+  late final _rs2_rs400_visual_preset_to_stringPtr = _lookup<
+          ffi.NativeFunction<ffi.Pointer<pkg_ffi.Utf8> Function(ffi.Int32)>>(
+      'rs2_rs400_visual_preset_to_string');
+  late final _rs2_rs400_visual_preset_to_string =
+      _rs2_rs400_visual_preset_to_stringPtr
+          .asFunction<ffi.Pointer<pkg_ffi.Utf8> Function(int)>();
+
+  ffi.Pointer<pkg_ffi.Utf8> rs2_l500_visual_preset_to_string(
+    int preset,
+  ) {
+    return _rs2_l500_visual_preset_to_string(
+      preset,
+    );
+  }
+
+  late final _rs2_l500_visual_preset_to_stringPtr = _lookup<
+          ffi.NativeFunction<ffi.Pointer<pkg_ffi.Utf8> Function(ffi.Int32)>>(
+      'rs2_l500_visual_preset_to_string');
+  late final _rs2_l500_visual_preset_to_string =
+      _rs2_l500_visual_preset_to_stringPtr
+          .asFunction<ffi.Pointer<pkg_ffi.Utf8> Function(int)>();
+
+  ffi.Pointer<pkg_ffi.Utf8> rs2_sensor_mode_to_string(
+    int preset,
+  ) {
+    return _rs2_sensor_mode_to_string(
+      preset,
+    );
+  }
+
+  late final _rs2_sensor_mode_to_stringPtr = _lookup<
+          ffi.NativeFunction<ffi.Pointer<pkg_ffi.Utf8> Function(ffi.Int32)>>(
+      'rs2_sensor_mode_to_string');
+  late final _rs2_sensor_mode_to_string = _rs2_sensor_mode_to_stringPtr
+      .asFunction<ffi.Pointer<pkg_ffi.Utf8> Function(int)>();
+
+  ffi.Pointer<pkg_ffi.Utf8> rs2_ambient_light_to_string(
+    int preset,
+  ) {
+    return _rs2_ambient_light_to_string(
+      preset,
+    );
+  }
+
+  late final _rs2_ambient_light_to_stringPtr = _lookup<
+          ffi.NativeFunction<ffi.Pointer<pkg_ffi.Utf8> Function(ffi.Int32)>>(
+      'rs2_ambient_light_to_string');
+  late final _rs2_ambient_light_to_string = _rs2_ambient_light_to_stringPtr
+      .asFunction<ffi.Pointer<pkg_ffi.Utf8> Function(int)>();
+
+  ffi.Pointer<pkg_ffi.Utf8> rs2_digital_gain_to_string(
+    int preset,
+  ) {
+    return _rs2_digital_gain_to_string(
+      preset,
+    );
+  }
+
+  late final _rs2_digital_gain_to_stringPtr = _lookup<
+          ffi.NativeFunction<ffi.Pointer<pkg_ffi.Utf8> Function(ffi.Int32)>>(
+      'rs2_digital_gain_to_string');
+  late final _rs2_digital_gain_to_string = _rs2_digital_gain_to_stringPtr
+      .asFunction<ffi.Pointer<pkg_ffi.Utf8> Function(int)>();
+
+  ffi.Pointer<pkg_ffi.Utf8> rs2_host_perf_mode_to_string(
+    int perf,
+  ) {
+    return _rs2_host_perf_mode_to_string(
+      perf,
+    );
+  }
+
+  late final _rs2_host_perf_mode_to_stringPtr = _lookup<
+          ffi.NativeFunction<ffi.Pointer<pkg_ffi.Utf8> Function(ffi.Int32)>>(
+      'rs2_host_perf_mode_to_string');
+  late final _rs2_host_perf_mode_to_string = _rs2_host_perf_mode_to_stringPtr
+      .asFunction<ffi.Pointer<pkg_ffi.Utf8> Function(int)>();
+
+  ffi.Pointer<pkg_ffi.Utf8> rs2_emitter_frequency_mode_to_string(
+    int mode,
+  ) {
+    return _rs2_emitter_frequency_mode_to_string(
+      mode,
+    );
+  }
+
+  late final _rs2_emitter_frequency_mode_to_stringPtr = _lookup<
+          ffi.NativeFunction<ffi.Pointer<pkg_ffi.Utf8> Function(ffi.Int32)>>(
+      'rs2_emitter_frequency_mode_to_string');
+  late final _rs2_emitter_frequency_mode_to_string =
+      _rs2_emitter_frequency_mode_to_stringPtr
+          .asFunction<ffi.Pointer<pkg_ffi.Utf8> Function(int)>();
+
+  ffi.Pointer<pkg_ffi.Utf8> rs2_depth_auto_exposure_mode_to_string(
+    int mode,
+  ) {
+    return _rs2_depth_auto_exposure_mode_to_string(
+      mode,
+    );
+  }
+
+  late final _rs2_depth_auto_exposure_mode_to_stringPtr = _lookup<
+          ffi.NativeFunction<ffi.Pointer<pkg_ffi.Utf8> Function(ffi.Int32)>>(
+      'rs2_depth_auto_exposure_mode_to_string');
+  late final _rs2_depth_auto_exposure_mode_to_string =
+      _rs2_depth_auto_exposure_mode_to_stringPtr
+          .asFunction<ffi.Pointer<pkg_ffi.Utf8> Function(int)>();
+
+  /// check if an option is read-only
+  /// \param[in] options  the options container
+  /// \param[in] option   option id to be checked
+  /// \param[out] error   if non-null, receives any error that occurs during this call, otherwise, errors are ignored
+  /// \return true if option is read-only
+  int rs2_is_option_read_only(
+    ffi.Pointer<rs2_options> options,
+    int option,
+    ffi.Pointer<ffi.Pointer<rs2_error>> error,
+  ) {
+    return _rs2_is_option_read_only(
+      options,
+      option,
+      error,
+    );
+  }
+
+  late final _rs2_is_option_read_onlyPtr = _lookup<
+      ffi.NativeFunction<
+          ffi.Int Function(ffi.Pointer<rs2_options>, ffi.Int32,
+              ffi.Pointer<ffi.Pointer<rs2_error>>)>>('rs2_is_option_read_only');
+  late final _rs2_is_option_read_only = _rs2_is_option_read_onlyPtr.asFunction<
+      int Function(ffi.Pointer<rs2_options>, int,
+          ffi.Pointer<ffi.Pointer<rs2_error>>)>();
+
+  /// read option value from the sensor
+  /// \param[in] options  the options container
+  /// \param[in] option   option id to be queried
+  /// \param[out] error   if non-null, receives any error that occurs during this call, otherwise, errors are ignored
+  /// \return value of the option
+  double rs2_get_option(
+    ffi.Pointer<rs2_options> options,
+    int option,
+    ffi.Pointer<ffi.Pointer<rs2_error>> error,
+  ) {
+    return _rs2_get_option(
+      options,
+      option,
+      error,
+    );
+  }
+
+  late final _rs2_get_optionPtr = _lookup<
+      ffi.NativeFunction<
+          ffi.Float Function(ffi.Pointer<rs2_options>, ffi.Int32,
+              ffi.Pointer<ffi.Pointer<rs2_error>>)>>('rs2_get_option');
+  late final _rs2_get_option = _rs2_get_optionPtr.asFunction<
+      double Function(ffi.Pointer<rs2_options>, int,
+          ffi.Pointer<ffi.Pointer<rs2_error>>)>();
+
+  /// write new value to sensor option
+  /// \param[in] options    the options container
+  /// \param[in] option     option id to be queried
+  /// \param[in] value      new value for the option
+  /// \param[out] error     if non-null, receives any error that occurs during this call, otherwise, errors are ignored
+  void rs2_set_option(
+    ffi.Pointer<rs2_options> options,
+    int option,
+    double value,
+    ffi.Pointer<ffi.Pointer<rs2_error>> error,
+  ) {
+    return _rs2_set_option(
+      options,
+      option,
+      value,
+      error,
+    );
+  }
+
+  late final _rs2_set_optionPtr = _lookup<
+      ffi.NativeFunction<
+          ffi.Void Function(ffi.Pointer<rs2_options>, ffi.Int32, ffi.Float,
+              ffi.Pointer<ffi.Pointer<rs2_error>>)>>('rs2_set_option');
+  late final _rs2_set_option = _rs2_set_optionPtr.asFunction<
+      void Function(ffi.Pointer<rs2_options>, int, double,
+          ffi.Pointer<ffi.Pointer<rs2_error>>)>();
+
+  /// get the list of supported options of options container
+  /// \param[in] options    the options container
+  /// \param[out] error     if non-null, receives any error that occurs during this call, otherwise, errors are ignored
+  ffi.Pointer<rs2_options_list> rs2_get_options_list(
+    ffi.Pointer<rs2_options> options,
+    ffi.Pointer<ffi.Pointer<rs2_error>> error,
+  ) {
+    return _rs2_get_options_list(
+      options,
+      error,
+    );
+  }
+
+  late final _rs2_get_options_listPtr = _lookup<
+      ffi.NativeFunction<
+          ffi.Pointer<rs2_options_list> Function(ffi.Pointer<rs2_options>,
+              ffi.Pointer<ffi.Pointer<rs2_error>>)>>('rs2_get_options_list');
+  late final _rs2_get_options_list = _rs2_get_options_listPtr.asFunction<
+      ffi.Pointer<rs2_options_list> Function(
+          ffi.Pointer<rs2_options>, ffi.Pointer<ffi.Pointer<rs2_error>>)>();
+
+  /// get the size of options list
+  /// \param[in] options    the option list
+  /// \param[out] error     if non-null, receives any error that occurs during this call, otherwise, errors are ignored
+  int rs2_get_options_list_size(
+    ffi.Pointer<rs2_options_list> options,
+    ffi.Pointer<ffi.Pointer<rs2_error>> error,
+  ) {
+    return _rs2_get_options_list_size(
+      options,
+      error,
+    );
+  }
+
+  late final _rs2_get_options_list_sizePtr = _lookup<
+          ffi.NativeFunction<
+              ffi.Int Function(ffi.Pointer<rs2_options_list>,
+                  ffi.Pointer<ffi.Pointer<rs2_error>>)>>(
+      'rs2_get_options_list_size');
+  late final _rs2_get_options_list_size =
+      _rs2_get_options_list_sizePtr.asFunction<
+          int Function(ffi.Pointer<rs2_options_list>,
+              ffi.Pointer<ffi.Pointer<rs2_error>>)>();
+
+  /// get option name
+  /// \param[in] options    the options container
+  /// \param[in] option     option id to be checked
+  /// \param[out] error     if non-null, receives any error that occurs during this call, otherwise, errors are ignored
+  /// \return human-readable option name
+  ffi.Pointer<pkg_ffi.Utf8> rs2_get_option_name(
+    ffi.Pointer<rs2_options> options,
+    int option,
+    ffi.Pointer<ffi.Pointer<rs2_error>> error,
+  ) {
+    return _rs2_get_option_name(
+      options,
+      option,
+      error,
+    );
+  }
+
+  late final _rs2_get_option_namePtr = _lookup<
+      ffi.NativeFunction<
+          ffi.Pointer<pkg_ffi.Utf8> Function(
+              ffi.Pointer<rs2_options>,
+              ffi.Int32,
+              ffi.Pointer<ffi.Pointer<rs2_error>>)>>('rs2_get_option_name');
+  late final _rs2_get_option_name = _rs2_get_option_namePtr.asFunction<
+      ffi.Pointer<pkg_ffi.Utf8> Function(ffi.Pointer<rs2_options>, int,
+          ffi.Pointer<ffi.Pointer<rs2_error>>)>();
+
+  /// get the specific option from options list
+  /// \param[in] i    the index of the option
+  /// \param[out] error     if non-null, receives any error that occurs during this call, otherwise, errors are ignored
+  int rs2_get_option_from_list(
+    ffi.Pointer<rs2_options_list> options,
+    int i,
+    ffi.Pointer<ffi.Pointer<rs2_error>> error,
+  ) {
+    return _rs2_get_option_from_list(
+      options,
+      i,
+      error,
+    );
+  }
+
+  late final _rs2_get_option_from_listPtr = _lookup<
+          ffi.NativeFunction<
+              ffi.Int32 Function(ffi.Pointer<rs2_options_list>, ffi.Int,
+                  ffi.Pointer<ffi.Pointer<rs2_error>>)>>(
+      'rs2_get_option_from_list');
+  late final _rs2_get_option_from_list =
+      _rs2_get_option_from_listPtr.asFunction<
+          int Function(ffi.Pointer<rs2_options_list>, int,
+              ffi.Pointer<ffi.Pointer<rs2_error>>)>();
+
+  /// Deletes options list
+  /// \param[in] list list to delete
+  void rs2_delete_options_list(
+    ffi.Pointer<rs2_options_list> list,
+  ) {
+    return _rs2_delete_options_list(
+      list,
+    );
+  }
+
+  late final _rs2_delete_options_listPtr = _lookup<
+          ffi.NativeFunction<ffi.Void Function(ffi.Pointer<rs2_options_list>)>>(
+      'rs2_delete_options_list');
+  late final _rs2_delete_options_list = _rs2_delete_options_listPtr
+      .asFunction<void Function(ffi.Pointer<rs2_options_list>)>();
+
+  /// check if particular option is supported by a subdevice
+  /// \param[in] options    the options container
+  /// \param[in] option     option id to be checked
+  /// \param[out] error     if non-null, receives any error that occurs during this call, otherwise, errors are ignored
+  /// \return true if option is supported
+  int rs2_supports_option(
+    ffi.Pointer<rs2_options> options,
+    int option,
+    ffi.Pointer<ffi.Pointer<rs2_error>> error,
+  ) {
+    return _rs2_supports_option(
+      options,
+      option,
+      error,
+    );
+  }
+
+  late final _rs2_supports_optionPtr = _lookup<
+      ffi.NativeFunction<
+          ffi.Int Function(ffi.Pointer<rs2_options>, ffi.Int32,
+              ffi.Pointer<ffi.Pointer<rs2_error>>)>>('rs2_supports_option');
+  late final _rs2_supports_option = _rs2_supports_optionPtr.asFunction<
+      int Function(ffi.Pointer<rs2_options>, int,
+          ffi.Pointer<ffi.Pointer<rs2_error>>)>();
+
+  /// retrieve the available range of values of a supported option
+  /// \param[in] sensor  the RealSense device
+  /// \param[in] option  the option whose range should be queried
+  /// \param[out] min    the minimum value which will be accepted for this option
+  /// \param[out] max    the maximum value which will be accepted for this option
+  /// \param[out] step   the granularity of options which accept discrete values, or zero if the option accepts continuous values
+  /// \param[out] def    the default value of the option
+  /// \param[out] error  if non-null, receives any error that occurs during this call, otherwise, errors are ignored
+  void rs2_get_option_range(
+    ffi.Pointer<rs2_options> sensor,
+    int option,
+    ffi.Pointer<ffi.Float> min,
+    ffi.Pointer<ffi.Float> max,
+    ffi.Pointer<ffi.Float> step,
+    ffi.Pointer<ffi.Float> def,
+    ffi.Pointer<ffi.Pointer<rs2_error>> error,
+  ) {
+    return _rs2_get_option_range(
+      sensor,
+      option,
+      min,
+      max,
+      step,
+      def,
+      error,
+    );
+  }
+
+  late final _rs2_get_option_rangePtr = _lookup<
+      ffi.NativeFunction<
+          ffi.Void Function(
+              ffi.Pointer<rs2_options>,
+              ffi.Int32,
+              ffi.Pointer<ffi.Float>,
+              ffi.Pointer<ffi.Float>,
+              ffi.Pointer<ffi.Float>,
+              ffi.Pointer<ffi.Float>,
+              ffi.Pointer<ffi.Pointer<rs2_error>>)>>('rs2_get_option_range');
+  late final _rs2_get_option_range = _rs2_get_option_rangePtr.asFunction<
+      void Function(
+          ffi.Pointer<rs2_options>,
+          int,
+          ffi.Pointer<ffi.Float>,
+          ffi.Pointer<ffi.Float>,
+          ffi.Pointer<ffi.Float>,
+          ffi.Pointer<ffi.Float>,
+          ffi.Pointer<ffi.Pointer<rs2_error>>)>();
+
+  /// get option description
+  /// \param[in] options    the options container
+  /// \param[in] option     option id to be checked
+  /// \param[out] error     if non-null, receives any error that occurs during this call, otherwise, errors are ignored
+  /// \return human-readable option description
+  ffi.Pointer<pkg_ffi.Utf8> rs2_get_option_description(
+    ffi.Pointer<rs2_options> options,
+    int option,
+    ffi.Pointer<ffi.Pointer<rs2_error>> error,
+  ) {
+    return _rs2_get_option_description(
+      options,
+      option,
+      error,
+    );
+  }
+
+  late final _rs2_get_option_descriptionPtr = _lookup<
+          ffi.NativeFunction<
+              ffi.Pointer<pkg_ffi.Utf8> Function(ffi.Pointer<rs2_options>,
+                  ffi.Int32, ffi.Pointer<ffi.Pointer<rs2_error>>)>>(
+      'rs2_get_option_description');
+  late final _rs2_get_option_description =
+      _rs2_get_option_descriptionPtr.asFunction<
+          ffi.Pointer<pkg_ffi.Utf8> Function(ffi.Pointer<rs2_options>, int,
+              ffi.Pointer<ffi.Pointer<rs2_error>>)>();
+
+  /// get option value description (in case specific option value hold special meaning)
+  /// \param[in] options    the options container
+  /// \param[in] option     option id to be checked
+  /// \param[in] value      value of the option
+  /// \param[out] error     if non-null, receives any error that occurs during this call, otherwise, errors are ignored
+  /// \return human-readable description of a specific value of an option or null if no special meaning
+  ffi.Pointer<pkg_ffi.Utf8> rs2_get_option_value_description(
+    ffi.Pointer<rs2_options> options,
+    int option,
+    double value,
+    ffi.Pointer<ffi.Pointer<rs2_error>> error,
+  ) {
+    return _rs2_get_option_value_description(
+      options,
+      option,
+      value,
+      error,
+    );
+  }
+
+  late final _rs2_get_option_value_descriptionPtr = _lookup<
+          ffi.NativeFunction<
+              ffi.Pointer<pkg_ffi.Utf8> Function(ffi.Pointer<rs2_options>,
+                  ffi.Int32, ffi.Float, ffi.Pointer<ffi.Pointer<rs2_error>>)>>(
+      'rs2_get_option_value_description');
+  late final _rs2_get_option_value_description =
+      _rs2_get_option_value_descriptionPtr.asFunction<
+          ffi.Pointer<pkg_ffi.Utf8> Function(ffi.Pointer<rs2_options>, int,
+              double, ffi.Pointer<ffi.Pointer<rs2_error>>)>();
+
+  /// get the size of rs2_raw_data_buffer
+  /// \param[in] buffer  pointer to rs2_raw_data_buffer returned by rs2_send_and_receive_raw_data
+  /// \param[out] error  if non-null, receives any error that occurs during this call, otherwise, errors are ignored
+  /// \return size of rs2_raw_data_buffer
+  int rs2_get_raw_data_size(
+    ffi.Pointer<rs2_raw_data_buffer> buffer,
+    ffi.Pointer<ffi.Pointer<rs2_error>> error,
+  ) {
+    return _rs2_get_raw_data_size(
+      buffer,
+      error,
+    );
+  }
+
+  late final _rs2_get_raw_data_sizePtr = _lookup<
+      ffi.NativeFunction<
+          ffi.Int Function(ffi.Pointer<rs2_raw_data_buffer>,
+              ffi.Pointer<ffi.Pointer<rs2_error>>)>>('rs2_get_raw_data_size');
+  late final _rs2_get_raw_data_size = _rs2_get_raw_data_sizePtr.asFunction<
+      int Function(ffi.Pointer<rs2_raw_data_buffer>,
+          ffi.Pointer<ffi.Pointer<rs2_error>>)>();
+
+  /// Delete rs2_raw_data_buffer
+  /// \param[in] buffer        rs2_raw_data_buffer returned by rs2_send_and_receive_raw_data
+  void rs2_delete_raw_data(
+    ffi.Pointer<rs2_raw_data_buffer> buffer,
+  ) {
+    return _rs2_delete_raw_data(
+      buffer,
+    );
+  }
+
+  late final _rs2_delete_raw_dataPtr = _lookup<
+          ffi
+          .NativeFunction<ffi.Void Function(ffi.Pointer<rs2_raw_data_buffer>)>>(
+      'rs2_delete_raw_data');
+  late final _rs2_delete_raw_data = _rs2_delete_raw_dataPtr
+      .asFunction<void Function(ffi.Pointer<rs2_raw_data_buffer>)>();
+
+  /// Retrieve char array from rs2_raw_data_buffer
+  /// \param[in] buffer   rs2_raw_data_buffer returned by rs2_send_and_receive_raw_data
+  /// \param[out] error   if non-null, receives any error that occurs during this call, otherwise, errors are ignored
+  /// \return raw data
+  ffi.Pointer<ffi.UnsignedChar> rs2_get_raw_data(
+    ffi.Pointer<rs2_raw_data_buffer> buffer,
+    ffi.Pointer<ffi.Pointer<rs2_error>> error,
+  ) {
+    return _rs2_get_raw_data(
+      buffer,
+      error,
+    );
+  }
+
+  late final _rs2_get_raw_dataPtr = _lookup<
+      ffi.NativeFunction<
+          ffi.Pointer<ffi.UnsignedChar> Function(
+              ffi.Pointer<rs2_raw_data_buffer>,
+              ffi.Pointer<ffi.Pointer<rs2_error>>)>>('rs2_get_raw_data');
+  late final _rs2_get_raw_data = _rs2_get_raw_dataPtr.asFunction<
+      ffi.Pointer<ffi.UnsignedChar> Function(ffi.Pointer<rs2_raw_data_buffer>,
+          ffi.Pointer<ffi.Pointer<rs2_error>>)>();
+
+  /// Retrieve the API version from the source code. Evaluate that the value is conformant to the established policies
+  /// \param[out] error  if non-null, receives any error that occurs during this call, otherwise, errors are ignored
+  /// \return            the version API encoded into integer value "1.9.3" -> 10903
+  int rs2_get_api_version(
+    ffi.Pointer<ffi.Pointer<rs2_error>> error,
+  ) {
+    return _rs2_get_api_version(
+      error,
+    );
+  }
+
+  late final _rs2_get_api_versionPtr = _lookup<
+      ffi.NativeFunction<
+          ffi.Int Function(
+              ffi.Pointer<ffi.Pointer<rs2_error>>)>>('rs2_get_api_version');
+  late final _rs2_get_api_version = _rs2_get_api_versionPtr
+      .asFunction<int Function(ffi.Pointer<ffi.Pointer<rs2_error>>)>();
+
+  void rs2_log_to_console(
+    int min_severity,
+    ffi.Pointer<ffi.Pointer<rs2_error>> error,
+  ) {
+    return _rs2_log_to_console(
+      min_severity,
+      error,
+    );
+  }
+
+  late final _rs2_log_to_consolePtr = _lookup<
+      ffi.NativeFunction<
+          ffi.Void Function(ffi.Int32,
+              ffi.Pointer<ffi.Pointer<rs2_error>>)>>('rs2_log_to_console');
+  late final _rs2_log_to_console = _rs2_log_to_consolePtr
+      .asFunction<void Function(int, ffi.Pointer<ffi.Pointer<rs2_error>>)>();
+
+  void rs2_log_to_file(
+    int min_severity,
+    ffi.Pointer<pkg_ffi.Utf8> file_path,
+    ffi.Pointer<ffi.Pointer<rs2_error>> error,
+  ) {
+    return _rs2_log_to_file(
+      min_severity,
+      file_path,
+      error,
+    );
+  }
+
+  late final _rs2_log_to_filePtr = _lookup<
+      ffi.NativeFunction<
+          ffi.Void Function(ffi.Int32, ffi.Pointer<pkg_ffi.Utf8>,
+              ffi.Pointer<ffi.Pointer<rs2_error>>)>>('rs2_log_to_file');
+  late final _rs2_log_to_file = _rs2_log_to_filePtr.asFunction<
+      void Function(int, ffi.Pointer<pkg_ffi.Utf8>,
+          ffi.Pointer<ffi.Pointer<rs2_error>>)>();
+
+  void rs2_log_to_callback_cpp(
+    int min_severity,
+    ffi.Pointer<rs2_log_callback> callback,
+    ffi.Pointer<ffi.Pointer<rs2_error>> error,
+  ) {
+    return _rs2_log_to_callback_cpp(
+      min_severity,
+      callback,
+      error,
+    );
+  }
+
+  late final _rs2_log_to_callback_cppPtr = _lookup<
+      ffi.NativeFunction<
+          ffi.Void Function(ffi.Int32, ffi.Pointer<rs2_log_callback>,
+              ffi.Pointer<ffi.Pointer<rs2_error>>)>>('rs2_log_to_callback_cpp');
+  late final _rs2_log_to_callback_cpp = _rs2_log_to_callback_cppPtr.asFunction<
+      void Function(int, ffi.Pointer<rs2_log_callback>,
+          ffi.Pointer<ffi.Pointer<rs2_error>>)>();
+
+  void rs2_log_to_callback(
+    int min_severity,
+    rs2_log_callback_ptr callback,
+    ffi.Pointer<ffi.Void> arg,
+    ffi.Pointer<ffi.Pointer<rs2_error>> error,
+  ) {
+    return _rs2_log_to_callback(
+      min_severity,
+      callback,
+      arg,
+      error,
+    );
+  }
+
+  late final _rs2_log_to_callbackPtr = _lookup<
+      ffi.NativeFunction<
+          ffi.Void Function(
+              ffi.Int32,
+              rs2_log_callback_ptr,
+              ffi.Pointer<ffi.Void>,
+              ffi.Pointer<ffi.Pointer<rs2_error>>)>>('rs2_log_to_callback');
+  late final _rs2_log_to_callback = _rs2_log_to_callbackPtr.asFunction<
+      void Function(int, rs2_log_callback_ptr, ffi.Pointer<ffi.Void>,
+          ffi.Pointer<ffi.Pointer<rs2_error>>)>();
+
+  void rs2_reset_logger(
+    ffi.Pointer<ffi.Pointer<rs2_error>> error,
+  ) {
+    return _rs2_reset_logger(
+      error,
+    );
+  }
+
+  late final _rs2_reset_loggerPtr = _lookup<
+      ffi.NativeFunction<
+          ffi.Void Function(
+              ffi.Pointer<ffi.Pointer<rs2_error>>)>>('rs2_reset_logger');
+  late final _rs2_reset_logger = _rs2_reset_loggerPtr
+      .asFunction<void Function(ffi.Pointer<ffi.Pointer<rs2_error>>)>();
+
+  /// Enable rolling log file when used with rs2_log_to_file:
+  /// Upon reaching (max_size/2) bytes, the log will be renamed with an ".old" suffix and a new log created. Any
+  /// previous .old file will be erased.
+  /// Must have permissions to remove/rename files in log file directory.
+  /// \param[in] max_size   max file size in megabytes
+  /// \param[out] error     if non-null, receives any error that occurs during this call, otherwise, errors are ignored
+  void rs2_enable_rolling_log_file(
+    int max_size,
+    ffi.Pointer<ffi.Pointer<rs2_error>> error,
+  ) {
+    return _rs2_enable_rolling_log_file(
+      max_size,
+      error,
+    );
+  }
+
+  late final _rs2_enable_rolling_log_filePtr = _lookup<
+          ffi.NativeFunction<
+              ffi.Void Function(
+                  ffi.UnsignedInt, ffi.Pointer<ffi.Pointer<rs2_error>>)>>(
+      'rs2_enable_rolling_log_file');
+  late final _rs2_enable_rolling_log_file = _rs2_enable_rolling_log_filePtr
+      .asFunction<void Function(int, ffi.Pointer<ffi.Pointer<rs2_error>>)>();
+
+  int rs2_get_log_message_line_number(
+    ffi.Pointer<rs2_log_message> msg,
+    ffi.Pointer<ffi.Pointer<rs2_error>> error,
+  ) {
+    return _rs2_get_log_message_line_number(
+      msg,
+      error,
+    );
+  }
+
+  late final _rs2_get_log_message_line_numberPtr = _lookup<
+          ffi.NativeFunction<
+              ffi.UnsignedInt Function(ffi.Pointer<rs2_log_message>,
+                  ffi.Pointer<ffi.Pointer<rs2_error>>)>>(
+      'rs2_get_log_message_line_number');
+  late final _rs2_get_log_message_line_number =
+      _rs2_get_log_message_line_numberPtr.asFunction<
+          int Function(ffi.Pointer<rs2_log_message>,
+              ffi.Pointer<ffi.Pointer<rs2_error>>)>();
+
+  ffi.Pointer<pkg_ffi.Utf8> rs2_get_log_message_filename(
+    ffi.Pointer<rs2_log_message> msg,
+    ffi.Pointer<ffi.Pointer<rs2_error>> error,
+  ) {
+    return _rs2_get_log_message_filename(
+      msg,
+      error,
+    );
+  }
+
+  late final _rs2_get_log_message_filenamePtr = _lookup<
+          ffi.NativeFunction<
+              ffi.Pointer<pkg_ffi.Utf8> Function(ffi.Pointer<rs2_log_message>,
+                  ffi.Pointer<ffi.Pointer<rs2_error>>)>>(
+      'rs2_get_log_message_filename');
+  late final _rs2_get_log_message_filename =
+      _rs2_get_log_message_filenamePtr.asFunction<
+          ffi.Pointer<pkg_ffi.Utf8> Function(ffi.Pointer<rs2_log_message>,
+              ffi.Pointer<ffi.Pointer<rs2_error>>)>();
+
+  ffi.Pointer<pkg_ffi.Utf8> rs2_get_raw_log_message(
+    ffi.Pointer<rs2_log_message> msg,
+    ffi.Pointer<ffi.Pointer<rs2_error>> error,
+  ) {
+    return _rs2_get_raw_log_message(
+      msg,
+      error,
+    );
+  }
+
+  late final _rs2_get_raw_log_messagePtr = _lookup<
+      ffi.NativeFunction<
+          ffi.Pointer<pkg_ffi.Utf8> Function(ffi.Pointer<rs2_log_message>,
+              ffi.Pointer<ffi.Pointer<rs2_error>>)>>('rs2_get_raw_log_message');
+  late final _rs2_get_raw_log_message = _rs2_get_raw_log_messagePtr.asFunction<
+      ffi.Pointer<pkg_ffi.Utf8> Function(
+          ffi.Pointer<rs2_log_message>, ffi.Pointer<ffi.Pointer<rs2_error>>)>();
+
+  ffi.Pointer<pkg_ffi.Utf8> rs2_get_full_log_message(
+    ffi.Pointer<rs2_log_message> msg,
+    ffi.Pointer<ffi.Pointer<rs2_error>> error,
+  ) {
+    return _rs2_get_full_log_message(
+      msg,
+      error,
+    );
+  }
+
+  late final _rs2_get_full_log_messagePtr = _lookup<
+          ffi.NativeFunction<
+              ffi.Pointer<pkg_ffi.Utf8> Function(ffi.Pointer<rs2_log_message>,
+                  ffi.Pointer<ffi.Pointer<rs2_error>>)>>(
+      'rs2_get_full_log_message');
+  late final _rs2_get_full_log_message =
+      _rs2_get_full_log_messagePtr.asFunction<
+          ffi.Pointer<pkg_ffi.Utf8> Function(ffi.Pointer<rs2_log_message>,
+              ffi.Pointer<ffi.Pointer<rs2_error>>)>();
+
+  /// Add custom message into librealsense log
+  /// \param[in] severity  The log level for the message to be written under
+  /// \param[in] message   Message to be logged
+  /// \param[out] error  if non-null, receives any error that occurs during this call, otherwise, errors are ignored
+  void rs2_log(
+    int severity,
+    ffi.Pointer<pkg_ffi.Utf8> message,
+    ffi.Pointer<ffi.Pointer<rs2_error>> error,
+  ) {
+    return _rs2_log(
+      severity,
+      message,
+      error,
+    );
+  }
+
+  late final _rs2_logPtr = _lookup<
+      ffi.NativeFunction<
+          ffi.Void Function(ffi.Int32, ffi.Pointer<pkg_ffi.Utf8>,
+              ffi.Pointer<ffi.Pointer<rs2_error>>)>>('rs2_log');
+  late final _rs2_log = _rs2_logPtr.asFunction<
+      void Function(int, ffi.Pointer<pkg_ffi.Utf8>,
+          ffi.Pointer<ffi.Pointer<rs2_error>>)>();
+
+  /// Given the 2D depth coordinate (x,y) provide the corresponding depth in metric units
+  /// \param[in] frame_ref  2D depth pixel coordinates (Left-Upper corner origin)
+  /// \param[in] x,y  2D depth pixel coordinates (Left-Upper corner origin)
+  /// \param[out] error  if non-null, receives any error that occurs during this call, otherwise, errors are ignored
+  double rs2_depth_frame_get_distance(
+    ffi.Pointer<rs2_frame> frame_ref,
+    int x,
+    int y,
+    ffi.Pointer<ffi.Pointer<rs2_error>> error,
+  ) {
+    return _rs2_depth_frame_get_distance(
+      frame_ref,
+      x,
+      y,
+      error,
+    );
+  }
+
+  late final _rs2_depth_frame_get_distancePtr = _lookup<
+          ffi.NativeFunction<
+              ffi.Float Function(ffi.Pointer<rs2_frame>, ffi.Int, ffi.Int,
+                  ffi.Pointer<ffi.Pointer<rs2_error>>)>>(
+      'rs2_depth_frame_get_distance');
+  late final _rs2_depth_frame_get_distance =
+      _rs2_depth_frame_get_distancePtr.asFunction<
+          double Function(ffi.Pointer<rs2_frame>, int, int,
+              ffi.Pointer<ffi.Pointer<rs2_error>>)>();
+
+  /// return the time at specific time point
+  /// \param[out] error  if non-null, receives any error that occurs during this call, otherwise, errors are ignored
+  /// \return            the time at specific time point, in live and record mode it will return the system time and in playback mode it will return the recorded time
+  double rs2_get_time(
+    ffi.Pointer<ffi.Pointer<rs2_error>> error,
+  ) {
+    return _rs2_get_time(
+      error,
+    );
+  }
+
+  late final _rs2_get_timePtr = _lookup<
+      ffi.NativeFunction<
+          rs2_time_t Function(
+              ffi.Pointer<ffi.Pointer<rs2_error>>)>>('rs2_get_time');
+  late final _rs2_get_time = _rs2_get_timePtr
+      .asFunction<double Function(ffi.Pointer<ffi.Pointer<rs2_error>>)>();
+
+  /// Create a pipeline instance
+  /// The pipeline simplifies the user interaction with the device and computer vision processing modules.
+  /// The class abstracts the camera configuration and streaming, and the vision modules triggering and threading.
+  /// It lets the application focus on the computer vision output of the modules, or the device output data.
+  /// The pipeline can manage computer vision modules, which are implemented as a processing blocks.
+  /// The pipeline is the consumer of the processing block interface, while the application consumes the
+  /// computer vision interface.
+  /// \param[in]  ctx    context
+  /// \param[out] error  if non-null, receives any error that occurs during this call, otherwise, errors are ignored
+  ffi.Pointer<rs2_pipeline> rs2_create_pipeline(
+    ffi.Pointer<rs2_context> ctx,
+    ffi.Pointer<ffi.Pointer<rs2_error>> error,
+  ) {
+    return _rs2_create_pipeline(
+      ctx,
+      error,
+    );
+  }
+
+  late final _rs2_create_pipelinePtr = _lookup<
+      ffi.NativeFunction<
+          ffi.Pointer<rs2_pipeline> Function(ffi.Pointer<rs2_context>,
+              ffi.Pointer<ffi.Pointer<rs2_error>>)>>('rs2_create_pipeline');
+  late final _rs2_create_pipeline = _rs2_create_pipelinePtr.asFunction<
+      ffi.Pointer<rs2_pipeline> Function(
+          ffi.Pointer<rs2_context>, ffi.Pointer<ffi.Pointer<rs2_error>>)>();
+
+  /// Stop the pipeline streaming.
+  /// The pipeline stops delivering samples to the attached computer vision modules and processing blocks, stops the device streaming
+  /// and releases the device resources used by the pipeline. It is the application's responsibility to release any frame reference it owns.
+  /// The method takes effect only after \c start() was called, otherwise an exception is raised.
+  /// \param[in] pipe  pipeline
+  /// \param[out] error  if non-null, receives any error that occurs during this call, otherwise, errors are ignored
+  void rs2_pipeline_stop(
+    ffi.Pointer<rs2_pipeline> pipe,
+    ffi.Pointer<ffi.Pointer<rs2_error>> error,
+  ) {
+    return _rs2_pipeline_stop(
+      pipe,
+      error,
+    );
+  }
+
+  late final _rs2_pipeline_stopPtr = _lookup<
+      ffi.NativeFunction<
+          ffi.Void Function(ffi.Pointer<rs2_pipeline>,
+              ffi.Pointer<ffi.Pointer<rs2_error>>)>>('rs2_pipeline_stop');
+  late final _rs2_pipeline_stop = _rs2_pipeline_stopPtr.asFunction<
+      void Function(
+          ffi.Pointer<rs2_pipeline>, ffi.Pointer<ffi.Pointer<rs2_error>>)>();
+
+  /// Wait until a new set of frames becomes available.
+  /// The frames set includes time-synchronized frames of each enabled stream in the pipeline.
+  /// The method blocks the calling thread, and fetches the latest unread frames set.
+  /// Device frames, which were produced while the function wasn't called, are dropped. To avoid frame drops, this method should be called
+  /// as fast as the device frame rate.
+  /// The application can maintain the frames handles to defer processing. However, if the application maintains too long history, the device
+  /// may lack memory resources to produce new frames, and the following call to this method shall fail to retrieve new frames, until resources
+  /// are retained.
+  /// \param[in] pipe the pipeline
+  /// \param[in] timeout_ms   Max time in milliseconds to wait until an exception will be thrown
+  /// \param[out] error         if non-null, receives any error that occurs during this call, otherwise, errors are ignored
+  /// \return Set of coherent frames
+  ffi.Pointer<rs2_frame> rs2_pipeline_wait_for_frames(
+    ffi.Pointer<rs2_pipeline> pipe,
+    int timeout_ms,
+    ffi.Pointer<ffi.Pointer<rs2_error>> error,
+  ) {
+    return _rs2_pipeline_wait_for_frames(
+      pipe,
+      timeout_ms,
+      error,
+    );
+  }
+
+  late final _rs2_pipeline_wait_for_framesPtr = _lookup<
+          ffi.NativeFunction<
+              ffi.Pointer<rs2_frame> Function(ffi.Pointer<rs2_pipeline>,
+                  ffi.UnsignedInt, ffi.Pointer<ffi.Pointer<rs2_error>>)>>(
+      'rs2_pipeline_wait_for_frames');
+  late final _rs2_pipeline_wait_for_frames =
+      _rs2_pipeline_wait_for_framesPtr.asFunction<
+          ffi.Pointer<rs2_frame> Function(ffi.Pointer<rs2_pipeline>, int,
+              ffi.Pointer<ffi.Pointer<rs2_error>>)>();
+
+  /// Check if a new set of frames is available and retrieve the latest undelivered set.
+  /// The frames set includes time-synchronized frames of each enabled stream in the pipeline.
+  /// The method returns without blocking the calling thread, with status of new frames available or not. If available, it fetches the
+  /// latest frames set.
+  /// Device frames, which were produced while the function wasn't called, are dropped. To avoid frame drops, this method should be called
+  /// as fast as the device frame rate.
+  /// The application can maintain the frames handles to defer processing. However, if the application maintains too long history, the device
+  /// may lack memory resources to produce new frames, and the following calls to this method shall return no new frames, until resources are
+  /// retained.
+  /// \param[in] pipe the pipeline
+  /// \param[out] output_frame frame handle to be released using rs2_release_frame
+  /// \param[out] error  if non-null, receives any error that occurs during this call, otherwise, errors are ignored
+  /// \return true if new frame was stored to output_frame
+  int rs2_pipeline_poll_for_frames(
+    ffi.Pointer<rs2_pipeline> pipe,
+    ffi.Pointer<ffi.Pointer<rs2_frame>> output_frame,
+    ffi.Pointer<ffi.Pointer<rs2_error>> error,
+  ) {
+    return _rs2_pipeline_poll_for_frames(
+      pipe,
+      output_frame,
+      error,
+    );
+  }
+
+  late final _rs2_pipeline_poll_for_framesPtr = _lookup<
+          ffi.NativeFunction<
+              ffi.Int Function(
+                  ffi.Pointer<rs2_pipeline>,
+                  ffi.Pointer<ffi.Pointer<rs2_frame>>,
+                  ffi.Pointer<ffi.Pointer<rs2_error>>)>>(
+      'rs2_pipeline_poll_for_frames');
+  late final _rs2_pipeline_poll_for_frames =
+      _rs2_pipeline_poll_for_framesPtr.asFunction<
+          int Function(
+              ffi.Pointer<rs2_pipeline>,
+              ffi.Pointer<ffi.Pointer<rs2_frame>>,
+              ffi.Pointer<ffi.Pointer<rs2_error>>)>();
+
+  /// Wait until a new set of frames becomes available.
+  /// The frames set includes time-synchronized frames of each enabled stream in the pipeline.
+  /// The method blocks the calling thread, and fetches the latest unread frames set.
+  /// Device frames, which were produced while the function wasn't called, are dropped. To avoid frame drops, this method should be called
+  /// as fast as the device frame rate.
+  /// The application can maintain the frames handles to defer processing. However, if the application maintains too long history, the device
+  /// may lack memory resources to produce new frames, and the following call to this method shall fail to retrieve new frames, until resources
+  /// are retained.
+  /// \param[in] pipe           the pipeline
+  /// \param[in] timeout_ms     max time in milliseconds to wait until a frame becomes available
+  /// \param[out] output_frame  frame handle to be released using rs2_release_frame
+  /// \param[out] error         if non-null, receives any error that occurs during this call, otherwise, errors are ignored
+  /// \return true if new frame was stored to output_frame
+  int rs2_pipeline_try_wait_for_frames(
+    ffi.Pointer<rs2_pipeline> pipe,
+    ffi.Pointer<ffi.Pointer<rs2_frame>> output_frame,
+    int timeout_ms,
+    ffi.Pointer<ffi.Pointer<rs2_error>> error,
+  ) {
+    return _rs2_pipeline_try_wait_for_frames(
+      pipe,
+      output_frame,
+      timeout_ms,
+      error,
+    );
+  }
+
+  late final _rs2_pipeline_try_wait_for_framesPtr = _lookup<
+          ffi.NativeFunction<
+              ffi.Int Function(
+                  ffi.Pointer<rs2_pipeline>,
+                  ffi.Pointer<ffi.Pointer<rs2_frame>>,
+                  ffi.UnsignedInt,
+                  ffi.Pointer<ffi.Pointer<rs2_error>>)>>(
+      'rs2_pipeline_try_wait_for_frames');
+  late final _rs2_pipeline_try_wait_for_frames =
+      _rs2_pipeline_try_wait_for_framesPtr.asFunction<
+          int Function(
+              ffi.Pointer<rs2_pipeline>,
+              ffi.Pointer<ffi.Pointer<rs2_frame>>,
+              int,
+              ffi.Pointer<ffi.Pointer<rs2_error>>)>();
+
+  /// Delete a pipeline instance.
+  /// Upon destruction, the pipeline will implicitly stop itself
+  /// \param[in] pipe to delete
+  void rs2_delete_pipeline(
+    ffi.Pointer<rs2_pipeline> pipe,
+  ) {
+    return _rs2_delete_pipeline(
+      pipe,
+    );
+  }
+
+  late final _rs2_delete_pipelinePtr =
+      _lookup<ffi.NativeFunction<ffi.Void Function(ffi.Pointer<rs2_pipeline>)>>(
+          'rs2_delete_pipeline');
+  late final _rs2_delete_pipeline = _rs2_delete_pipelinePtr
+      .asFunction<void Function(ffi.Pointer<rs2_pipeline>)>();
+
+  /// Start the pipeline streaming with its default configuration.
+  /// The pipeline streaming loop captures samples from the device, and delivers them to the attached computer vision modules
+  /// and processing blocks, according to each module requirements and threading model.
+  /// During the loop execution, the application can access the camera streams by calling \c wait_for_frames() or \c poll_for_frames().
+  /// The streaming loop runs until the pipeline is stopped.
+  /// Starting the pipeline is possible only when it is not started. If the pipeline was started, an exception is raised.
+  ///
+  /// \param[in] pipe    a pointer to an instance of the pipeline
+  /// \param[out] error  if non-null, receives any error that occurs during this call, otherwise, errors are ignored
+  /// \return             The actual pipeline device and streams profile, which was successfully configured to the streaming device.
+  ffi.Pointer<rs2_pipeline_profile> rs2_pipeline_start(
+    ffi.Pointer<rs2_pipeline> pipe,
+    ffi.Pointer<ffi.Pointer<rs2_error>> error,
+  ) {
+    return _rs2_pipeline_start(
+      pipe,
+      error,
+    );
+  }
+
+  late final _rs2_pipeline_startPtr = _lookup<
+      ffi.NativeFunction<
+          ffi.Pointer<rs2_pipeline_profile> Function(ffi.Pointer<rs2_pipeline>,
+              ffi.Pointer<ffi.Pointer<rs2_error>>)>>('rs2_pipeline_start');
+  late final _rs2_pipeline_start = _rs2_pipeline_startPtr.asFunction<
+      ffi.Pointer<rs2_pipeline_profile> Function(
+          ffi.Pointer<rs2_pipeline>, ffi.Pointer<ffi.Pointer<rs2_error>>)>();
+
+  /// Start the pipeline streaming according to the configuraion.
+  /// The pipeline streaming loop captures samples from the device, and delivers them to the attached computer vision modules
+  /// and processing blocks, according to each module requirements and threading model.
+  /// During the loop execution, the application can access the camera streams by calling \c wait_for_frames() or \c poll_for_frames().
+  /// The streaming loop runs until the pipeline is stopped.
+  /// Starting the pipeline is possible only when it is not started. If the pipeline was started, an exception is raised.
+  /// The pipeline selects and activates the device upon start, according to configuration or a default configuration.
+  /// When the rs2::config is provided to the method, the pipeline tries to activate the config \c resolve() result. If the application
+  /// requests are conflicting with pipeline computer vision modules or no matching device is available on the platform, the method fails.
+  /// Available configurations and devices may change between config \c resolve() call and pipeline start, in case devices are connected
+  /// or disconnected, or another application acquires ownership of a device.
+  ///
+  /// \param[in] pipe    a pointer to an instance of the pipeline
+  /// \param[in] config   A rs2::config with requested filters on the pipeline configuration. By default no filters are applied.
+  /// \param[out] error  if non-null, receives any error that occurs during this call, otherwise, errors are ignored
+  /// \return             The actual pipeline device and streams profile, which was successfully configured to the streaming device.
+  ffi.Pointer<rs2_pipeline_profile> rs2_pipeline_start_with_config(
+    ffi.Pointer<rs2_pipeline> pipe,
+    ffi.Pointer<rs2_config> config,
+    ffi.Pointer<ffi.Pointer<rs2_error>> error,
+  ) {
+    return _rs2_pipeline_start_with_config(
+      pipe,
+      config,
+      error,
+    );
+  }
+
+  late final _rs2_pipeline_start_with_configPtr = _lookup<
+          ffi.NativeFunction<
+              ffi.Pointer<rs2_pipeline_profile> Function(
+                  ffi.Pointer<rs2_pipeline>,
+                  ffi.Pointer<rs2_config>,
+                  ffi.Pointer<ffi.Pointer<rs2_error>>)>>(
+      'rs2_pipeline_start_with_config');
+  late final _rs2_pipeline_start_with_config =
+      _rs2_pipeline_start_with_configPtr.asFunction<
+          ffi.Pointer<rs2_pipeline_profile> Function(ffi.Pointer<rs2_pipeline>,
+              ffi.Pointer<rs2_config>, ffi.Pointer<ffi.Pointer<rs2_error>>)>();
+
+  /// Start the pipeline streaming with its default configuration.
+  /// The pipeline captures samples from the device, and delivers them to the through the provided frame callback.
+  /// Starting the pipeline is possible only when it is not started. If the pipeline was started, an exception is raised.
+  /// When starting the pipeline with a callback both \c wait_for_frames() or \c poll_for_frames() will throw exception.
+  ///
+  /// \param[in] pipe     A pointer to an instance of the pipeline
+  /// \param[in] on_frame function pointer to register as per-frame callback
+  /// \param[in] user auxiliary  data the user wishes to receive together with every frame callback
+  /// \param[out] error   If non-null, receives any error that occurs during this call, otherwise, errors are ignored
+  /// \return             The actual pipeline device and streams profile, which was successfully configured to the streaming device.
+  ffi.Pointer<rs2_pipeline_profile> rs2_pipeline_start_with_callback(
+    ffi.Pointer<rs2_pipeline> pipe,
+    rs2_frame_callback_ptr on_frame,
+    ffi.Pointer<ffi.Void> user,
+    ffi.Pointer<ffi.Pointer<rs2_error>> error,
+  ) {
+    return _rs2_pipeline_start_with_callback(
+      pipe,
+      on_frame,
+      user,
+      error,
+    );
+  }
+
+  late final _rs2_pipeline_start_with_callbackPtr = _lookup<
+          ffi.NativeFunction<
+              ffi.Pointer<rs2_pipeline_profile> Function(
+                  ffi.Pointer<rs2_pipeline>,
+                  rs2_frame_callback_ptr,
+                  ffi.Pointer<ffi.Void>,
+                  ffi.Pointer<ffi.Pointer<rs2_error>>)>>(
+      'rs2_pipeline_start_with_callback');
+  late final _rs2_pipeline_start_with_callback =
+      _rs2_pipeline_start_with_callbackPtr.asFunction<
+          ffi.Pointer<rs2_pipeline_profile> Function(
+              ffi.Pointer<rs2_pipeline>,
+              rs2_frame_callback_ptr,
+              ffi.Pointer<ffi.Void>,
+              ffi.Pointer<ffi.Pointer<rs2_error>>)>();
+
+  /// Start the pipeline streaming with its default configuration.
+  /// The pipeline captures samples from the device, and delivers them to the through the provided frame callback.
+  /// Starting the pipeline is possible only when it is not started. If the pipeline was started, an exception is raised.
+  /// When starting the pipeline with a callback both \c wait_for_frames() or \c poll_for_frames() will throw exception.
+  ///
+  /// \param[in] pipe     A pointer to an instance of the pipeline
+  /// \param[in] callback callback object created from c++ application. ownership over the callback object is moved into the relevant streaming lock
+  /// \param[out] error   If non-null, receives any error that occurs during this call, otherwise, errors are ignored
+  /// \return             The actual pipeline device and streams profile, which was successfully configured to the streaming device.
+  ffi.Pointer<rs2_pipeline_profile> rs2_pipeline_start_with_callback_cpp(
+    ffi.Pointer<rs2_pipeline> pipe,
+    ffi.Pointer<rs2_frame_callback> callback,
+    ffi.Pointer<ffi.Pointer<rs2_error>> error,
+  ) {
+    return _rs2_pipeline_start_with_callback_cpp(
+      pipe,
+      callback,
+      error,
+    );
+  }
+
+  late final _rs2_pipeline_start_with_callback_cppPtr = _lookup<
+          ffi.NativeFunction<
+              ffi.Pointer<rs2_pipeline_profile> Function(
+                  ffi.Pointer<rs2_pipeline>,
+                  ffi.Pointer<rs2_frame_callback>,
+                  ffi.Pointer<ffi.Pointer<rs2_error>>)>>(
+      'rs2_pipeline_start_with_callback_cpp');
+  late final _rs2_pipeline_start_with_callback_cpp =
+      _rs2_pipeline_start_with_callback_cppPtr.asFunction<
+          ffi.Pointer<rs2_pipeline_profile> Function(
+              ffi.Pointer<rs2_pipeline>,
+              ffi.Pointer<rs2_frame_callback>,
+              ffi.Pointer<ffi.Pointer<rs2_error>>)>();
+
+  /// Start the pipeline streaming according to the configuraion.
+  /// The pipeline captures samples from the device, and delivers them to the through the provided frame callback.
+  /// Starting the pipeline is possible only when it is not started. If the pipeline was started, an exception is raised.
+  /// When starting the pipeline with a callback both \c wait_for_frames() or \c poll_for_frames() will throw exception.
+  /// The pipeline selects and activates the device upon start, according to configuration or a default configuration.
+  /// When the rs2::config is provided to the method, the pipeline tries to activate the config \c resolve() result. If the application
+  /// requests are conflicting with pipeline computer vision modules or no matching device is available on the platform, the method fails.
+  /// Available configurations and devices may change between config \c resolve() call and pipeline start, in case devices are connected
+  /// or disconnected, or another application acquires ownership of a device.
+  ///
+  /// \param[in] pipe     A pointer to an instance of the pipeline
+  /// \param[in] config   A rs2::config with requested filters on the pipeline configuration. By default no filters are applied.
+  /// \param[in] on_frame function pointer to register as per-frame callback
+  /// \param[in] user auxiliary  data the user wishes to receive together with every frame callback
+  /// \param[out] error   If non-null, receives any error that occurs during this call, otherwise, errors are ignored
+  /// \return             The actual pipeline device and streams profile, which was successfully configured to the streaming device.
+  ffi.Pointer<rs2_pipeline_profile> rs2_pipeline_start_with_config_and_callback(
+    ffi.Pointer<rs2_pipeline> pipe,
+    ffi.Pointer<rs2_config> config,
+    rs2_frame_callback_ptr on_frame,
+    ffi.Pointer<ffi.Void> user,
+    ffi.Pointer<ffi.Pointer<rs2_error>> error,
+  ) {
+    return _rs2_pipeline_start_with_config_and_callback(
+      pipe,
+      config,
+      on_frame,
+      user,
+      error,
+    );
+  }
+
+  late final _rs2_pipeline_start_with_config_and_callbackPtr = _lookup<
+          ffi.NativeFunction<
+              ffi.Pointer<rs2_pipeline_profile> Function(
+                  ffi.Pointer<rs2_pipeline>,
+                  ffi.Pointer<rs2_config>,
+                  rs2_frame_callback_ptr,
+                  ffi.Pointer<ffi.Void>,
+                  ffi.Pointer<ffi.Pointer<rs2_error>>)>>(
+      'rs2_pipeline_start_with_config_and_callback');
+  late final _rs2_pipeline_start_with_config_and_callback =
+      _rs2_pipeline_start_with_config_and_callbackPtr.asFunction<
+          ffi.Pointer<rs2_pipeline_profile> Function(
+              ffi.Pointer<rs2_pipeline>,
+              ffi.Pointer<rs2_config>,
+              rs2_frame_callback_ptr,
+              ffi.Pointer<ffi.Void>,
+              ffi.Pointer<ffi.Pointer<rs2_error>>)>();
+
+  /// Start the pipeline streaming according to the configuraion.
+  /// The pipeline captures samples from the device, and delivers them to the through the provided frame callback.
+  /// Starting the pipeline is possible only when it is not started. If the pipeline was started, an exception is raised.
+  /// When starting the pipeline with a callback both \c wait_for_frames() or \c poll_for_frames() will throw exception.
+  /// The pipeline selects and activates the device upon start, according to configuration or a default configuration.
+  /// When the rs2::config is provided to the method, the pipeline tries to activate the config \c resolve() result. If the application
+  /// requests are conflicting with pipeline computer vision modules or no matching device is available on the platform, the method fails.
+  /// Available configurations and devices may change between config \c resolve() call and pipeline start, in case devices are connected
+  /// or disconnected, or another application acquires ownership of a device.
+  ///
+  /// \param[in] pipe     A pointer to an instance of the pipeline
+  /// \param[in] config   A rs2::config with requested filters on the pipeline configuration. By default no filters are applied.
+  /// \param[in] callback callback object created from c++ application. ownership over the callback object is moved into the relevant streaming lock
+  /// \param[out] error   If non-null, receives any error that occurs during this call, otherwise, errors are ignored
+  /// \return             The actual pipeline device and streams profile, which was successfully configured to the streaming device.
+  ffi.Pointer<rs2_pipeline_profile>
+      rs2_pipeline_start_with_config_and_callback_cpp(
+    ffi.Pointer<rs2_pipeline> pipe,
+    ffi.Pointer<rs2_config> config,
+    ffi.Pointer<rs2_frame_callback> callback,
+    ffi.Pointer<ffi.Pointer<rs2_error>> error,
+  ) {
+    return _rs2_pipeline_start_with_config_and_callback_cpp(
+      pipe,
+      config,
+      callback,
+      error,
+    );
+  }
+
+  late final _rs2_pipeline_start_with_config_and_callback_cppPtr = _lookup<
+          ffi.NativeFunction<
+              ffi.Pointer<rs2_pipeline_profile> Function(
+                  ffi.Pointer<rs2_pipeline>,
+                  ffi.Pointer<rs2_config>,
+                  ffi.Pointer<rs2_frame_callback>,
+                  ffi.Pointer<ffi.Pointer<rs2_error>>)>>(
+      'rs2_pipeline_start_with_config_and_callback_cpp');
+  late final _rs2_pipeline_start_with_config_and_callback_cpp =
+      _rs2_pipeline_start_with_config_and_callback_cppPtr.asFunction<
+          ffi.Pointer<rs2_pipeline_profile> Function(
+              ffi.Pointer<rs2_pipeline>,
+              ffi.Pointer<rs2_config>,
+              ffi.Pointer<rs2_frame_callback>,
+              ffi.Pointer<ffi.Pointer<rs2_error>>)>();
+
+  /// Return the active device and streams profiles, used by the pipeline.
+  /// The pipeline streams profiles are selected during \c start(). The method returns a valid result only when the pipeline is active -
+  /// between calls to \c start() and \c stop().
+  /// After \c stop() is called, the pipeline doesn't own the device, thus, the pipeline selected device may change in subsequent activations.
+  ///
+  /// \param[in] pipe    a pointer to an instance of the pipeline
+  /// \param[out] error  if non-null, receives any error that occurs during this call, otherwise, errors are ignored
+  /// \return  The actual pipeline device and streams profile, which was successfully configured to the streaming device on start.
+  ffi.Pointer<rs2_pipeline_profile> rs2_pipeline_get_active_profile(
+    ffi.Pointer<rs2_pipeline> pipe,
+    ffi.Pointer<ffi.Pointer<rs2_error>> error,
+  ) {
+    return _rs2_pipeline_get_active_profile(
+      pipe,
+      error,
+    );
+  }
+
+  late final _rs2_pipeline_get_active_profilePtr = _lookup<
+          ffi.NativeFunction<
+              ffi.Pointer<rs2_pipeline_profile> Function(
+                  ffi.Pointer<rs2_pipeline>,
+                  ffi.Pointer<ffi.Pointer<rs2_error>>)>>(
+      'rs2_pipeline_get_active_profile');
+  late final _rs2_pipeline_get_active_profile =
+      _rs2_pipeline_get_active_profilePtr.asFunction<
+          ffi.Pointer<rs2_pipeline_profile> Function(ffi.Pointer<rs2_pipeline>,
+              ffi.Pointer<ffi.Pointer<rs2_error>>)>();
+
+  /// Retrieve the device used by the pipeline.
+  /// The device class provides the application access to control camera additional settings -
+  /// get device information, sensor options information, options value query and set, sensor specific extensions.
+  /// Since the pipeline controls the device streams configuration, activation state and frames reading, calling
+  /// the device API functions, which execute those operations, results in unexpected behavior.
+  /// The pipeline streaming device is selected during pipeline \c start(). Devices of profiles, which are not returned by
+  /// pipeline \c start() or \c get_active_profile(), are not guaranteed to be used by the pipeline.
+  ///
+  /// \param[in] profile    A pointer to an instance of a pipeline profile
+  /// \param[out] error     if non-null, receives any error that occurs during this call, otherwise, errors are ignored
+  /// \return rs2_device* The pipeline selected device
+  ffi.Pointer<rs2_device> rs2_pipeline_profile_get_device(
+    ffi.Pointer<rs2_pipeline_profile> profile,
+    ffi.Pointer<ffi.Pointer<rs2_error>> error,
+  ) {
+    return _rs2_pipeline_profile_get_device(
+      profile,
+      error,
+    );
+  }
+
+  late final _rs2_pipeline_profile_get_devicePtr = _lookup<
+          ffi.NativeFunction<
+              ffi.Pointer<rs2_device> Function(
+                  ffi.Pointer<rs2_pipeline_profile>,
+                  ffi.Pointer<ffi.Pointer<rs2_error>>)>>(
+      'rs2_pipeline_profile_get_device');
+  late final _rs2_pipeline_profile_get_device =
+      _rs2_pipeline_profile_get_devicePtr.asFunction<
+          ffi.Pointer<rs2_device> Function(ffi.Pointer<rs2_pipeline_profile>,
+              ffi.Pointer<ffi.Pointer<rs2_error>>)>();
+
+  /// Return the selected streams profiles, which are enabled in this profile.
+  ///
+  /// \param[in] profile    A pointer to an instance of a pipeline profile
+  /// \param[out] error     if non-null, receives any error that occurs during this call, otherwise, errors are ignored
+  /// \return   list of stream profiles
+  ffi.Pointer<rs2_stream_profile_list> rs2_pipeline_profile_get_streams(
+    ffi.Pointer<rs2_pipeline_profile> profile,
+    ffi.Pointer<ffi.Pointer<rs2_error>> error,
+  ) {
+    return _rs2_pipeline_profile_get_streams(
+      profile,
+      error,
+    );
+  }
+
+  late final _rs2_pipeline_profile_get_streamsPtr = _lookup<
+          ffi.NativeFunction<
+              ffi.Pointer<rs2_stream_profile_list> Function(
+                  ffi.Pointer<rs2_pipeline_profile>,
+                  ffi.Pointer<ffi.Pointer<rs2_error>>)>>(
+      'rs2_pipeline_profile_get_streams');
+  late final _rs2_pipeline_profile_get_streams =
+      _rs2_pipeline_profile_get_streamsPtr.asFunction<
+          ffi.Pointer<rs2_stream_profile_list> Function(
+              ffi.Pointer<rs2_pipeline_profile>,
+              ffi.Pointer<ffi.Pointer<rs2_error>>)>();
+
+  /// Deletes an instance of a pipeline profile
+  ///
+  /// \param[in] profile    A pointer to an instance of a pipeline profile
+  void rs2_delete_pipeline_profile(
+    ffi.Pointer<rs2_pipeline_profile> profile,
+  ) {
+    return _rs2_delete_pipeline_profile(
+      profile,
+    );
+  }
+
+  late final _rs2_delete_pipeline_profilePtr = _lookup<
+          ffi.NativeFunction<
+              ffi.Void Function(ffi.Pointer<rs2_pipeline_profile>)>>(
+      'rs2_delete_pipeline_profile');
+  late final _rs2_delete_pipeline_profile = _rs2_delete_pipeline_profilePtr
+      .asFunction<void Function(ffi.Pointer<rs2_pipeline_profile>)>();
 }
 
-final class rs2_raw_data_buffer extends ffi.Opaque {}
+/// \brief Specifies the clock in relation to which the frame timestamp was measured.
+abstract class rs2_timestamp_domain {
+  /// < Frame timestamp was measured in relation to the camera clock
+  static const int RS2_TIMESTAMP_DOMAIN_HARDWARE_CLOCK = 0;
 
-final class rs2_error extends ffi.Opaque {}
+  /// < Frame timestamp was measured in relation to the OS system clock
+  static const int RS2_TIMESTAMP_DOMAIN_SYSTEM_TIME = 1;
 
-/// \brief Severity of the librealsense logger.
-abstract class rs2_log_severity {
-  /// < Detailed information about ordinary operations
-  static const int RS2_LOG_SEVERITY_DEBUG = 0;
-
-  /// < Terse information about ordinary operations
-  static const int RS2_LOG_SEVERITY_INFO = 1;
-
-  /// < Indication of possible failure
-  static const int RS2_LOG_SEVERITY_WARN = 2;
-
-  /// < Indication of definite failure
-  static const int RS2_LOG_SEVERITY_ERROR = 3;
-
-  /// < Indication of unrecoverable failure
-  static const int RS2_LOG_SEVERITY_FATAL = 4;
-
-  /// < No logging will occur
-  static const int RS2_LOG_SEVERITY_NONE = 5;
+  /// < Frame timestamp was measured in relation to the camera clock and converted to OS system clock by constantly measure the difference
+  static const int RS2_TIMESTAMP_DOMAIN_GLOBAL_TIME = 2;
 
   /// < Number of enumeration values. Not a valid input: intended to be used in for-loops.
-  static const int RS2_LOG_SEVERITY_COUNT = 6;
-
-  /// < Include any/all log messages
-  static const int RS2_LOG_SEVERITY_ALL = 0;
+  static const int RS2_TIMESTAMP_DOMAIN_COUNT = 3;
 }
 
-final class rs2_log_callback extends ffi.Opaque {}
+/// \brief Per-Frame-Metadata is the set of read-only properties that might be exposed for each individual frame.
+abstract class rs2_frame_metadata_value {
+  /// < A sequential index managed per-stream. Integer value
+  static const int RS2_FRAME_METADATA_FRAME_COUNTER = 0;
 
-typedef rs2_log_callback_ptr = ffi.Pointer<
-    ffi.NativeFunction<
-        ffi.Void Function(
-            ffi.Int32, ffi.Pointer<rs2_log_message>, ffi.Pointer<ffi.Void>)>>;
+  /// < Timestamp set by device clock when data readout and transmit commence. usec
+  static const int RS2_FRAME_METADATA_FRAME_TIMESTAMP = 1;
 
-final class rs2_log_message extends ffi.Opaque {}
+  /// < Timestamp of the middle of sensor's exposure calculated by device. usec
+  static const int RS2_FRAME_METADATA_SENSOR_TIMESTAMP = 2;
+
+  /// < Sensor's exposure width. When Auto Exposure (AE) is on the value is controlled by firmware. usec
+  static const int RS2_FRAME_METADATA_ACTUAL_EXPOSURE = 3;
+
+  /// < A relative value increasing which will increase the Sensor's gain factor. \
+  /// When AE is set On, the value is controlled by firmware. Integer value
+  static const int RS2_FRAME_METADATA_GAIN_LEVEL = 4;
+
+  /// < Auto Exposure Mode indicator. Zero corresponds to AE switched off.
+  static const int RS2_FRAME_METADATA_AUTO_EXPOSURE = 5;
+
+  /// < White Balance setting as a color temperature. Kelvin degrees
+  static const int RS2_FRAME_METADATA_WHITE_BALANCE = 6;
+
+  /// < Time of arrival in system clock
+  static const int RS2_FRAME_METADATA_TIME_OF_ARRIVAL = 7;
+
+  /// < Temperature of the device, measured at the time of the frame capture. Celsius degrees
+  static const int RS2_FRAME_METADATA_TEMPERATURE = 8;
+
+  /// < Timestamp get from uvc driver. usec
+  static const int RS2_FRAME_METADATA_BACKEND_TIMESTAMP = 9;
+
+  /// < Actual fps
+  static const int RS2_FRAME_METADATA_ACTUAL_FPS = 10;
+
+  /// < Laser power value 0-360.
+  static const int RS2_FRAME_METADATA_FRAME_LASER_POWER = 11;
+
+  /// < Laser power mode. Zero corresponds to Laser power switched off and one for switched on. deprecated, replaced by RS2_FRAME_METADATA_FRAME_EMITTER_MODE
+  static const int RS2_FRAME_METADATA_FRAME_LASER_POWER_MODE = 12;
+
+  /// < Exposure priority.
+  static const int RS2_FRAME_METADATA_EXPOSURE_PRIORITY = 13;
+
+  /// < Left region of interest for the auto exposure Algorithm.
+  static const int RS2_FRAME_METADATA_EXPOSURE_ROI_LEFT = 14;
+
+  /// < Right region of interest for the auto exposure Algorithm.
+  static const int RS2_FRAME_METADATA_EXPOSURE_ROI_RIGHT = 15;
+
+  /// < Top region of interest for the auto exposure Algorithm.
+  static const int RS2_FRAME_METADATA_EXPOSURE_ROI_TOP = 16;
+
+  /// < Bottom region of interest for the auto exposure Algorithm.
+  static const int RS2_FRAME_METADATA_EXPOSURE_ROI_BOTTOM = 17;
+
+  /// < Color image brightness.
+  static const int RS2_FRAME_METADATA_BRIGHTNESS = 18;
+
+  /// < Color image contrast.
+  static const int RS2_FRAME_METADATA_CONTRAST = 19;
+
+  /// < Color image saturation.
+  static const int RS2_FRAME_METADATA_SATURATION = 20;
+
+  /// < Color image sharpness.
+  static const int RS2_FRAME_METADATA_SHARPNESS = 21;
+
+  /// < Auto white balance temperature Mode indicator. Zero corresponds to automatic mode switched off.
+  static const int RS2_FRAME_METADATA_AUTO_WHITE_BALANCE_TEMPERATURE = 22;
+
+  /// < Color backlight compensation. Zero corresponds to switched off.
+  static const int RS2_FRAME_METADATA_BACKLIGHT_COMPENSATION = 23;
+
+  /// < Color image hue.
+  static const int RS2_FRAME_METADATA_HUE = 24;
+
+  /// < Color image gamma.
+  static const int RS2_FRAME_METADATA_GAMMA = 25;
+
+  /// < Color image white balance.
+  static const int RS2_FRAME_METADATA_MANUAL_WHITE_BALANCE = 26;
+
+  /// < Power Line Frequency for anti-flickering Off/50Hz/60Hz/Auto.
+  static const int RS2_FRAME_METADATA_POWER_LINE_FREQUENCY = 27;
+
+  /// < Color lowlight compensation. Zero corresponds to switched off.
+  static const int RS2_FRAME_METADATA_LOW_LIGHT_COMPENSATION = 28;
+
+  /// < Emitter mode: 0 - all emitters disabled. 1 - laser enabled. 2 - auto laser enabled (opt). 3 - LED enabled (opt).
+  static const int RS2_FRAME_METADATA_FRAME_EMITTER_MODE = 29;
+
+  /// < Led power value 0-360.
+  static const int RS2_FRAME_METADATA_FRAME_LED_POWER = 30;
+
+  /// < The number of transmitted payload bytes, not including metadata
+  static const int RS2_FRAME_METADATA_RAW_FRAME_SIZE = 31;
+
+  /// < GPIO input data
+  static const int RS2_FRAME_METADATA_GPIO_INPUT_DATA = 32;
+
+  /// < sub-preset id
+  static const int RS2_FRAME_METADATA_SEQUENCE_NAME = 33;
+
+  /// < sub-preset sequence id
+  static const int RS2_FRAME_METADATA_SEQUENCE_ID = 34;
+
+  /// < sub-preset sequence size
+  static const int RS2_FRAME_METADATA_SEQUENCE_SIZE = 35;
+
+  /// < Frame trigger type
+  static const int RS2_FRAME_METADATA_TRIGGER = 36;
+
+  /// < Preset id, used in MIPI SKU Metadata
+  static const int RS2_FRAME_METADATA_PRESET = 37;
+
+  /// < Frame input width in pixels, used as safety attribute
+  static const int RS2_FRAME_METADATA_INPUT_WIDTH = 38;
+
+  /// < Frame input height in pixels, used as safety attribute
+  static const int RS2_FRAME_METADATA_INPUT_HEIGHT = 39;
+
+  /// < Sub-preset information
+  static const int RS2_FRAME_METADATA_SUB_PRESET_INFO = 40;
+
+  /// < FW-controlled frame counter to be using in Calibration scenarios
+  static const int RS2_FRAME_METADATA_CALIB_INFO = 41;
+
+  /// < CRC checksum of the Metadata
+  static const int RS2_FRAME_METADATA_CRC = 42;
+  static const int RS2_FRAME_METADATA_COUNT = 43;
+}
+
+/// \brief Calibration target type.
+abstract class rs2_calib_target_type {
+  /// < Flat rectangle with vertices as the centers of Gaussian dots
+  static const int RS2_CALIB_TARGET_RECT_GAUSSIAN_DOT_VERTICES = 0;
+
+  /// < Flat rectangle with vertices as the centers of Gaussian dots with target inside the ROI
+  static const int RS2_CALIB_TARGET_ROI_RECT_GAUSSIAN_DOT_VERTICES = 1;
+
+  /// < Positions of vertices as the centers of Gaussian dots with target inside the ROI
+  static const int RS2_CALIB_TARGET_POS_GAUSSIAN_DOT_VERTICES = 2;
+
+  /// < Number of enumeration values. Not a valid input: intended to be used in for-loops.
+  static const int RS2_CALIB_TARGET_COUNT = 3;
+}
+
+typedef rs2_metadata_type = ffi.LongLong;
 
 final class rs2_frame extends ffi.Opaque {}
 
+final class rs2_error extends ffi.Opaque {}
+
 typedef rs2_time_t = ffi.Double;
 
-final class rs2_pipeline extends ffi.Opaque {}
+final class rs2_sensor extends ffi.Opaque {}
 
-final class rs2_context extends ffi.Opaque {}
+/// \brief 3D coordinates with origin at topmost left corner of the lense,
+/// with positive Z pointing away from the camera, positive X pointing camera right and positive Y pointing camera down
+final class rs2_vertex extends ffi.Struct {
+  @ffi.Array.multi([3])
+  external ffi.Array<ffi.Float> xyz;
+}
 
-final class rs2_pipeline_profile extends ffi.Opaque {}
+/// \brief Pixel location within 2D image. (0,0) is the topmost, left corner. Positive X is right, positive Y is down
+final class rs2_pixel extends ffi.Struct {
+  @ffi.Array.multi([2])
+  external ffi.Array<ffi.Int> ij;
+}
 
-final class rs2_config extends ffi.Opaque {}
+final class rs2_stream_profile extends ffi.Opaque {}
 
-typedef rs2_frame_callback_ptr = ffi.Pointer<
-    ffi.NativeFunction<
-        ffi.Void Function(ffi.Pointer<rs2_frame>, ffi.Pointer<ffi.Void>)>>;
+/// \brief Specifies advanced interfaces (capabilities) objects may implement.
+abstract class rs2_extension {
+  static const int RS2_EXTENSION_UNKNOWN = 0;
+  static const int RS2_EXTENSION_DEBUG = 1;
+  static const int RS2_EXTENSION_INFO = 2;
+  static const int RS2_EXTENSION_MOTION = 3;
+  static const int RS2_EXTENSION_OPTIONS = 4;
+  static const int RS2_EXTENSION_VIDEO = 5;
+  static const int RS2_EXTENSION_ROI = 6;
+  static const int RS2_EXTENSION_DEPTH_SENSOR = 7;
+  static const int RS2_EXTENSION_VIDEO_FRAME = 8;
+  static const int RS2_EXTENSION_MOTION_FRAME = 9;
+  static const int RS2_EXTENSION_COMPOSITE_FRAME = 10;
+  static const int RS2_EXTENSION_POINTS = 11;
+  static const int RS2_EXTENSION_DEPTH_FRAME = 12;
+  static const int RS2_EXTENSION_ADVANCED_MODE = 13;
+  static const int RS2_EXTENSION_RECORD = 14;
+  static const int RS2_EXTENSION_VIDEO_PROFILE = 15;
+  static const int RS2_EXTENSION_PLAYBACK = 16;
+  static const int RS2_EXTENSION_DEPTH_STEREO_SENSOR = 17;
+  static const int RS2_EXTENSION_DISPARITY_FRAME = 18;
+  static const int RS2_EXTENSION_MOTION_PROFILE = 19;
+  static const int RS2_EXTENSION_POSE_FRAME = 20;
+  static const int RS2_EXTENSION_POSE_PROFILE = 21;
+  static const int RS2_EXTENSION_TM2 = 22;
+  static const int RS2_EXTENSION_SOFTWARE_DEVICE = 23;
+  static const int RS2_EXTENSION_SOFTWARE_SENSOR = 24;
+  static const int RS2_EXTENSION_DECIMATION_FILTER = 25;
+  static const int RS2_EXTENSION_THRESHOLD_FILTER = 26;
+  static const int RS2_EXTENSION_DISPARITY_FILTER = 27;
+  static const int RS2_EXTENSION_SPATIAL_FILTER = 28;
+  static const int RS2_EXTENSION_TEMPORAL_FILTER = 29;
+  static const int RS2_EXTENSION_HOLE_FILLING_FILTER = 30;
+  static const int RS2_EXTENSION_ZERO_ORDER_FILTER = 31;
+  static const int RS2_EXTENSION_RECOMMENDED_FILTERS = 32;
+  static const int RS2_EXTENSION_POSE = 33;
+  static const int RS2_EXTENSION_POSE_SENSOR = 34;
+  static const int RS2_EXTENSION_WHEEL_ODOMETER = 35;
+  static const int RS2_EXTENSION_GLOBAL_TIMER = 36;
+  static const int RS2_EXTENSION_UPDATABLE = 37;
+  static const int RS2_EXTENSION_UPDATE_DEVICE = 38;
+  static const int RS2_EXTENSION_L500_DEPTH_SENSOR = 39;
+  static const int RS2_EXTENSION_TM2_SENSOR = 40;
+  static const int RS2_EXTENSION_AUTO_CALIBRATED_DEVICE = 41;
+  static const int RS2_EXTENSION_COLOR_SENSOR = 42;
+  static const int RS2_EXTENSION_MOTION_SENSOR = 43;
+  static const int RS2_EXTENSION_FISHEYE_SENSOR = 44;
 
-final class rs2_frame_callback extends ffi.Opaque {}
+  /// DEPRECATED
+  static const int RS2_EXTENSION_DEPTH_HUFFMAN_DECODER = 45;
+  static const int RS2_EXTENSION_SERIALIZABLE = 46;
+  static const int RS2_EXTENSION_FW_LOGGER = 47;
+  static const int RS2_EXTENSION_AUTO_CALIBRATION_FILTER = 48;
+  static const int RS2_EXTENSION_DEVICE_CALIBRATION = 49;
+  static const int RS2_EXTENSION_CALIBRATED_SENSOR = 50;
+  static const int RS2_EXTENSION_HDR_MERGE = 51;
+  static const int RS2_EXTENSION_SEQUENCE_ID_FILTER = 52;
+  static const int RS2_EXTENSION_MAX_USABLE_RANGE_SENSOR = 53;
+  static const int RS2_EXTENSION_DEBUG_STREAM_SENSOR = 54;
+  static const int RS2_EXTENSION_CALIBRATION_CHANGE_DEVICE = 55;
+  static const int RS2_EXTENSION_COUNT = 56;
+}
 
-final class rs2_device extends ffi.Opaque {}
+final class rs2_source extends ffi.Opaque {}
 
-final class rs2_stream_profile_list extends ffi.Opaque {}
+final class rs2_pose extends ffi.Struct {
+  /// < X, Y, Z values of translation, in meters (relative to initial position)
+  external rs2_vector translation;
+
+  /// < X, Y, Z values of velocity, in meters/sec
+  external rs2_vector velocity;
+
+  /// < X, Y, Z values of acceleration, in meters/sec^2
+  external rs2_vector acceleration;
+
+  /// < Qi, Qj, Qk, Qr components of rotation as represented in quaternion rotation (relative to initial position)
+  external rs2_quaternion rotation;
+
+  /// < X, Y, Z values of angular velocity, in radians/sec
+  external rs2_vector angular_velocity;
+
+  /// < X, Y, Z values of angular acceleration, in radians/sec^2
+  external rs2_vector angular_acceleration;
+
+  /// < Pose confidence 0x0 - Failed, 0x1 - Low, 0x2 - Medium, 0x3 - High
+  @ffi.UnsignedInt()
+  external int tracker_confidence;
+
+  /// < Pose map confidence 0x0 - Failed, 0x1 - Low, 0x2 - Medium, 0x3 - High
+  @ffi.UnsignedInt()
+  external int mapper_confidence;
+}
+
+/// \brief 3D vector in Euclidean coordinate space
+final class rs2_vector extends ffi.Struct {
+  @ffi.Float()
+  external double x;
+
+  @ffi.Float()
+  external double y;
+
+  @ffi.Float()
+  external double z;
+}
+
+/// \brief Quaternion used to represent rotation
+final class rs2_quaternion extends ffi.Struct {
+  @ffi.Float()
+  external double x;
+
+  @ffi.Float()
+  external double y;
+
+  @ffi.Float()
+  external double z;
+
+  @ffi.Float()
+  external double w;
+}
 
 /// \brief Defines general configuration controls.
 /// These can generally be mapped to camera UVC controls, and can be set / queried at any time unless stated otherwise.
@@ -2746,308 +2993,61 @@ final class rs2_options extends ffi.Opaque {}
 
 final class rs2_options_list extends ffi.Opaque {}
 
-/// \brief Specifies the clock in relation to which the frame timestamp was measured.
-abstract class rs2_timestamp_domain {
-  /// < Frame timestamp was measured in relation to the camera clock
-  static const int RS2_TIMESTAMP_DOMAIN_HARDWARE_CLOCK = 0;
+final class rs2_raw_data_buffer extends ffi.Opaque {}
 
-  /// < Frame timestamp was measured in relation to the OS system clock
-  static const int RS2_TIMESTAMP_DOMAIN_SYSTEM_TIME = 1;
+/// \brief Severity of the librealsense logger.
+abstract class rs2_log_severity {
+  /// < Detailed information about ordinary operations
+  static const int RS2_LOG_SEVERITY_DEBUG = 0;
 
-  /// < Frame timestamp was measured in relation to the camera clock and converted to OS system clock by constantly measure the difference
-  static const int RS2_TIMESTAMP_DOMAIN_GLOBAL_TIME = 2;
+  /// < Terse information about ordinary operations
+  static const int RS2_LOG_SEVERITY_INFO = 1;
 
-  /// < Number of enumeration values. Not a valid input: intended to be used in for-loops.
-  static const int RS2_TIMESTAMP_DOMAIN_COUNT = 3;
-}
+  /// < Indication of possible failure
+  static const int RS2_LOG_SEVERITY_WARN = 2;
 
-/// \brief Per-Frame-Metadata is the set of read-only properties that might be exposed for each individual frame.
-abstract class rs2_frame_metadata_value {
-  /// < A sequential index managed per-stream. Integer value
-  static const int RS2_FRAME_METADATA_FRAME_COUNTER = 0;
+  /// < Indication of definite failure
+  static const int RS2_LOG_SEVERITY_ERROR = 3;
 
-  /// < Timestamp set by device clock when data readout and transmit commence. usec
-  static const int RS2_FRAME_METADATA_FRAME_TIMESTAMP = 1;
+  /// < Indication of unrecoverable failure
+  static const int RS2_LOG_SEVERITY_FATAL = 4;
 
-  /// < Timestamp of the middle of sensor's exposure calculated by device. usec
-  static const int RS2_FRAME_METADATA_SENSOR_TIMESTAMP = 2;
-
-  /// < Sensor's exposure width. When Auto Exposure (AE) is on the value is controlled by firmware. usec
-  static const int RS2_FRAME_METADATA_ACTUAL_EXPOSURE = 3;
-
-  /// < A relative value increasing which will increase the Sensor's gain factor. \
-  /// When AE is set On, the value is controlled by firmware. Integer value
-  static const int RS2_FRAME_METADATA_GAIN_LEVEL = 4;
-
-  /// < Auto Exposure Mode indicator. Zero corresponds to AE switched off.
-  static const int RS2_FRAME_METADATA_AUTO_EXPOSURE = 5;
-
-  /// < White Balance setting as a color temperature. Kelvin degrees
-  static const int RS2_FRAME_METADATA_WHITE_BALANCE = 6;
-
-  /// < Time of arrival in system clock
-  static const int RS2_FRAME_METADATA_TIME_OF_ARRIVAL = 7;
-
-  /// < Temperature of the device, measured at the time of the frame capture. Celsius degrees
-  static const int RS2_FRAME_METADATA_TEMPERATURE = 8;
-
-  /// < Timestamp get from uvc driver. usec
-  static const int RS2_FRAME_METADATA_BACKEND_TIMESTAMP = 9;
-
-  /// < Actual fps
-  static const int RS2_FRAME_METADATA_ACTUAL_FPS = 10;
-
-  /// < Laser power value 0-360.
-  static const int RS2_FRAME_METADATA_FRAME_LASER_POWER = 11;
-
-  /// < Laser power mode. Zero corresponds to Laser power switched off and one for switched on. deprecated, replaced by RS2_FRAME_METADATA_FRAME_EMITTER_MODE
-  static const int RS2_FRAME_METADATA_FRAME_LASER_POWER_MODE = 12;
-
-  /// < Exposure priority.
-  static const int RS2_FRAME_METADATA_EXPOSURE_PRIORITY = 13;
-
-  /// < Left region of interest for the auto exposure Algorithm.
-  static const int RS2_FRAME_METADATA_EXPOSURE_ROI_LEFT = 14;
-
-  /// < Right region of interest for the auto exposure Algorithm.
-  static const int RS2_FRAME_METADATA_EXPOSURE_ROI_RIGHT = 15;
-
-  /// < Top region of interest for the auto exposure Algorithm.
-  static const int RS2_FRAME_METADATA_EXPOSURE_ROI_TOP = 16;
-
-  /// < Bottom region of interest for the auto exposure Algorithm.
-  static const int RS2_FRAME_METADATA_EXPOSURE_ROI_BOTTOM = 17;
-
-  /// < Color image brightness.
-  static const int RS2_FRAME_METADATA_BRIGHTNESS = 18;
-
-  /// < Color image contrast.
-  static const int RS2_FRAME_METADATA_CONTRAST = 19;
-
-  /// < Color image saturation.
-  static const int RS2_FRAME_METADATA_SATURATION = 20;
-
-  /// < Color image sharpness.
-  static const int RS2_FRAME_METADATA_SHARPNESS = 21;
-
-  /// < Auto white balance temperature Mode indicator. Zero corresponds to automatic mode switched off.
-  static const int RS2_FRAME_METADATA_AUTO_WHITE_BALANCE_TEMPERATURE = 22;
-
-  /// < Color backlight compensation. Zero corresponds to switched off.
-  static const int RS2_FRAME_METADATA_BACKLIGHT_COMPENSATION = 23;
-
-  /// < Color image hue.
-  static const int RS2_FRAME_METADATA_HUE = 24;
-
-  /// < Color image gamma.
-  static const int RS2_FRAME_METADATA_GAMMA = 25;
-
-  /// < Color image white balance.
-  static const int RS2_FRAME_METADATA_MANUAL_WHITE_BALANCE = 26;
-
-  /// < Power Line Frequency for anti-flickering Off/50Hz/60Hz/Auto.
-  static const int RS2_FRAME_METADATA_POWER_LINE_FREQUENCY = 27;
-
-  /// < Color lowlight compensation. Zero corresponds to switched off.
-  static const int RS2_FRAME_METADATA_LOW_LIGHT_COMPENSATION = 28;
-
-  /// < Emitter mode: 0 - all emitters disabled. 1 - laser enabled. 2 - auto laser enabled (opt). 3 - LED enabled (opt).
-  static const int RS2_FRAME_METADATA_FRAME_EMITTER_MODE = 29;
-
-  /// < Led power value 0-360.
-  static const int RS2_FRAME_METADATA_FRAME_LED_POWER = 30;
-
-  /// < The number of transmitted payload bytes, not including metadata
-  static const int RS2_FRAME_METADATA_RAW_FRAME_SIZE = 31;
-
-  /// < GPIO input data
-  static const int RS2_FRAME_METADATA_GPIO_INPUT_DATA = 32;
-
-  /// < sub-preset id
-  static const int RS2_FRAME_METADATA_SEQUENCE_NAME = 33;
-
-  /// < sub-preset sequence id
-  static const int RS2_FRAME_METADATA_SEQUENCE_ID = 34;
-
-  /// < sub-preset sequence size
-  static const int RS2_FRAME_METADATA_SEQUENCE_SIZE = 35;
-
-  /// < Frame trigger type
-  static const int RS2_FRAME_METADATA_TRIGGER = 36;
-
-  /// < Preset id, used in MIPI SKU Metadata
-  static const int RS2_FRAME_METADATA_PRESET = 37;
-
-  /// < Frame input width in pixels, used as safety attribute
-  static const int RS2_FRAME_METADATA_INPUT_WIDTH = 38;
-
-  /// < Frame input height in pixels, used as safety attribute
-  static const int RS2_FRAME_METADATA_INPUT_HEIGHT = 39;
-
-  /// < Sub-preset information
-  static const int RS2_FRAME_METADATA_SUB_PRESET_INFO = 40;
-
-  /// < FW-controlled frame counter to be using in Calibration scenarios
-  static const int RS2_FRAME_METADATA_CALIB_INFO = 41;
-
-  /// < CRC checksum of the Metadata
-  static const int RS2_FRAME_METADATA_CRC = 42;
-  static const int RS2_FRAME_METADATA_COUNT = 43;
-}
-
-/// \brief Calibration target type.
-abstract class rs2_calib_target_type {
-  /// < Flat rectangle with vertices as the centers of Gaussian dots
-  static const int RS2_CALIB_TARGET_RECT_GAUSSIAN_DOT_VERTICES = 0;
-
-  /// < Flat rectangle with vertices as the centers of Gaussian dots with target inside the ROI
-  static const int RS2_CALIB_TARGET_ROI_RECT_GAUSSIAN_DOT_VERTICES = 1;
-
-  /// < Positions of vertices as the centers of Gaussian dots with target inside the ROI
-  static const int RS2_CALIB_TARGET_POS_GAUSSIAN_DOT_VERTICES = 2;
+  /// < No logging will occur
+  static const int RS2_LOG_SEVERITY_NONE = 5;
 
   /// < Number of enumeration values. Not a valid input: intended to be used in for-loops.
-  static const int RS2_CALIB_TARGET_COUNT = 3;
+  static const int RS2_LOG_SEVERITY_COUNT = 6;
+
+  /// < Include any/all log messages
+  static const int RS2_LOG_SEVERITY_ALL = 0;
 }
 
-typedef rs2_metadata_type = ffi.LongLong;
+final class rs2_log_callback extends ffi.Opaque {}
 
-final class rs2_sensor extends ffi.Opaque {}
+typedef rs2_log_callback_ptr = ffi.Pointer<
+    ffi.NativeFunction<
+        ffi.Void Function(
+            ffi.Int32, ffi.Pointer<rs2_log_message>, ffi.Pointer<ffi.Void>)>>;
 
-/// \brief 3D coordinates with origin at topmost left corner of the lense,
-/// with positive Z pointing away from the camera, positive X pointing camera right and positive Y pointing camera down
-final class rs2_vertex extends ffi.Struct {
-  @ffi.Array.multi([3])
-  external ffi.Array<ffi.Float> xyz;
-}
+final class rs2_log_message extends ffi.Opaque {}
 
-/// \brief Pixel location within 2D image. (0,0) is the topmost, left corner. Positive X is right, positive Y is down
-final class rs2_pixel extends ffi.Struct {
-  @ffi.Array.multi([2])
-  external ffi.Array<ffi.Int> ij;
-}
+final class rs2_pipeline extends ffi.Opaque {}
 
-final class rs2_stream_profile extends ffi.Opaque {}
+final class rs2_context extends ffi.Opaque {}
 
-/// \brief Specifies advanced interfaces (capabilities) objects may implement.
-abstract class rs2_extension {
-  static const int RS2_EXTENSION_UNKNOWN = 0;
-  static const int RS2_EXTENSION_DEBUG = 1;
-  static const int RS2_EXTENSION_INFO = 2;
-  static const int RS2_EXTENSION_MOTION = 3;
-  static const int RS2_EXTENSION_OPTIONS = 4;
-  static const int RS2_EXTENSION_VIDEO = 5;
-  static const int RS2_EXTENSION_ROI = 6;
-  static const int RS2_EXTENSION_DEPTH_SENSOR = 7;
-  static const int RS2_EXTENSION_VIDEO_FRAME = 8;
-  static const int RS2_EXTENSION_MOTION_FRAME = 9;
-  static const int RS2_EXTENSION_COMPOSITE_FRAME = 10;
-  static const int RS2_EXTENSION_POINTS = 11;
-  static const int RS2_EXTENSION_DEPTH_FRAME = 12;
-  static const int RS2_EXTENSION_ADVANCED_MODE = 13;
-  static const int RS2_EXTENSION_RECORD = 14;
-  static const int RS2_EXTENSION_VIDEO_PROFILE = 15;
-  static const int RS2_EXTENSION_PLAYBACK = 16;
-  static const int RS2_EXTENSION_DEPTH_STEREO_SENSOR = 17;
-  static const int RS2_EXTENSION_DISPARITY_FRAME = 18;
-  static const int RS2_EXTENSION_MOTION_PROFILE = 19;
-  static const int RS2_EXTENSION_POSE_FRAME = 20;
-  static const int RS2_EXTENSION_POSE_PROFILE = 21;
-  static const int RS2_EXTENSION_TM2 = 22;
-  static const int RS2_EXTENSION_SOFTWARE_DEVICE = 23;
-  static const int RS2_EXTENSION_SOFTWARE_SENSOR = 24;
-  static const int RS2_EXTENSION_DECIMATION_FILTER = 25;
-  static const int RS2_EXTENSION_THRESHOLD_FILTER = 26;
-  static const int RS2_EXTENSION_DISPARITY_FILTER = 27;
-  static const int RS2_EXTENSION_SPATIAL_FILTER = 28;
-  static const int RS2_EXTENSION_TEMPORAL_FILTER = 29;
-  static const int RS2_EXTENSION_HOLE_FILLING_FILTER = 30;
-  static const int RS2_EXTENSION_ZERO_ORDER_FILTER = 31;
-  static const int RS2_EXTENSION_RECOMMENDED_FILTERS = 32;
-  static const int RS2_EXTENSION_POSE = 33;
-  static const int RS2_EXTENSION_POSE_SENSOR = 34;
-  static const int RS2_EXTENSION_WHEEL_ODOMETER = 35;
-  static const int RS2_EXTENSION_GLOBAL_TIMER = 36;
-  static const int RS2_EXTENSION_UPDATABLE = 37;
-  static const int RS2_EXTENSION_UPDATE_DEVICE = 38;
-  static const int RS2_EXTENSION_L500_DEPTH_SENSOR = 39;
-  static const int RS2_EXTENSION_TM2_SENSOR = 40;
-  static const int RS2_EXTENSION_AUTO_CALIBRATED_DEVICE = 41;
-  static const int RS2_EXTENSION_COLOR_SENSOR = 42;
-  static const int RS2_EXTENSION_MOTION_SENSOR = 43;
-  static const int RS2_EXTENSION_FISHEYE_SENSOR = 44;
+final class rs2_pipeline_profile extends ffi.Opaque {}
 
-  /// DEPRECATED
-  static const int RS2_EXTENSION_DEPTH_HUFFMAN_DECODER = 45;
-  static const int RS2_EXTENSION_SERIALIZABLE = 46;
-  static const int RS2_EXTENSION_FW_LOGGER = 47;
-  static const int RS2_EXTENSION_AUTO_CALIBRATION_FILTER = 48;
-  static const int RS2_EXTENSION_DEVICE_CALIBRATION = 49;
-  static const int RS2_EXTENSION_CALIBRATED_SENSOR = 50;
-  static const int RS2_EXTENSION_HDR_MERGE = 51;
-  static const int RS2_EXTENSION_SEQUENCE_ID_FILTER = 52;
-  static const int RS2_EXTENSION_MAX_USABLE_RANGE_SENSOR = 53;
-  static const int RS2_EXTENSION_DEBUG_STREAM_SENSOR = 54;
-  static const int RS2_EXTENSION_CALIBRATION_CHANGE_DEVICE = 55;
-  static const int RS2_EXTENSION_COUNT = 56;
-}
+final class rs2_config extends ffi.Opaque {}
 
-final class rs2_source extends ffi.Opaque {}
+typedef rs2_frame_callback_ptr = ffi.Pointer<
+    ffi.NativeFunction<
+        ffi.Void Function(ffi.Pointer<rs2_frame>, ffi.Pointer<ffi.Void>)>>;
 
-final class rs2_pose extends ffi.Struct {
-  /// < X, Y, Z values of translation, in meters (relative to initial position)
-  external rs2_vector translation;
+final class rs2_frame_callback extends ffi.Opaque {}
 
-  /// < X, Y, Z values of velocity, in meters/sec
-  external rs2_vector velocity;
+final class rs2_device extends ffi.Opaque {}
 
-  /// < X, Y, Z values of acceleration, in meters/sec^2
-  external rs2_vector acceleration;
-
-  /// < Qi, Qj, Qk, Qr components of rotation as represented in quaternion rotation (relative to initial position)
-  external rs2_quaternion rotation;
-
-  /// < X, Y, Z values of angular velocity, in radians/sec
-  external rs2_vector angular_velocity;
-
-  /// < X, Y, Z values of angular acceleration, in radians/sec^2
-  external rs2_vector angular_acceleration;
-
-  /// < Pose confidence 0x0 - Failed, 0x1 - Low, 0x2 - Medium, 0x3 - High
-  @ffi.UnsignedInt()
-  external int tracker_confidence;
-
-  /// < Pose map confidence 0x0 - Failed, 0x1 - Low, 0x2 - Medium, 0x3 - High
-  @ffi.UnsignedInt()
-  external int mapper_confidence;
-}
-
-/// \brief 3D vector in Euclidean coordinate space
-final class rs2_vector extends ffi.Struct {
-  @ffi.Float()
-  external double x;
-
-  @ffi.Float()
-  external double y;
-
-  @ffi.Float()
-  external double z;
-}
-
-/// \brief Quaternion used to represent rotation
-final class rs2_quaternion extends ffi.Struct {
-  @ffi.Float()
-  external double x;
-
-  @ffi.Float()
-  external double y;
-
-  @ffi.Float()
-  external double z;
-
-  @ffi.Float()
-  external double w;
-}
+final class rs2_stream_profile_list extends ffi.Opaque {}
 
 const int RS2_API_MAJOR_VERSION = 2;
 
