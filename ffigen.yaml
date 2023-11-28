@@ -11,11 +11,21 @@ headers:
     - 'src/librealsense/include/librealsense2/h/rs_pipeline.h'
     - 'src/librealsense/include/librealsense2/h/rs_option.h'
     - 'src/librealsense/include/librealsense2/h/rs_frame.h'
+    - 'src/librealsense/include/librealsense2/h/rs_context.h'
+    - 'src/librealsense/include/librealsense2/h/rs_types.h'
+    - 'src/librealsense/include/librealsense2/h/rs_device.h'
+    - 'src/librealsense/include/librealsense2/h/rs_config.h'
+    - 'src/librealsense/include/librealsense2/h/rs_sensor.h'
   include-directives:
     - 'src/librealsense/include/librealsense2/rs.h'
     - 'src/librealsense/include/librealsense2/h/rs_pipeline.h'
     - 'src/librealsense/include/librealsense2/h/rs_option.h'
     - 'src/librealsense/include/librealsense2/h/rs_frame.h'
+    - 'src/librealsense/include/librealsense2/h/rs_context.h'
+    - 'src/librealsense/include/librealsense2/h/rs_types.h'
+    - 'src/librealsense/include/librealsense2/h/rs_device.h'
+    - 'src/librealsense/include/librealsense2/h/rs_config.h'
+    - 'src/librealsense/include/librealsense2/h/rs_sensor.h'
 comments:
   style: any
   length: full
