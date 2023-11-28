@@ -85,7 +85,7 @@ void main(){
   final Pointer<Int> width = arena.allocate(4);
   final Pointer<Int> height = arena.allocate(4);
   nativeLib.rs2_get_video_stream_resolution(stream_profile, width, height, errorPtr);
-  if(errorPtr.value != nullptd) {
+  if(errorPtr.value != nullptr) {
     print("Failed to get video stream resolution data!");
     exit(0);
   }
@@ -108,7 +108,8 @@ void main(){
     final int num_of_frames = nativeLib.rs2_embedded_frames_count(frames, errorPtr);
     checkError(errorPtr.value);
 
-    for (int i = 0; i < num_of_frames; ++i) {
+    int i = 0;
+    for (i = 0; i < num_of_frames; ++i) {
       final Pointer<rs2_frame> frame = nativeLib.rs2_extract_frame(frames, i, errorPtr);
       checkError(errorPtr.value);
 
@@ -120,13 +121,13 @@ void main(){
       }
 
       /// Retrieve depth data, configured as 16-bit depth values */
-      const uint16_t* depth_frame_data = (const uint16_t*)(nativeLib.rs2_get_frame_data(frame, e));
+      final Pointer<void> depth_frame_data = nativeLib.rs2_get_frame_data(frame, errorPtr);
       checkError(errorPtr.value);
 
           /* Print a simple text-based representation of the image, by breaking it into 10x5 pixel regions and approximating the coverage of pixels within one meter */
       out.value = buffer.value;
       int x, y, i;
-      Pointer<Int> coverage = calloc(row_length, sizeof(int));
+      final Pointer<Int> coverage = calloc(row_length, sizeof(int));
 
         for (y = 0; y < height.value; ++y){
           for (x = 0; x < width.value; ++x){
