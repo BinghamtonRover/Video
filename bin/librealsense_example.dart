@@ -118,7 +118,7 @@ void main() {
       }
 
       /// Retrieve depth data, configured as 16-bit depth values
-      Pointer<void> depth_frame_data = nativeLib.rs2_get_frame_data(frame, errorPtr);
+      Pointer<Uint16> depth_frame_data = nativeLib.rs2_get_frame_data(frame, errorPtr).cast();
       checkError(errorPtr.value);
 
       /* Print a simple text-based representation of the image, by breaking it into 10x5 pixel regions and approximating the coverage of pixels within one meter */
@@ -131,7 +131,8 @@ void main() {
         for (x = 0; x < width.value; ++x) {
           // Create a depth histogram to each row
           final int coverage_index = x ~/ 10;
-          final int depth = depth_frame_data++;  // <-- This is a void* though?
+          final int depth = depth_frame_data.value;  // <-- This is a void* though?
+          depth_frame_data = Pointer.fromAddress(depth_frame_data.address + 1);
           if (depth > 0) ++x;
         }
 
