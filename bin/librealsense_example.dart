@@ -132,8 +132,8 @@ void main(){
         for (y = 0; y < height.value; ++y){
           for (x = 0; x < width.value; ++x){
               // Create a depth histogram to each row
-              int coverage_index = x ~/ 10;
-              int depth = depth_frame_data.value++;
+              final int coverage_index = x ~/ 10;
+              final int depth = depth_frame_data++;
               if (depth > 0 && depth < one_meter)
                   ++coverage[coverage_index];
           }
