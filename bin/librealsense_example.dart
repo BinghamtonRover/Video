@@ -1,9 +1,9 @@
 // ignore_for_file: non_constant_identifier_names, avoid_print, prefer_final_locals, cascade_invocations, constant_identifier_names
 
 import "package:video/video.dart";
-import "dart:ffi/ffi.dart";
 import "package:ffi/ffi.dart";
 import "dart:io";
+import "dart:ffi";
 
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 //                                     These parameters are reconfigurable                                          //
