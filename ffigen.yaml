@@ -16,6 +16,7 @@ headers:
     - 'src/librealsense/include/librealsense2/h/rs_device.h'
     - 'src/librealsense/include/librealsense2/h/rs_config.h'
     - 'src/librealsense/include/librealsense2/h/rs_sensor.h'
+    - 'src/librealsense/include/librealsense2/h/rs_option.h'
   include-directives:
     - 'src/librealsense/include/librealsense2/rs.h'
     - 'src/librealsense/include/librealsense2/h/rs_pipeline.h'
@@ -26,6 +27,7 @@ headers:
     - 'src/librealsense/include/librealsense2/h/rs_device.h'
     - 'src/librealsense/include/librealsense2/h/rs_config.h'
     - 'src/librealsense/include/librealsense2/h/rs_sensor.h'
+    - 'src/librealsense/include/librealsense2/h/rs_option.h'
 comments:
   style: any
   length: full

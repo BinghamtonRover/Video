@@ -1,9 +1,22 @@
-// ignore_for_file: non_constant_identifier_names, avoid_print, prefer_final_locals, cascade_invocations
+// ignore_for_file: non_constant_identifier_names, avoid_print, prefer_final_locals, cascade_invocations, constant_identifier_names
 
 import "package:video/video.dart";
 import "dart:ffi/ffi.dart";
 import "package:ffi/ffi.dart";
 import "dart:io";
+
+//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+//                                     These parameters are reconfigurable                                          //
+//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+const STREAM = rs2_stream.RS2_STREAM_DEPTH; // rs2_stream is a types of data provided by RealSense device           //
+const FORMAT = rs2_format.RS2_FORMAT_Z16;   // rs2_format identifies how binary data is encoded within a frame      //
+const WIDTH = 640;                          // Defines the number of columns for each frame or zero for auto resolve//
+const HEIGHT = 0;                           // Defines the number of lines for each frame or zero for auto resolve  //
+const FPS = 30;                             // Defines the rate of frames per second                                //
+const STREAM_INDEX = 0;                     // Defines the stream index, used for multiple streams of the same type //
+const HEIGHT_RATIO = 20;                    // Defines the height ratio between the original frame to the new frame //
+const WIDTH_RATIO = 10;                     // Defines the width ratio between the original frame to the new frame  //
+//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 final arena = Arena();
 
@@ -16,6 +29,40 @@ void checkError(Pointer<rs2_error> e) {
   }
 }
 
+double get_depth_unit_value(Pointer<rs2_device> dev){
+  final ePtr = arena<Pointer<rs2_error>>();
+  Pointer<rs2_sensor_list> sensor_list = nativeLib.rs2_query_sensors(dev, ePtr);
+  checkError(ePtr.value);
+
+  int num_of_sensors = nativeLib.rs2_get_sensors_count(sensor_list, ePtr);
+  checkError(ePtr.value);
+
+  double depth_scale = 0;
+  int is_depth_sensor_found = 0;   
+  for(int i = 0; i < num_of_sensors; ++i){
+    Pointer<rs2_sensor> sensor = nativeLib.rs2_create_sensor(sensor_list, i, ePtr);
+    checkError(ePtr.value);
+
+    // Check if the given sensor can be extended to depth sensor interface
+    is_depth_sensor_found = nativeLib.rs2_is_sensor_extendable_to(sensor, rs2_extension.RS2_EXTENSION_DEPTH_SENSOR, ePtr);
+    checkError(ePtr.value);
+
+    if(1 == is_depth_sensor_found){
+      depth_scale = nativeLib.rs2_get_option(sensor.cast(), rs2_option.RS2_OPTION_DEPTH_UNITS, ePtr);
+      checkError(ePtr.value);
+      nativeLib.rs2_delete_sensor(sensor);
+      break;
+    }
+  }
+  nativeLib.rs2_delete_sensor_list(sensor_list);
+
+  if(0 == is_depth_sensor_found){
+    print("Depth sensor not found!");
+    exit(0);
+  }
+  arena.free(ePtr);
+  return depth_scale;
+}
 void main() {
   final errorPtr = arena<Pointer<rs2_error>>();
   
@@ -36,7 +83,7 @@ void main() {
   final Pointer<rs2_device> dev = nativeLib.rs2_create_device(device_list, 0, errorPtr);
   checkError(errorPtr.value);
 
-  final one_meter = 1.0 / nativeLib.get_depth_unit_value(dev);
+  final one_meter = 1.0 / get_depth_unit_value(dev);
 
   /// Create a pipeline to configure, start and stop camera streaming
   final Pointer<rs2_pipeline> pipeline =  nativeLib.rs2_create_pipeline(context, errorPtr);
@@ -48,7 +95,7 @@ void main() {
 
   /// Request a specific configuration
   /// Parameters are reconfigurable
-  nativeLib.rs2_config_enable_stream(config, rs2_stream.RS2_STREAM_DEPTH, 0, 640, 0, rs2_format.RS2_FORMAT_Z16, 30, errorPtr);
+  nativeLib.rs2_config_enable_stream(config, STREAM, STREAM_INDEX, WIDTH, HEIGHT, FORMAT, FPS, errorPtr);
   checkError(errorPtr.value);
 
   // Start the pipeline streaming
@@ -70,31 +117,30 @@ void main() {
     exit(0);
   }
 
-  final Pointer<Int32> stream = arena.allocate(4); 
-  final Pointer<Int32> format = arena.allocate(4);
-  final Pointer<Int> index = arena.allocate(4); 
-  final Pointer<Int> unique_id = arena.allocate(4);
-  final Pointer<Int> framerate = arena.allocate(4);
+  final Pointer<Int32> stream = arena.allocate<Int32>(4); 
+  final Pointer<Int32> format = arena.allocate<Int32>(4);
+  final Pointer<Int> index = arena.allocate<Int>(4); 
+  final Pointer<Int> unique_id = arena.allocate<Int>(4);
+  final Pointer<Int> framerate = arena.allocate<Int>(4);
   nativeLib.rs2_get_stream_profile_data(stream_profile, stream, format, index, unique_id, framerate, errorPtr);
   if(errorPtr.value != nullptr){
     print("Failed to get stream profile data!");
     exit(0);
   }
 
-  final Pointer<Int> width = arena.allocate(4);
-  final Pointer<Int> height = arena.allocate(4);
+  final Pointer<Int> width = arena.allocate<Int>(4);
+  final Pointer<Int> height = arena.allocate<Int>(4);
   nativeLib.rs2_get_video_stream_resolution(stream_profile, width, height, errorPtr);
   if(errorPtr.value != nullptr) {
     print("Failed to get video stream resolution data!");
     exit(0);
   }
-  final int rows = height.value ~/ 20;
-  final int row_length = width.value ~/ 10;
+  final int rows = height.value ~/ HEIGHT_RATIO;
+  final int row_length = width.value ~/ WIDTH_RATIO;
   final int display_size = (rows + 1) * (row_length + 1);
-  final int buffer_size = display_size;
 
-  final Pointer<Char> buffer = arena<Char>(display_size);
-  final Pointer<Char> out = nullptr;
+  List<String> out = List<String>.filled(display_size, " ");
+  int out_index = 0; 
 
   while(true) {
     // This call waits until a new composite_frame is available
@@ -121,37 +167,40 @@ void main() {
       Pointer<Uint16> depth_frame_data = nativeLib.rs2_get_frame_data(frame, errorPtr).cast();
       checkError(errorPtr.value);
 
-      /* Print a simple text-based representation of the image, by breaking it into 10x5 pixel regions and approximating the coverage of pixels within one meter */
-      out.value = buffer.value;
-      int x, y;
-      final Pointer<Int> coverage = arena<Int>(row_length);
-      // final Pointer<Int> coverage = calloc(row_length, sizeof(int));
-
-      for (y = 0; y < height.value; ++y) {
-        for (x = 0; x < width.value; ++x) {
+      /// Print a simple text-based representation of the image, by breaking it into 10x5 pixel regions and approximating the coverage of pixels within one meter 
+      final List<int> coverage = List<int>.filled(row_length, 0);
+      
+      for (int y = 0; y < height.value; ++y) {
+        for (int x = 0; x < width.value; ++x) {
           // Create a depth histogram to each row
-          final int coverage_index = x ~/ 10;
+          final int coverage_index = x ~/ WIDTH_RATIO;
           final int depth = depth_frame_data.value;  // <-- This is a void* though?
-          depth_frame_data = Pointer.fromAddress(depth_frame_data.address + 1);
-          if (depth > 0) ++x;
+          depth_frame_data = Pointer.fromAddress(depth_frame_data.address + 2);
+          if (depth > 0 && depth < one_meter) {
+            coverage[coverage_index]++;
+          }
         }
 
-        if ((y % 10) == 9) {
-          for (i = 0; i < row_length; ++i) {
+        if ((y % HEIGHT_RATIO) == (HEIGHT_RATIO - 1)) {
+          for (int j = 0; j < row_length; ++j) {
             const List<String> pixels = [" ", ".", ":", "n", "h", "B", "X", "W", "W"];
-            int pixel_index = (coverage[i] / (HEIGHT_RATIO * WIDTH_RATIO / pixels.length)).truncate();
-            // *out++ = pixels[pixel_index];
-            coverage[i] = 0;
+            int pixel_index = (coverage[j] / (20 * WIDTH_RATIO / pixels.length)).truncate();
+            out[out_index] = pixels[pixel_index];
+            out_index++;
+            coverage[j] = 0;
           }
-          // *out++ = "\n";
+          out[out_index] = "\n";
+          out_index++;
         }
       }
+      out[out_index] = "\n";
+      out_index++;
 
-      // *out++ = 0;
-      print("\n$buffer");
+      print("\n$out");
+
       nativeLib.rs2_release_frame(frame);
-      nativeLib.rs2_release_frame(frames);
     }
+    nativeLib.rs2_release_frame(frames);
   }
   /// Stop the pipeline streaming
   // THIS CODE WON'T RUN BECAUSE IT'S BELOW AN INFINITE LOOP!
