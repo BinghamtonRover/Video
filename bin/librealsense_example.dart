@@ -139,7 +139,7 @@ void main() {
   final int row_length = width.value ~/ WIDTH_RATIO;
   final int display_size = (rows + 1) * (row_length + 1);
 
-  List<String> out = List<String>.filled(display_size, " ");
+  List<String> out = List<String>.filled(display_size + 1, " ");
   int out_index = 0; 
 
   while(true) {
@@ -184,8 +184,9 @@ void main() {
         if ((y % HEIGHT_RATIO) == (HEIGHT_RATIO - 1)) {
           for (int j = 0; j < row_length; ++j) {
             const List<String> pixels = [" ", ".", ":", "n", "h", "B", "X", "W", "W"];
-            int pixel_index = (coverage[j] / (20 * WIDTH_RATIO / pixels.length)).truncate();
-            out[out_index] = pixels[pixel_index];
+            int pixel_index = ((coverage[j] / (HEIGHT_RATIO * WIDTH_RATIO / pixels.length)) % pixels.length).toInt();
+            var test1 = out[out_index];
+            var test2 = pixels[pixel_index];
             out_index++;
             coverage[j] = 0;
           }
@@ -194,7 +195,7 @@ void main() {
         }
       }
       out[out_index] = "\n";
-      out_index++;
+      out_index = 0;
 
       print("\n$out");
 

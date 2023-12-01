@@ -6544,7 +6544,7 @@ class LibRealSenseBindings {
   /// \param[in] frame_num          - Monotonocally increasing frame number, managed per sensor.
   /// \param[in] translational_velocity   - Translational velocity of the wheel sensor [meter/sec]
   /// \return true on success
-  int rs2_send_wheel_odometry(
+  /*int rs2_send_wheel_odometry(
     ffi.Pointer<rs2_sensor> sensor,
     pkg_ffi.Utf8 wo_sensor_id,
     int frame_num,
@@ -6571,6 +6571,7 @@ class LibRealSenseBindings {
   late final _rs2_send_wheel_odometry = _rs2_send_wheel_odometryPtr.asFunction<
       int Function(ffi.Pointer<rs2_sensor>, pkg_ffi.Utf8, int, rs2_vector,
           ffi.Pointer<ffi.Pointer<rs2_error>>)>();
+    */
 
   /// Set intrinsics of a given sensor
   /// \param[in] sensor       The RealSense device
