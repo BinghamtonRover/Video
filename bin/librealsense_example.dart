@@ -185,8 +185,6 @@ void main() {
           for (int j = 0; j < row_length; ++j) {
             const List<String> pixels = [" ", ".", ":", "n", "h", "B", "X", "W", "W"];
             int pixel_index = ((coverage[j] / (HEIGHT_RATIO * WIDTH_RATIO / pixels.length)) % pixels.length).toInt();
-            var test1 = out[out_index];
-            // p.s From Paul - Levi modified this code in some way... runtime error still exists but it *should* print the realsense camera data instead of blank lines
             out[out_index] = pixels[pixel_index];
             out_index++;
             coverage[j] = 0;

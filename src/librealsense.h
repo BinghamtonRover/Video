@@ -16,7 +16,7 @@ extern "C" {
 FFI_PLUGIN_EXPORT rs2_context* rs2_create_context(int api_version, rs2_error** error);
 FFI_PLUGIN_EXPORT rs2_device_list* rs2_query_devices(rs2_context* context, rs2_error** error);
 FFI_PLUGIN_EXPORT int rs2_get_device_count(rs2_device_list* device_list, rs2_error** error);
-FFI_PLUGIN_EXPORT rs2_device* rs2_create_device(rs2_device_list*, int index, rs2_error** error);
+FFI_PLUGIN_EXPORT rs2_device* rs2_create_device(rs2_device_list* device_list, int index, rs2_error** error);
 FFI_PLUGIN_EXPORT rs2_pipeline* rs2_create_pipeline(rs2_context* context, rs2_error** error);
 FFI_PLUGIN_EXPORT rs2_config* rs2_create_config(rs2_error** error);
 FFI_PLUGIN_EXPORT void rs2_config_enable_stream(rs2_config* config, int stream, int index, int width, int height, int format, int framerate, rs2_error** error);
