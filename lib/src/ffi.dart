@@ -10,7 +10,7 @@ String _getPath() {
   } else if (Platform.isMacOS) {
     return "opencv_ffi.dylib";
   } else if (Platform.isLinux) {
-    return "libopencv_ffi.so";
+    return "realsense_ffi.so";
   } else {
     throw UnsupportedError("Unsupported platform");
   }

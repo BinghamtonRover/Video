@@ -23,594 +23,76 @@ class LibRealSenseBindings {
           lookup)
       : _lookup = lookup;
 
-  /// SETUP
-  ffi.Pointer<rs2_context> create_context(
-    int api_version,
-    ffi.Pointer<ffi.Pointer<rs2_error>> error,
+  ffi.Pointer<NativeRealSense> RealSense_create() {
+    return _RealSense_create();
+  }
+
+  late final _RealSense_createPtr =
+      _lookup<ffi.NativeFunction<ffi.Pointer<NativeRealSense> Function()>>(
+          'RealSense_create');
+  late final _RealSense_create = _RealSense_createPtr.asFunction<
+      ffi.Pointer<NativeRealSense> Function()>();
+
+  void RealSense_free(
+    ffi.Pointer<NativeRealSense> ptr,
   ) {
-    return _create_context(
-      api_version,
-      error,
+    return _RealSense_free(
+      ptr,
     );
   }
 
-  late final _create_contextPtr = _lookup<
+  late final _RealSense_freePtr = _lookup<
+          ffi.NativeFunction<ffi.Void Function(ffi.Pointer<NativeRealSense>)>>(
+      'RealSense_free');
+  late final _RealSense_free = _RealSense_freePtr.asFunction<
+      void Function(ffi.Pointer<NativeRealSense>)>();
+
+  void RealSense_init(
+    ffi.Pointer<NativeRealSense> ptr,
+  ) {
+    return _RealSense_init(
+      ptr,
+    );
+  }
+
+  late final _RealSense_initPtr = _lookup<
+          ffi.NativeFunction<ffi.Void Function(ffi.Pointer<NativeRealSense>)>>(
+      'RealSense_init');
+  late final _RealSense_init = _RealSense_initPtr.asFunction<
+      void Function(ffi.Pointer<NativeRealSense>)>();
+
+  ffi.Pointer<rs2_frame> RealSense_getDepthFrame(
+    ffi.Pointer<NativeRealSense> ptr,
+  ) {
+    return _RealSense_getDepthFrame(
+      ptr,
+    );
+  }
+
+  late final _RealSense_getDepthFramePtr = _lookup<
       ffi.NativeFunction<
-          ffi.Pointer<rs2_context> Function(
-              ffi.Int, ffi.Pointer<ffi.Pointer<rs2_error>>)>>('create_context');
-  late final _create_context = _create_contextPtr.asFunction<
-      ffi.Pointer<rs2_context> Function(
-          int, ffi.Pointer<ffi.Pointer<rs2_error>>)>();
+          ffi.Pointer<rs2_frame> Function(
+              ffi.Pointer<NativeRealSense>)>>('RealSense_getDepthFrame');
+  late final _RealSense_getDepthFrame = _RealSense_getDepthFramePtr.asFunction<
+      ffi.Pointer<rs2_frame> Function(ffi.Pointer<NativeRealSense>)>();
 
-  ffi.Pointer<rs2_device_list> query_devices(
-    ffi.Pointer<rs2_context> context,
-    ffi.Pointer<ffi.Pointer<rs2_error>> error,
+  void rs2_frame_free(
+    ffi.Pointer<rs2_frame> ptr,
   ) {
-    return _query_devices(
-      context,
-      error,
+    return _rs2_frame_free(
+      ptr,
     );
   }
 
-  late final _query_devicesPtr = _lookup<
-      ffi.NativeFunction<
-          ffi.Pointer<rs2_device_list> Function(ffi.Pointer<rs2_context>,
-              ffi.Pointer<ffi.Pointer<rs2_error>>)>>('query_devices');
-  late final _query_devices = _query_devicesPtr.asFunction<
-      ffi.Pointer<rs2_device_list> Function(
-          ffi.Pointer<rs2_context>, ffi.Pointer<ffi.Pointer<rs2_error>>)>();
-
-  int get_device_count(
-    ffi.Pointer<rs2_device_list> device_list,
-    ffi.Pointer<ffi.Pointer<rs2_error>> error,
-  ) {
-    return _get_device_count(
-      device_list,
-      error,
-    );
-  }
-
-  late final _get_device_countPtr = _lookup<
-      ffi.NativeFunction<
-          ffi.Int Function(ffi.Pointer<rs2_device_list>,
-              ffi.Pointer<ffi.Pointer<rs2_error>>)>>('get_device_count');
-  late final _get_device_count = _get_device_countPtr.asFunction<
-      int Function(
-          ffi.Pointer<rs2_device_list>, ffi.Pointer<ffi.Pointer<rs2_error>>)>();
-
-  ffi.Pointer<rs2_device> create_device(
-    ffi.Pointer<rs2_device_list> device_list,
-    int index,
-    ffi.Pointer<ffi.Pointer<rs2_error>> error,
-  ) {
-    return _create_device(
-      device_list,
-      index,
-      error,
-    );
-  }
-
-  late final _create_devicePtr = _lookup<
-      ffi.NativeFunction<
-          ffi.Pointer<rs2_device> Function(ffi.Pointer<rs2_device_list>,
-              ffi.Int, ffi.Pointer<ffi.Pointer<rs2_error>>)>>('create_device');
-  late final _create_device = _create_devicePtr.asFunction<
-      ffi.Pointer<rs2_device> Function(ffi.Pointer<rs2_device_list>, int,
-          ffi.Pointer<ffi.Pointer<rs2_error>>)>();
-
-  ffi.Pointer<rs2_pipeline> create_pipeline(
-    ffi.Pointer<rs2_context> context,
-    ffi.Pointer<ffi.Pointer<rs2_error>> error,
-  ) {
-    return _create_pipeline(
-      context,
-      error,
-    );
-  }
-
-  late final _create_pipelinePtr = _lookup<
-      ffi.NativeFunction<
-          ffi.Pointer<rs2_pipeline> Function(ffi.Pointer<rs2_context>,
-              ffi.Pointer<ffi.Pointer<rs2_error>>)>>('create_pipeline');
-  late final _create_pipeline = _create_pipelinePtr.asFunction<
-      ffi.Pointer<rs2_pipeline> Function(
-          ffi.Pointer<rs2_context>, ffi.Pointer<ffi.Pointer<rs2_error>>)>();
-
-  ffi.Pointer<rs2_config> create_config(
-    ffi.Pointer<ffi.Pointer<rs2_error>> error,
-  ) {
-    return _create_config(
-      error,
-    );
-  }
-
-  late final _create_configPtr = _lookup<
-      ffi.NativeFunction<
-          ffi.Pointer<rs2_config> Function(
-              ffi.Pointer<ffi.Pointer<rs2_error>>)>>('create_config');
-  late final _create_config = _create_configPtr.asFunction<
-      ffi.Pointer<rs2_config> Function(ffi.Pointer<ffi.Pointer<rs2_error>>)>();
-
-  void config_enable_stream(
-    ffi.Pointer<rs2_config> config,
-    int stream,
-    int index,
-    int width,
-    int height,
-    int format,
-    int framerate,
-    ffi.Pointer<ffi.Pointer<rs2_error>> error,
-  ) {
-    return _config_enable_stream(
-      config,
-      stream,
-      index,
-      width,
-      height,
-      format,
-      framerate,
-      error,
-    );
-  }
-
-  late final _config_enable_streamPtr = _lookup<
-      ffi.NativeFunction<
-          ffi.Void Function(
-              ffi.Pointer<rs2_config>,
-              ffi.Int,
-              ffi.Int,
-              ffi.Int,
-              ffi.Int,
-              ffi.Int,
-              ffi.Int,
-              ffi.Pointer<ffi.Pointer<rs2_error>>)>>('config_enable_stream');
-  late final _config_enable_stream = _config_enable_streamPtr.asFunction<
-      void Function(ffi.Pointer<rs2_config>, int, int, int, int, int, int,
-          ffi.Pointer<ffi.Pointer<rs2_error>>)>();
-
-  ffi.Pointer<rs2_pipeline_profile> pipeline_start_with_config(
-    ffi.Pointer<rs2_pipeline> pipeline,
-    ffi.Pointer<rs2_config> config,
-    ffi.Pointer<ffi.Pointer<rs2_error>> error,
-  ) {
-    return _pipeline_start_with_config(
-      pipeline,
-      config,
-      error,
-    );
-  }
-
-  late final _pipeline_start_with_configPtr = _lookup<
-          ffi.NativeFunction<
-              ffi.Pointer<rs2_pipeline_profile> Function(
-                  ffi.Pointer<rs2_pipeline>,
-                  ffi.Pointer<rs2_config>,
-                  ffi.Pointer<ffi.Pointer<rs2_error>>)>>(
-      'pipeline_start_with_config');
-  late final _pipeline_start_with_config =
-      _pipeline_start_with_configPtr.asFunction<
-          ffi.Pointer<rs2_pipeline_profile> Function(ffi.Pointer<rs2_pipeline>,
-              ffi.Pointer<rs2_config>, ffi.Pointer<ffi.Pointer<rs2_error>>)>();
-
-  ffi.Pointer<rs2_stream_profile_list> pipeline_profile_get_streams(
-    ffi.Pointer<rs2_pipeline_profile> pipeline_profile,
-    ffi.Pointer<ffi.Pointer<rs2_error>> error,
-  ) {
-    return _pipeline_profile_get_streams(
-      pipeline_profile,
-      error,
-    );
-  }
-
-  late final _pipeline_profile_get_streamsPtr = _lookup<
-          ffi.NativeFunction<
-              ffi.Pointer<rs2_stream_profile_list> Function(
-                  ffi.Pointer<rs2_pipeline_profile>,
-                  ffi.Pointer<ffi.Pointer<rs2_error>>)>>(
-      'pipeline_profile_get_streams');
-  late final _pipeline_profile_get_streams =
-      _pipeline_profile_get_streamsPtr.asFunction<
-          ffi.Pointer<rs2_stream_profile_list> Function(
-              ffi.Pointer<rs2_pipeline_profile>,
-              ffi.Pointer<ffi.Pointer<rs2_error>>)>();
-
-  ffi.Pointer<rs2_stream_profile> get_stream_profile(
-    ffi.Pointer<rs2_stream_profile_list> stream_profile_list,
-    int index,
-    ffi.Pointer<ffi.Pointer<rs2_error>> error,
-  ) {
-    return _get_stream_profile(
-      stream_profile_list,
-      index,
-      error,
-    );
-  }
-
-  late final _get_stream_profilePtr = _lookup<
-      ffi.NativeFunction<
-          ffi.Pointer<rs2_stream_profile> Function(
-              ffi.Pointer<rs2_stream_profile_list>,
-              ffi.Int,
-              ffi.Pointer<ffi.Pointer<rs2_error>>)>>('get_stream_profile');
-  late final _get_stream_profile = _get_stream_profilePtr.asFunction<
-      ffi.Pointer<rs2_stream_profile> Function(
-          ffi.Pointer<rs2_stream_profile_list>,
-          int,
-          ffi.Pointer<ffi.Pointer<rs2_error>>)>();
-
-  void get_stream_profile_data(
-    ffi.Pointer<rs2_stream_profile> stream_profile,
-    ffi.Pointer<ffi.Int> stream,
-    ffi.Pointer<ffi.Int> format,
-    ffi.Pointer<ffi.Int> index,
-    ffi.Pointer<ffi.Int> unique_id,
-    ffi.Pointer<ffi.Int> framerate,
-    ffi.Pointer<ffi.Pointer<rs2_error>> error,
-  ) {
-    return _get_stream_profile_data(
-      stream_profile,
-      stream,
-      format,
-      index,
-      unique_id,
-      framerate,
-      error,
-    );
-  }
-
-  late final _get_stream_profile_dataPtr = _lookup<
-      ffi.NativeFunction<
-          ffi.Void Function(
-              ffi.Pointer<rs2_stream_profile>,
-              ffi.Pointer<ffi.Int>,
-              ffi.Pointer<ffi.Int>,
-              ffi.Pointer<ffi.Int>,
-              ffi.Pointer<ffi.Int>,
-              ffi.Pointer<ffi.Int>,
-              ffi.Pointer<ffi.Pointer<rs2_error>>)>>('get_stream_profile_data');
-  late final _get_stream_profile_data = _get_stream_profile_dataPtr.asFunction<
-      void Function(
-          ffi.Pointer<rs2_stream_profile>,
-          ffi.Pointer<ffi.Int>,
-          ffi.Pointer<ffi.Int>,
-          ffi.Pointer<ffi.Int>,
-          ffi.Pointer<ffi.Int>,
-          ffi.Pointer<ffi.Int>,
-          ffi.Pointer<ffi.Pointer<rs2_error>>)>();
-
-  void get_video_stream_resolution(
-    ffi.Pointer<rs2_stream_profile> profile,
-    ffi.Pointer<ffi.Int> width,
-    ffi.Pointer<ffi.Int> height,
-    ffi.Pointer<ffi.Pointer<rs2_error>> error,
-  ) {
-    return _get_video_stream_resolution(
-      profile,
-      width,
-      height,
-      error,
-    );
-  }
-
-  late final _get_video_stream_resolutionPtr = _lookup<
-          ffi.NativeFunction<
-              ffi.Void Function(
-                  ffi.Pointer<rs2_stream_profile>,
-                  ffi.Pointer<ffi.Int>,
-                  ffi.Pointer<ffi.Int>,
-                  ffi.Pointer<ffi.Pointer<rs2_error>>)>>(
-      'get_video_stream_resolution');
-  late final _get_video_stream_resolution =
-      _get_video_stream_resolutionPtr.asFunction<
-          void Function(ffi.Pointer<rs2_stream_profile>, ffi.Pointer<ffi.Int>,
-              ffi.Pointer<ffi.Int>, ffi.Pointer<ffi.Pointer<rs2_error>>)>();
-
-  /// READING / ANALYZING FRAMES
-  ffi.Pointer<rs2_frame> pipeline_wait_for_frames(
-    ffi.Pointer<rs2_pipeline> pipeline,
-    int timeout,
-    ffi.Pointer<ffi.Pointer<rs2_error>> error,
-  ) {
-    return _pipeline_wait_for_frames(
-      pipeline,
-      timeout,
-      error,
-    );
-  }
-
-  late final _pipeline_wait_for_framesPtr = _lookup<
-          ffi.NativeFunction<
-              ffi.Pointer<rs2_frame> Function(ffi.Pointer<rs2_pipeline>,
-                  ffi.UnsignedInt, ffi.Pointer<ffi.Pointer<rs2_error>>)>>(
-      'pipeline_wait_for_frames');
-  late final _pipeline_wait_for_frames =
-      _pipeline_wait_for_framesPtr.asFunction<
-          ffi.Pointer<rs2_frame> Function(ffi.Pointer<rs2_pipeline>, int,
-              ffi.Pointer<ffi.Pointer<rs2_error>>)>();
-
-  int embedded_frames_count(
-    ffi.Pointer<rs2_frame> frames,
-    ffi.Pointer<ffi.Pointer<rs2_error>> error,
-  ) {
-    return _embedded_frames_count(
-      frames,
-      error,
-    );
-  }
-
-  late final _embedded_frames_countPtr = _lookup<
-      ffi.NativeFunction<
-          ffi.Int Function(ffi.Pointer<rs2_frame>,
-              ffi.Pointer<ffi.Pointer<rs2_error>>)>>('embedded_frames_count');
-  late final _embedded_frames_count = _embedded_frames_countPtr.asFunction<
-      int Function(
-          ffi.Pointer<rs2_frame>, ffi.Pointer<ffi.Pointer<rs2_error>>)>();
-
-  ffi.Pointer<rs2_frame> extract_frame(
-    ffi.Pointer<rs2_frame> frames,
-    int i,
-    ffi.Pointer<ffi.Pointer<rs2_error>> error,
-  ) {
-    return _extract_frame(
-      frames,
-      i,
-      error,
-    );
-  }
-
-  late final _extract_framePtr = _lookup<
-      ffi.NativeFunction<
-          ffi.Pointer<rs2_frame> Function(ffi.Pointer<rs2_frame>, ffi.Int,
-              ffi.Pointer<ffi.Pointer<rs2_error>>)>>('extract_frame');
-  late final _extract_frame = _extract_framePtr.asFunction<
-      ffi.Pointer<rs2_frame> Function(
-          ffi.Pointer<rs2_frame>, int, ffi.Pointer<ffi.Pointer<rs2_error>>)>();
-
-  int is_frame_extendable_to(
-    ffi.Pointer<rs2_frame> frame,
-    int extension_type,
-    ffi.Pointer<ffi.Pointer<rs2_error>> error,
-  ) {
-    return _is_frame_extendable_to(
-      frame,
-      extension_type,
-      error,
-    );
-  }
-
-  late final _is_frame_extendable_toPtr = _lookup<
-      ffi.NativeFunction<
-          ffi.Int Function(ffi.Pointer<rs2_frame>, ffi.Int32,
-              ffi.Pointer<ffi.Pointer<rs2_error>>)>>('is_frame_extendable_to');
-  late final _is_frame_extendable_to = _is_frame_extendable_toPtr.asFunction<
-      int Function(
-          ffi.Pointer<rs2_frame>, int, ffi.Pointer<ffi.Pointer<rs2_error>>)>();
-
-  void release_frame(
-    ffi.Pointer<rs2_frame> frame,
-  ) {
-    return _release_frame(
-      frame,
-    );
-  }
-
-  late final _release_framePtr =
+  late final _rs2_frame_freePtr =
       _lookup<ffi.NativeFunction<ffi.Void Function(ffi.Pointer<rs2_frame>)>>(
-          'release_frame');
-  late final _release_frame =
-      _release_framePtr.asFunction<void Function(ffi.Pointer<rs2_frame>)>();
-
-  /// Stop the pipeline streaming
-  void pipeline_stop(
-    ffi.Pointer<rs2_pipeline> pipeline,
-    ffi.Pointer<ffi.Pointer<rs2_error>> error,
-  ) {
-    return _pipeline_stop(
-      pipeline,
-      error,
-    );
-  }
-
-  late final _pipeline_stopPtr = _lookup<
-      ffi.NativeFunction<
-          ffi.Void Function(ffi.Pointer<rs2_pipeline>,
-              ffi.Pointer<ffi.Pointer<rs2_error>>)>>('pipeline_stop');
-  late final _pipeline_stop = _pipeline_stopPtr.asFunction<
-      void Function(
-          ffi.Pointer<rs2_pipeline>, ffi.Pointer<ffi.Pointer<rs2_error>>)>();
-
-  void delete_pipeline_profile(
-    ffi.Pointer<rs2_pipeline_profile> pipeline_profile,
-  ) {
-    return _delete_pipeline_profile(
-      pipeline_profile,
-    );
-  }
-
-  late final _delete_pipeline_profilePtr = _lookup<
-      ffi.NativeFunction<
-          ffi.Void Function(
-              ffi.Pointer<rs2_pipeline_profile>)>>('delete_pipeline_profile');
-  late final _delete_pipeline_profile = _delete_pipeline_profilePtr
-      .asFunction<void Function(ffi.Pointer<rs2_pipeline_profile>)>();
-
-  void delete_stream_profiles_list(
-    ffi.Pointer<rs2_stream_profile_list> profile_list,
-  ) {
-    return _delete_stream_profiles_list(
-      profile_list,
-    );
-  }
-
-  late final _delete_stream_profiles_listPtr = _lookup<
-          ffi.NativeFunction<
-              ffi.Void Function(ffi.Pointer<rs2_stream_profile_list>)>>(
-      'delete_stream_profiles_list');
-  late final _delete_stream_profiles_list = _delete_stream_profiles_listPtr
-      .asFunction<void Function(ffi.Pointer<rs2_stream_profile_list>)>();
-
-  void delete_stream_profile(
-    ffi.Pointer<rs2_stream_profile> stream_profile,
-  ) {
-    return _delete_stream_profile(
-      stream_profile,
-    );
-  }
-
-  late final _delete_stream_profilePtr = _lookup<
-          ffi
-          .NativeFunction<ffi.Void Function(ffi.Pointer<rs2_stream_profile>)>>(
-      'delete_stream_profile');
-  late final _delete_stream_profile = _delete_stream_profilePtr
-      .asFunction<void Function(ffi.Pointer<rs2_stream_profile>)>();
-
-  void delete_config(
-    ffi.Pointer<rs2_config> config,
-  ) {
-    return _delete_config(
-      config,
-    );
-  }
-
-  late final _delete_configPtr =
-      _lookup<ffi.NativeFunction<ffi.Void Function(ffi.Pointer<rs2_config>)>>(
-          'delete_config');
-  late final _delete_config =
-      _delete_configPtr.asFunction<void Function(ffi.Pointer<rs2_config>)>();
-
-  void delete_pipeline(
-    ffi.Pointer<rs2_pipeline> pipeline,
-  ) {
-    return _delete_pipeline(
-      pipeline,
-    );
-  }
-
-  late final _delete_pipelinePtr =
-      _lookup<ffi.NativeFunction<ffi.Void Function(ffi.Pointer<rs2_pipeline>)>>(
-          'delete_pipeline');
-  late final _delete_pipeline = _delete_pipelinePtr
-      .asFunction<void Function(ffi.Pointer<rs2_pipeline>)>();
-
-  void delete_device(
-    ffi.Pointer<rs2_device> dev,
-  ) {
-    return _delete_device(
-      dev,
-    );
-  }
-
-  late final _delete_devicePtr =
-      _lookup<ffi.NativeFunction<ffi.Void Function(ffi.Pointer<rs2_device>)>>(
-          'delete_device');
-  late final _delete_device =
-      _delete_devicePtr.asFunction<void Function(ffi.Pointer<rs2_device>)>();
-
-  void delete_device_list(
-    ffi.Pointer<rs2_device_list> device_list,
-  ) {
-    return _delete_device_list(
-      device_list,
-    );
-  }
-
-  late final _delete_device_listPtr = _lookup<
-          ffi.NativeFunction<ffi.Void Function(ffi.Pointer<rs2_device_list>)>>(
-      'delete_device_list');
-  late final _delete_device_list = _delete_device_listPtr
-      .asFunction<void Function(ffi.Pointer<rs2_device_list>)>();
-
-  void delete_context(
-    ffi.Pointer<rs2_context> ctx,
-  ) {
-    return _delete_context(
-      ctx,
-    );
-  }
-
-  late final _delete_contextPtr =
-      _lookup<ffi.NativeFunction<ffi.Void Function(ffi.Pointer<rs2_context>)>>(
-          'delete_context');
-  late final _delete_context =
-      _delete_contextPtr.asFunction<void Function(ffi.Pointer<rs2_context>)>();
+          'rs2_frame_free');
+  late final _rs2_frame_free =
+      _rs2_frame_freePtr.asFunction<void Function(ffi.Pointer<rs2_frame>)>();
 }
 
-final class rs2_context extends ffi.Opaque {}
-
-final class rs2_error extends ffi.Opaque {}
-
-final class rs2_device_list extends ffi.Opaque {}
-
-final class rs2_device extends ffi.Opaque {}
-
-final class rs2_pipeline extends ffi.Opaque {}
-
-final class rs2_config extends ffi.Opaque {}
-
-final class rs2_pipeline_profile extends ffi.Opaque {}
-
-final class rs2_stream_profile_list extends ffi.Opaque {}
-
-final class rs2_stream_profile extends ffi.Opaque {}
+/// A fake ("opaque") C-friendly struct that we'll use a pointer to.
+/// This pointer will actually represent the RealSense class in C++
+final class NativeRealSense extends ffi.Opaque {}
 
 final class rs2_frame extends ffi.Opaque {}
-
-abstract class rs2_extension {
-  static const int RS2_EXTENSION_UNKNOWN = 0;
-  static const int RS2_EXTENSION_DEBUG = 1;
-  static const int RS2_EXTENSION_INFO = 2;
-  static const int RS2_EXTENSION_MOTION = 3;
-  static const int RS2_EXTENSION_OPTIONS = 4;
-  static const int RS2_EXTENSION_VIDEO = 5;
-  static const int RS2_EXTENSION_ROI = 6;
-  static const int RS2_EXTENSION_DEPTH_SENSOR = 7;
-  static const int RS2_EXTENSION_VIDEO_FRAME = 8;
-  static const int RS2_EXTENSION_MOTION_FRAME = 9;
-  static const int RS2_EXTENSION_COMPOSITE_FRAME = 10;
-  static const int RS2_EXTENSION_POINTS = 11;
-  static const int RS2_EXTENSION_DEPTH_FRAME = 12;
-  static const int RS2_EXTENSION_ADVANCED_MODE = 13;
-  static const int RS2_EXTENSION_RECORD = 14;
-  static const int RS2_EXTENSION_VIDEO_PROFILE = 15;
-  static const int RS2_EXTENSION_PLAYBACK = 16;
-  static const int RS2_EXTENSION_DEPTH_STEREO_SENSOR = 17;
-  static const int RS2_EXTENSION_DISPARITY_FRAME = 18;
-  static const int RS2_EXTENSION_MOTION_PROFILE = 19;
-  static const int RS2_EXTENSION_POSE_FRAME = 20;
-  static const int RS2_EXTENSION_POSE_PROFILE = 21;
-  static const int RS2_EXTENSION_TM2 = 22;
-  static const int RS2_EXTENSION_SOFTWARE_DEVICE = 23;
-  static const int RS2_EXTENSION_SOFTWARE_SENSOR = 24;
-  static const int RS2_EXTENSION_DECIMATION_FILTER = 25;
-  static const int RS2_EXTENSION_THRESHOLD_FILTER = 26;
-  static const int RS2_EXTENSION_DISPARITY_FILTER = 27;
-  static const int RS2_EXTENSION_SPATIAL_FILTER = 28;
-  static const int RS2_EXTENSION_TEMPORAL_FILTER = 29;
-  static const int RS2_EXTENSION_HOLE_FILLING_FILTER = 30;
-  static const int RS2_EXTENSION_ZERO_ORDER_FILTER = 31;
-  static const int RS2_EXTENSION_RECOMMENDED_FILTERS = 32;
-  static const int RS2_EXTENSION_POSE = 33;
-  static const int RS2_EXTENSION_POSE_SENSOR = 34;
-  static const int RS2_EXTENSION_WHEEL_ODOMETER = 35;
-  static const int RS2_EXTENSION_GLOBAL_TIMER = 36;
-  static const int RS2_EXTENSION_UPDATABLE = 37;
-  static const int RS2_EXTENSION_UPDATE_DEVICE = 38;
-  static const int RS2_EXTENSION_L500_DEPTH_SENSOR = 39;
-  static const int RS2_EXTENSION_TM2_SENSOR = 40;
-  static const int RS2_EXTENSION_AUTO_CALIBRATED_DEVICE = 41;
-  static const int RS2_EXTENSION_COLOR_SENSOR = 42;
-  static const int RS2_EXTENSION_MOTION_SENSOR = 43;
-  static const int RS2_EXTENSION_FISHEYE_SENSOR = 44;
-  static const int RS2_EXTENSION_DEPTH_HUFFMAN_DECODER = 45;
-  static const int RS2_EXTENSION_SERIALIZABLE = 46;
-  static const int RS2_EXTENSION_FW_LOGGER = 47;
-  static const int RS2_EXTENSION_AUTO_CALIBRATION_FILTER = 48;
-  static const int RS2_EXTENSION_DEVICE_CALIBRATION = 49;
-  static const int RS2_EXTENSION_CALIBRATED_SENSOR = 50;
-  static const int RS2_EXTENSION_HDR_MERGE = 51;
-  static const int RS2_EXTENSION_SEQUENCE_ID_FILTER = 52;
-  static const int RS2_EXTENSION_MAX_USABLE_RANGE_SENSOR = 53;
-  static const int RS2_EXTENSION_DEBUG_STREAM_SENSOR = 54;
-  static const int RS2_EXTENSION_CALIBRATION_CHANGE_DEVICE = 55;
-  static const int RS2_EXTENSION_COUNT = 56;
-}

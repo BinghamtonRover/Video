@@ -19,12 +19,13 @@ extern "C" {
 
 // A fake ("opaque") C-friendly struct that we'll use a pointer to.
 // This pointer will actually represent the RealSense class in C++
-struct RealSense;
+struct NativeRealSense;
+typedef struct NativeRealSense NativeRealSense;
 
-RealSense* RealSense_create();
-void RealSense_free(RealSense* ptr);
-void RealSense_init(RealSense* ptr);
-rs2_frame* RealSense_getDepthFrame(RealSense* ptr);
+NativeRealSense* RealSense_create();
+void RealSense_free(NativeRealSense* ptr);
+void RealSense_init(NativeRealSense* ptr);
+rs2_frame* RealSense_getDepthFrame(NativeRealSense* ptr);
 
 void rs2_frame_free(rs2_frame* ptr);
 

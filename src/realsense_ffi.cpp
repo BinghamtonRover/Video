@@ -7,21 +7,21 @@
 //   1. Convert C RealSense* to the C++ burt_rs::RealSense* using reinterpret_cast()
 //   2. Call the function on the C++ class as normal
 
-RealSense* RealSense_create() {
+NativeRealSense* RealSense_create() {
   // This method is different because it goes from C++ --> C instead of C --> C++
   auto ptr = new burt_rs::RealSense();
-  return reinterpret_cast<RealSense*>(ptr);
+  return reinterpret_cast<NativeRealSense*>(ptr);
 }
 
-void RealSense_free(RealSense* ptr) {
+void RealSense_free(NativeRealSense* ptr) {
   delete reinterpret_cast<burt_rs::RealSense*>(ptr);
 }
 
-void RealSense_init(RealSense* ptr) {
+void RealSense_init(NativeRealSense* ptr) {
   reinterpret_cast<burt_rs::RealSense*>(ptr)->init();
 }
 
-rs2_frame* RealSense_getDepthFrame(RealSense* ptr) {
+rs2_frame* RealSense_getDepthFrame(NativeRealSense* ptr) {
   return reinterpret_cast<burt_rs::RealSense*>(ptr)->getDepthFrame();
 }
 

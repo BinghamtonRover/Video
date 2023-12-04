@@ -2,6 +2,7 @@ import "dart:async";
 import "dart:io";
 
 import "package:burt_network/burt_network.dart";
+import "package:burt_network/logging.dart";
 import "package:opencv_ffi/opencv_ffi.dart";
 
 import "constants.dart";
@@ -48,3 +49,5 @@ class Collection {
 
 /// Holds all the devices connected
 final collection = Collection();
+/// Displays logs in the terminal and sends them to the Dashboard
+final logger = BurtLogger(socket: collection.videoServer);
