@@ -7,6 +7,9 @@
 #include <librealsense2/h/rs_option.h>
 #include <librealsense2/h/rs_frame.h>
 
+#ifndef RS_FFI
+#define RS_FFI
+
 #if _WIN32
 #define FFI_PLUGIN_EXPORT __declspec(dllexport)
 #else
@@ -31,4 +34,6 @@ void rs2_frame_free(rs2_frame* ptr);
 
 #ifdef __cplusplus
 }
+#endif
+
 #endif

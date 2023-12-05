@@ -1,5 +1,5 @@
 #include "realsense_ffi.h"
-#include "realsense.hpp"
+#include "realsense_internal.hpp"
 
 // realsense_ffi.h declares global C functions and an empty struct called RealSense
 // realsense.hpp declares a class burt_rs::RealSense with methods and fields
