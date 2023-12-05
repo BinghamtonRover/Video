@@ -1,3 +1,6 @@
+#ifndef RS_FFI
+#define RS_FFI
+
 #include <stdint.h>
 #include <stdio.h>
 #include <stdlib.h>
@@ -6,9 +9,6 @@
 #include <librealsense2/h/rs_pipeline.h>
 #include <librealsense2/h/rs_option.h>
 #include <librealsense2/h/rs_frame.h>
-
-#ifndef RS_FFI
-#define RS_FFI
 
 #if _WIN32
 #define FFI_PLUGIN_EXPORT __declspec(dllexport)
@@ -25,12 +25,12 @@ extern "C" {
 struct NativeRealSense;
 typedef struct NativeRealSense NativeRealSense;
 
-NativeRealSense* RealSense_create();
-void RealSense_free(NativeRealSense* ptr);
-void RealSense_init(NativeRealSense* ptr);
-rs2_frame* RealSense_getDepthFrame(NativeRealSense* ptr);
+FFI_PLUGIN_EXPORT NativeRealSense* RealSense_create();
+FFI_PLUGIN_EXPORT void RealSense_free(NativeRealSense* ptr);
+FFI_PLUGIN_EXPORT void RealSense_init(NativeRealSense* ptr);
+FFI_PLUGIN_EXPORT rs2_frame* RealSense_getDepthFrame(NativeRealSense* ptr);
 
-void rs2_frame_free(rs2_frame* ptr);
+FFI_PLUGIN_EXPORT void rs2_frame_free(rs2_frame* ptr);
 
 #ifdef __cplusplus
 }

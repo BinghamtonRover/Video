@@ -6,7 +6,7 @@ export "generated/librealsense_ffi_bindings.dart";
 
 String _getPath() {
   if (Platform.isWindows) {
-    return r"src\build\Debug\realsense_ffi.dll";
+    return "realsense_ffi.dll";
   } else if (Platform.isMacOS) {
     return "opencv_ffi.dylib";
   } else if (Platform.isLinux) {

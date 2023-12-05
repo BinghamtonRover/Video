@@ -18,7 +18,7 @@ if errorlevel 1 (
 rem Build realsense_ffi
 if not exist build mkdir build
 cd build
-cmake ..
+cmake -DCMAKE_BUILD_TYPE=Release ..
 if errorlevel 1 ( 
 	cd ..
 	exit /b 1
