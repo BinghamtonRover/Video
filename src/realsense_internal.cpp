@@ -22,7 +22,7 @@ void burt_rs::RealSense::init() {
   
   int device_count = rs2_get_device_count(device_list, &error);
   checkError(error);
-  if(device_count == 0) return EXIT_FAILURE;
+  if(device_count == 0) exit(EXIT_FAILURE);
 
   device = rs2_create_device(device_list, 0, &error);
   checkError(error);
@@ -34,7 +34,7 @@ void burt_rs::RealSense::init() {
   checkError(error);
 
   rs2_config_enable_stream(config, STREAM, STREAM_INDEX, WIDTH, HEIGHT, FORMAT, FPS, &error);
-  check_error(e);
+  checkError(error);
 
   pipeline_profile = rs2_pipeline_start_with_config(pipeline, config, &error);
   if(error){
@@ -62,7 +62,7 @@ void burt_rs::RealSense::init() {
   }
 
   int width; int height;
-  rs2_get_video_stream_resolution(stream_profile, &width, &height, &e);
+  rs2_get_video_stream_resolution(stream_profile, &width, &height, &error);
   if(error){
     printf("Failed to get video stream resolution data!\n");
     exit(EXIT_FAILURE);
@@ -88,7 +88,7 @@ rs2_frame* burt_rs::RealSense::getDepthFrame() {
   /// If none found return nullptr
   for(int i = num_of_frames - 1; i > 0; i--){
     rs2_frame* frame = rs2_extract_frame(frames, i, &error);
-    check_error(e);
+    checkError(error);
     if(rs2_is_frame_extendable_to(frame, RS2_EXTENSION_DEPTH_FRAME, &error) == 0){
       rs2_release_frame(frame);
     } else {
@@ -99,9 +99,9 @@ rs2_frame* burt_rs::RealSense::getDepthFrame() {
 }
 
 void burt_rs::RealSense::checkError(rs2_error* error){
-  if(e){
-    printf("rs_error was raised when calling %s(%s):\n", rs2_get_failed_function(e), rs2_get_failed_args(e));
-    printf("    %s\n", rs2_get_error_message(e));
+  if(error){
+    printf("rs_error was raised when calling %s(%s):\n", rs2_get_failed_function(error), rs2_get_failed_args(error));
+    printf("    %s\n", rs2_get_error_message(error));
     exit(EXIT_FAILURE);
   }
 }

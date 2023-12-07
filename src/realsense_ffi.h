@@ -8,6 +8,7 @@
 #include <librealsense2/rs.h>
 #include <librealsense2/h/rs_option.h>
 #include <librealsense2/h/rs_frame.h>
+#include <librealsense2/h/rs_pipeline.h>
 
 #if _WIN32
 #define FFI_PLUGIN_EXPORT __declspec(dllexport)

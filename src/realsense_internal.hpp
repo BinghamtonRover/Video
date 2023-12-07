@@ -1,8 +1,3 @@
-#include <librealsense2/h/rs_config.h>
-#include <librealsense2/h/rs_types.h>
-#include <librealsense2/h/rs_decive.h>
-#include <librealsense2/h/rs_pipeline.h>
-
 #include "realsense_ffi.h"
 
 namespace burt_rs {
