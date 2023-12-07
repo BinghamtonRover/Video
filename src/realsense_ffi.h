@@ -6,7 +6,6 @@
 #include <stdlib.h>
 
 #include <librealsense2/rs.h>
-#include <librealsense2/h/rs_pipeline.h>
 #include <librealsense2/h/rs_option.h>
 #include <librealsense2/h/rs_frame.h>
 
