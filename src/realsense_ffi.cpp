@@ -1,6 +1,10 @@
 #include "realsense_ffi.h"
 #include "realsense_internal.hpp"
 
+#include <iostream>
+
+using namespace std;
+
 // realsense_ffi.h declares global C functions and an empty struct called RealSense
 // realsense.hpp declares a class burt_rs::RealSense with methods and fields
 // This file implements the C functions by calling the C++ methods
@@ -14,15 +18,25 @@ NativeRealSense* RealSense_create() {
 }
 
 void RealSense_free(NativeRealSense* ptr) {
+  cout << "Trying to delete..." << endl;
   delete reinterpret_cast<burt_rs::RealSense*>(ptr);
+  cout << "Deleted" << endl;
 }
 
 void RealSense_init(NativeRealSense* ptr) {
   reinterpret_cast<burt_rs::RealSense*>(ptr)->init();
 }
 
-rs2_frame* RealSense_getDepthFrame(NativeRealSense* ptr) {
+uint16_t* RealSense_getDepthFrame(NativeRealSense* ptr) {
   return reinterpret_cast<burt_rs::RealSense*>(ptr)->getDepthFrame();
+}
+
+int RealSense_getWidth(NativeRealSense* ptr) {
+  return reinterpret_cast<burt_rs::RealSense*>(ptr)->width;
+}
+
+int RealSense_getHeight(NativeRealSense* ptr) {
+  return reinterpret_cast<burt_rs::RealSense*>(ptr)->height;
 }
 
 void rs2_frame_free(rs2_frame* ptr) {

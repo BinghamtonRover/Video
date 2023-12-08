@@ -37,5 +37,7 @@ copy build\Debug\*.dll ..\dist
 
 echo:
 echo Done! Your files are in the dist folder. Add this directory to your PATH:
+cd ..
 echo %cd%\dist
 echo You can edit your PATH by entering ^"Edit the system environment variables^" in the Start Menu
+cd src

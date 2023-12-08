@@ -1,5 +1,9 @@
 #include "realsense_internal.hpp"
 
+#include <iostream>
+
+using namespace std;
+
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 //                                     These parameters are reconfigurable                                        //
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -9,15 +13,13 @@
 #define HEIGHT          0                 // Defines the number of lines for each frame or zero for auto resolve  //
 #define FPS             30                // Defines the rate of frames per second                                //
 #define STREAM_INDEX    0                 // Defines the stream index, used for multiple streams of the same type //
-#define HEIGHT_RATIO    20                // Defines the height ratio between the original frame to the new frame //
-#define WIDTH_RATIO     10                // Defines the width ratio between the original frame to the new frame  //
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 void burt_rs::RealSense::init() {
   context = rs2_create_context(25402, &error);
   checkError(error);
 
-  rs2_device_list* device_list = rs2_query_devices(context, &error);
+  device_list = rs2_query_devices(context, &error);
   checkError(error);
   
   int device_count = rs2_get_device_count(device_list, &error);
@@ -30,7 +32,7 @@ void burt_rs::RealSense::init() {
   pipeline = rs2_create_pipeline(context, &error);
   checkError(error);
 
-  config = rs2_create_config(&error);\
+  config = rs2_create_config(&error);
   checkError(error);
 
   rs2_config_enable_stream(config, STREAM, STREAM_INDEX, WIDTH, HEIGHT, FORMAT, FPS, &error);
@@ -42,7 +44,7 @@ void burt_rs::RealSense::init() {
     exit(EXIT_FAILURE);
   }
 
-  rs2_stream_profile_list* stream_profile_list = rs2_pipeline_profile_get_streams(pipeline_profile, &error);
+  stream_profile_list = rs2_pipeline_profile_get_streams(pipeline_profile, &error);
   if(error){
     printf("Failed to create stream profile list!\n");
     exit(EXIT_FAILURE);
@@ -54,31 +56,34 @@ void burt_rs::RealSense::init() {
     exit(EXIT_FAILURE);
   }
 
-  rs2_format format; int index; int unique_id; int framerate;
+  rs2_stream stream; rs2_format format; int index; int unique_id; int framerate;
   rs2_get_stream_profile_data(stream_profile, &stream, &format, &index, &unique_id, &framerate, &error);
   if(error){
     printf("Failed to get stream profile data!\n");
     exit(EXIT_FAILURE);
   }
 
-  int width; int height;
   rs2_get_video_stream_resolution(stream_profile, &width, &height, &error);
   if(error){
     printf("Failed to get video stream resolution data!\n");
     exit(EXIT_FAILURE);
   }
+  cout << "Done initializing" << endl;
 }
 
 burt_rs::RealSense::~RealSense() {
   rs2_delete_pipeline_profile(pipeline_profile);
-  rs2_delete_stream_profile(stream_profile);
+  rs2_delete_stream_profiles_list(stream_profile_list);
+  //cout << "delete3" << endl;
+  //rs2_delete_stream_profile(stream_profile);
   rs2_delete_config(config);
   rs2_delete_pipeline(pipeline);
   rs2_delete_device(device);
+  rs2_delete_device_list(device_list);
   rs2_delete_context(context);
 }
 
-rs2_frame* burt_rs::RealSense::getDepthFrame() {
+uint16_t* burt_rs::RealSense::getDepthFrame() {
   rs2_frame* frames = rs2_pipeline_wait_for_frames(pipeline, 15000, &error);
   checkError(error);
   
@@ -92,7 +97,9 @@ rs2_frame* burt_rs::RealSense::getDepthFrame() {
     if(rs2_is_frame_extendable_to(frame, RS2_EXTENSION_DEPTH_FRAME, &error) == 0){
       rs2_release_frame(frame);
     } else {
-      return frame;
+      uint16_t* depth_frame_data = (uint16_t*)(rs2_get_frame_data(frame, &error));
+      checkError(error);
+      return depth_frame_data;
     }
   }
   return nullptr;

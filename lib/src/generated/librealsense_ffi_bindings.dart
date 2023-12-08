@@ -61,7 +61,35 @@ class LibRealSenseBindings {
   late final _RealSense_init = _RealSense_initPtr.asFunction<
       void Function(ffi.Pointer<NativeRealSense>)>();
 
-  ffi.Pointer<rs2_frame> RealSense_getDepthFrame(
+  int RealSense_getWidth(
+    ffi.Pointer<NativeRealSense> ptr,
+  ) {
+    return _RealSense_getWidth(
+      ptr,
+    );
+  }
+
+  late final _RealSense_getWidthPtr = _lookup<
+          ffi.NativeFunction<ffi.Int Function(ffi.Pointer<NativeRealSense>)>>(
+      'RealSense_getWidth');
+  late final _RealSense_getWidth = _RealSense_getWidthPtr.asFunction<
+      int Function(ffi.Pointer<NativeRealSense>)>();
+
+  int RealSense_getHeight(
+    ffi.Pointer<NativeRealSense> ptr,
+  ) {
+    return _RealSense_getHeight(
+      ptr,
+    );
+  }
+
+  late final _RealSense_getHeightPtr = _lookup<
+          ffi.NativeFunction<ffi.Int Function(ffi.Pointer<NativeRealSense>)>>(
+      'RealSense_getHeight');
+  late final _RealSense_getHeight = _RealSense_getHeightPtr.asFunction<
+      int Function(ffi.Pointer<NativeRealSense>)>();
+
+  ffi.Pointer<ffi.Uint16> RealSense_getDepthFrame(
     ffi.Pointer<NativeRealSense> ptr,
   ) {
     return _RealSense_getDepthFrame(
@@ -71,13 +99,13 @@ class LibRealSenseBindings {
 
   late final _RealSense_getDepthFramePtr = _lookup<
       ffi.NativeFunction<
-          ffi.Pointer<rs2_frame> Function(
+          ffi.Pointer<ffi.Uint16> Function(
               ffi.Pointer<NativeRealSense>)>>('RealSense_getDepthFrame');
   late final _RealSense_getDepthFrame = _RealSense_getDepthFramePtr.asFunction<
-      ffi.Pointer<rs2_frame> Function(ffi.Pointer<NativeRealSense>)>();
+      ffi.Pointer<ffi.Uint16> Function(ffi.Pointer<NativeRealSense>)>();
 
   void rs2_frame_free(
-    ffi.Pointer<rs2_frame> ptr,
+    ffi.Pointer<ffi.Int> ptr,
   ) {
     return _rs2_frame_free(
       ptr,
@@ -85,14 +113,12 @@ class LibRealSenseBindings {
   }
 
   late final _rs2_frame_freePtr =
-      _lookup<ffi.NativeFunction<ffi.Void Function(ffi.Pointer<rs2_frame>)>>(
+      _lookup<ffi.NativeFunction<ffi.Void Function(ffi.Pointer<ffi.Int>)>>(
           'rs2_frame_free');
   late final _rs2_frame_free =
-      _rs2_frame_freePtr.asFunction<void Function(ffi.Pointer<rs2_frame>)>();
+      _rs2_frame_freePtr.asFunction<void Function(ffi.Pointer<ffi.Int>)>();
 }
 
 /// A fake ("opaque") C-friendly struct that we'll use a pointer to.
 /// This pointer will actually represent the RealSense class in C++
 final class NativeRealSense extends ffi.Opaque {}
-
-final class rs2_frame extends ffi.Opaque {}

@@ -28,7 +28,9 @@ typedef struct NativeRealSense NativeRealSense;
 FFI_PLUGIN_EXPORT NativeRealSense* RealSense_create();
 FFI_PLUGIN_EXPORT void RealSense_free(NativeRealSense* ptr);
 FFI_PLUGIN_EXPORT void RealSense_init(NativeRealSense* ptr);
-FFI_PLUGIN_EXPORT rs2_frame* RealSense_getDepthFrame(NativeRealSense* ptr);
+FFI_PLUGIN_EXPORT int RealSense_getWidth(NativeRealSense* ptr);
+FFI_PLUGIN_EXPORT int RealSense_getHeight(NativeRealSense* ptr);
+FFI_PLUGIN_EXPORT uint16_t* RealSense_getDepthFrame(NativeRealSense* ptr);
 
 FFI_PLUGIN_EXPORT void rs2_frame_free(rs2_frame* ptr);
 

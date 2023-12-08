@@ -14,10 +14,17 @@ class RealSense {
     nativeLib.RealSense_free(device);
   }
 
-  Future<List<double>> getDepthFrame() async {
+  Future<List<double>> getDepthFrame() async { 
+    int width = nativeLib.RealSense_getWidth(device);
+    int height = nativeLib.RealSense_getHeight(device);
     final frame = nativeLib.RealSense_getDepthFrame(device);
+    List<double> newFrame = <double>[];
+    for(int i = 0; i < width * height; i++){
+      newFrame.add(frame.data);
+      depth_frame_data = Pointer.fromAddress(depth_frame_data.address + 2);
+    }         
     // TODO: Use this somehow ^
-    return [];
+    return newFrame;
   }
 }
 
@@ -25,6 +32,8 @@ void main() async {
   final realsense = RealSense();
   await realsense.init();
   logger.info("RealSense initialized");
+  final frame = getDepthFrame();
+  print(frame);
   await realsense.dispose();
   logger.info("RealSense disposed");
 }
