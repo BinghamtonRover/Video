@@ -2,13 +2,13 @@
 
 shared: bin/realsense_ffi.so install
 
-bin/realsense_ffi.so: obj/realsense_ffi.o obj/realsense.o
+bin/realsense_ffi.so: obj/realsense_ffi.o obj/realsense_internal.o
 	mkdir -p bin
-	g++ -Wall -Werror -shared obj/realsense_ffi.o obj/realsense.o -o bin/realsense_ffi.so
+	g++ -Wall -Werror -shared obj/realsense_ffi.o obj/realsense_internal.o -o bin/realsense_ffi.so
 
-obj/realsense.o: realsense.hpp realsense.cpp
+obj/realsense_internal.o: realsense_internal.hpp realsense_internal.cpp
 	mkdir -p obj
-	g++ -Wall -Werror -c realsense.cpp -o obj/realsense.o
+	g++ -Wall -Werror -c realsense_internal.cpp -o obj/realsense_internal.o
 
 obj/realsense_ffi.o: realsense_ffi.h realsense_ffi.cpp
 	mkdir -p obj
