@@ -18,6 +18,7 @@ namespace burt_rs {
       void checkError(rs2_error* error);
       void init();
       uint16_t* getDepthFrame();
+      float getDepthScale();
 
     private:
       rs2_context* context;

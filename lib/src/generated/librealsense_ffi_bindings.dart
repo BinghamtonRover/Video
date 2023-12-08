@@ -104,8 +104,22 @@ class LibRealSenseBindings {
   late final _RealSense_getDepthFrame = _RealSense_getDepthFramePtr.asFunction<
       ffi.Pointer<ffi.Uint16> Function(ffi.Pointer<NativeRealSense>)>();
 
+  double RealSense_getDepthScale(
+    ffi.Pointer<NativeRealSense> ptr,
+  ) {
+    return _RealSense_getDepthScale(
+      ptr,
+    );
+  }
+
+  late final _RealSense_getDepthScalePtr = _lookup<
+          ffi.NativeFunction<ffi.Float Function(ffi.Pointer<NativeRealSense>)>>(
+      'RealSense_getDepthScale');
+  late final _RealSense_getDepthScale = _RealSense_getDepthScalePtr.asFunction<
+      double Function(ffi.Pointer<NativeRealSense>)>();
+
   void rs2_frame_free(
-    ffi.Pointer<ffi.Int> ptr,
+    ffi.Pointer<rs2_frame> ptr,
   ) {
     return _rs2_frame_free(
       ptr,
@@ -113,12 +127,14 @@ class LibRealSenseBindings {
   }
 
   late final _rs2_frame_freePtr =
-      _lookup<ffi.NativeFunction<ffi.Void Function(ffi.Pointer<ffi.Int>)>>(
+      _lookup<ffi.NativeFunction<ffi.Void Function(ffi.Pointer<rs2_frame>)>>(
           'rs2_frame_free');
   late final _rs2_frame_free =
-      _rs2_frame_freePtr.asFunction<void Function(ffi.Pointer<ffi.Int>)>();
+      _rs2_frame_freePtr.asFunction<void Function(ffi.Pointer<rs2_frame>)>();
 }
 
 /// A fake ("opaque") C-friendly struct that we'll use a pointer to.
 /// This pointer will actually represent the RealSense class in C++
 final class NativeRealSense extends ffi.Opaque {}
+
+final class rs2_frame extends ffi.Opaque {}

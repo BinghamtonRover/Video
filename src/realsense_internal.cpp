@@ -112,3 +112,43 @@ void burt_rs::RealSense::checkError(rs2_error* error){
     exit(EXIT_FAILURE);
   }
 }
+
+float burt_rs::RealSense::getDepthScale() {
+  rs2_error* e = 0;
+  rs2_sensor_list* sensor_list = rs2_query_sensors(device, &e);
+  checkError(e);
+
+  int num_of_sensors = rs2_get_sensors_count(sensor_list, &e);
+  checkError(e);
+
+  float depth_scale = 0;
+  int is_depth_sensor_found = 0;
+  int i;
+  for (i = 0; i < num_of_sensors; ++i)
+  {
+      rs2_sensor* sensor = rs2_create_sensor(sensor_list, i, &e);
+      checkError(e);
+
+      // Check if the given sensor can be extended to depth sensor interface
+      is_depth_sensor_found = rs2_is_sensor_extendable_to(sensor, RS2_EXTENSION_DEPTH_SENSOR, &e);
+      checkError(e);
+
+      if (1 == is_depth_sensor_found)
+      {
+          depth_scale = rs2_get_depth_scale(sensor, &e);
+          checkError(e);
+          rs2_delete_sensor(sensor);
+          break;
+      }
+      rs2_delete_sensor(sensor);
+  }
+  rs2_delete_sensor_list(sensor_list);
+
+  if (0 == is_depth_sensor_found)
+  {
+      printf("Depth sensor not found!\n");
+      exit(EXIT_FAILURE);
+  }
+
+  return depth_scale;
+}

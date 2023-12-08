@@ -1,3 +1,5 @@
+import "dart:ffi";
+
 import "package:video/video.dart";
 import "package:burt_network/logging.dart";
 
@@ -5,9 +7,11 @@ final logger = BurtLogger();
 
 class RealSense {
   final device = nativeLib.RealSense_create();
+  late double scale;
   
   Future<void> init() async {
     nativeLib.RealSense_init(device);
+    scale = nativeLib.RealSense_getDepthScale(device);
   }
 
   Future<void> dispose() async {
@@ -15,16 +19,13 @@ class RealSense {
   }
 
   Future<List<double>> getDepthFrame() async { 
-    int width = nativeLib.RealSense_getWidth(device);
-    int height = nativeLib.RealSense_getHeight(device);
+    final width = nativeLib.RealSense_getWidth(device);
+    final height = nativeLib.RealSense_getHeight(device);
     final frame = nativeLib.RealSense_getDepthFrame(device);
-    List<double> newFrame = <double>[];
-    for(int i = 0; i < width * height; i++){
-      newFrame.add(frame.data);
-      depth_frame_data = Pointer.fromAddress(depth_frame_data.address + 2);
-    }         
-    // TODO: Use this somehow ^
-    return newFrame;
+    return [
+      for (int i = 0; i < width * height; i++)
+        frame[i] * scale,
+    ];
   }
 }
 
@@ -32,8 +33,9 @@ void main() async {
   final realsense = RealSense();
   await realsense.init();
   logger.info("RealSense initialized");
-  final frame = getDepthFrame();
-  print(frame);
+  final frame = await realsense.getDepthFrame();
+  logger.info("Got frame");
+  logger.trace(frame.join(", "));  // ignore: cascade_invocations
   await realsense.dispose();
   logger.info("RealSense disposed");
 }

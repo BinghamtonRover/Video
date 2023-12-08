@@ -39,6 +39,10 @@ int RealSense_getHeight(NativeRealSense* ptr) {
   return reinterpret_cast<burt_rs::RealSense*>(ptr)->height;
 }
 
+float RealSense_getDepthScale(NativeRealSense* ptr) {
+  return reinterpret_cast<burt_rs::RealSense*>(ptr)->getDepthScale();
+}
+
 void rs2_frame_free(rs2_frame* ptr) {
   // Can't use `delete` here because rs2_frames are allocated using malloc/calloc, not `new`
   free(ptr);

@@ -31,6 +31,7 @@ FFI_PLUGIN_EXPORT void RealSense_init(NativeRealSense* ptr);
 FFI_PLUGIN_EXPORT int RealSense_getWidth(NativeRealSense* ptr);
 FFI_PLUGIN_EXPORT int RealSense_getHeight(NativeRealSense* ptr);
 FFI_PLUGIN_EXPORT uint16_t* RealSense_getDepthFrame(NativeRealSense* ptr);
+FFI_PLUGIN_EXPORT float RealSense_getDepthScale(NativeRealSense* ptr);
 
 FFI_PLUGIN_EXPORT void rs2_frame_free(rs2_frame* ptr);
 
