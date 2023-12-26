@@ -16,3 +16,18 @@ class VideoServer extends ServerSocket {
     collection.parent.send(command, command.details.name);
   }
 }
+
+/// Class for the video program to interact with the autuonomy systems
+class AutonomyServer extends ServerSocket {
+  /// Requires a port to communicate through 
+  AutonomyServer({required super.port}) : super(device: Device.AUTONOMY);
+
+  /// Dummy (non-used) overridden function
+  @override
+  void onMessage(WrappedMessage wrapper) {}
+
+  late final Camera roverFront;
+  
+
+  sendMessage()
+}

@@ -34,6 +34,9 @@ class Collection {
   /// Default port is 8002 for video
   final videoServer = VideoServer(port: 8002);
 
+  /// Default port is 8006 for autonomy
+  final autonomyServer = AutonomyServer(port: 8006);
+
   /// Main parent isolate
   final parent = VideoController();
   
@@ -41,6 +44,7 @@ class Collection {
   Future<void> init() async {
     logger..trace("Running in trace mode")..debug("Running in debug mode");
     await videoServer.init();
+    await autonomyServer.init();
     await parent.run();
     logger.info("Video program initialized");
   }
