@@ -18,14 +18,13 @@ class RealSense {
     nativeLib.RealSense_free(device);
   }
 
-  Future<List<double>> getDepthFrame() async { 
+  Iterable<double> getDepthFrame() sync* { 
     final width = nativeLib.RealSense_getWidth(device);
     final height = nativeLib.RealSense_getHeight(device);
     final frame = nativeLib.RealSense_getDepthFrame(device);
-    return [
-      for (int i = 0; i < width * height; i++)
-        frame[i] * scale,
-    ];
+      for (int i = 0; i < width * height; i++){
+        yield frame[i] * scale;
+      }
   }
 }
 
