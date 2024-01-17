@@ -24,10 +24,18 @@ class AutonomyServer extends ServerSocket {
 
   /// Dummy (non-used) overridden function
   @override
-  void onMessage(WrappedMessage wrapper) {}
+  void onMessage(WrappedMessage wrapper) {
+    // ignore message if not a video message
+    if (wrapper.name != VideoCommand().messageName) return;
+    final command = VideoCommand.fromBuffer(wrapper.data);
+    sendMessage(command);  // Echo the request
+    collection.parent.send(command, command.details.name);
+  }
 
-  late final Camera roverFront;
-  
+  @override
+  void sendMessage(Message message, {SocketInfo? socketOverride}) {
+    // TODO: implement sendMessage
+    super.sendMessage(message);
+  }
 
-  sendMessage()
 }

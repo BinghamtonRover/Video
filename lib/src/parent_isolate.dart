@@ -8,7 +8,7 @@ import "package:burt_network/burt_network.dart";
 import "collection.dart";
 import "frame.dart";
 import "camera_isolate.dart";
-import 'depthcamera_isolate.dart';
+// import 'depthcamera_isolate.dart';
 
 /// A parent isolate that spawns [CameraIsolate]s to manage the cameras.
 /// 
@@ -23,11 +23,11 @@ class VideoController extends IsolateParent<VideoCommand, FrameData>{
     for (final name in CameraName.values) {
       if (name == CameraName.CAMERA_NAME_UNDEFINED) continue;
       if (name == CameraName.ROVER_FRONT){
-        await spawn(
-          DepthCameraIsolate(
-            logLevel: Logger.level,
-            details: getDefaultDetails(name)),
-        ); 
+        // await spawn(
+        //   DepthCameraIsolate(
+        //     logLevel: Logger.level,
+        //     details: getDefaultDetails(name)),
+        // ); 
         continue;
       }
       await spawn(
