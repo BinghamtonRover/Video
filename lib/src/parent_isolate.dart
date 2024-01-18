@@ -1,5 +1,6 @@
 import "dart:async";
 import "dart:ffi";
+import "dart:io";
 
 import "package:opencv_ffi/opencv_ffi.dart";
 import "package:typed_isolate/typed_isolate.dart";
@@ -45,7 +46,9 @@ class VideoController extends IsolateParent<VideoCommand, FrameData>{
       collection.videoServer.sendMessage(VideoData(details: data.details));
     } else {      
       final frame = OpenCVImage(pointer: Pointer.fromAddress(data.address!), length: data.length!);
-      collection.videoServer.sendMessage(VideoData(frame: frame.data, details: data.details));
+      final message = VideoData(frame: frame.data, details: data.details);
+      collection.videoServer.sendMessage(message);
+      collection.videoServer.sendMessage(message, socketOverride: SocketInfo(address: InternetAddress.loopbackIPv4, port: 8006));
       frame.dispose();
     }
   }
