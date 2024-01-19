@@ -32,7 +32,11 @@ void main() async {
   final realsense = RealSense();
   await realsense.init();
   logger.info("RealSense initialized");
-  final frame = await realsense.getDepthFrame();
+  final frameGenerator = realsense.getDepthFrame();
+  final frame = <double>[];
+  for(final value in frameGenerator){
+    frame.add(value);
+  }
   logger.info("Got frame");
   logger.trace(frame.join(", "));  // ignore: cascade_invocations
   await realsense.dispose();

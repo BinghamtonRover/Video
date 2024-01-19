@@ -21,3 +21,6 @@ type-map:
       'lib': 'pkg_ffi'
       'c-type': 'Utf8'
       'dart-type': 'Utf8'
+
+compiler-opts:
+  - '-Isrc/librealsense/include'
