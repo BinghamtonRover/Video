@@ -3,6 +3,7 @@ import "dart:async";
 import "package:opencv_ffi/opencv_ffi.dart";
 import "package:typed_isolate/typed_isolate.dart";
 import "package:burt_network/burt_network.dart";
+import "package:burt_network/logging.dart";
 import "collection.dart";
 import "frame.dart";
 import "periodic_timer.dart";
@@ -22,7 +23,7 @@ class CameraIsolate extends IsolateChild<FrameData, VideoCommand>{
   Timer? statusTimer;
   /// A timer to read from the camera at an FPS given by [details].
   PeriodicTimer? frameTimer;
-  /// A timer to log out the [fpsCount] every 5 seconds using [LoggerUtils.debug].
+  /// A timer to log out the [fpsCount] every 5 seconds using [BurtLogger.debug].
   Timer? fpsTimer;
   /// Records how many FPS this camera is actually running at.
   int fpsCount = 0;
