@@ -49,5 +49,6 @@ class Collection {
 
 /// Holds all the devices connected
 final collection = Collection();
+
 /// Displays logs in the terminal and sends them to the Dashboard
 final logger = BurtLogger(socket: collection.videoServer);

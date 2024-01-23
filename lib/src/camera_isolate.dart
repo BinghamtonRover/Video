@@ -23,7 +23,7 @@ class CameraIsolate extends IsolateChild<FrameData, VideoCommand>{
   Timer? statusTimer;
   /// A timer to read from the camera at an FPS given by [details].
   PeriodicTimer? frameTimer;
-  /// A timer to log out the [fpsCount] every 5 seconds using [BurtLogger].
+  /// A timer to log out the [fpsCount] every 5 seconds using [BurtLogger.debug].
   Timer? fpsTimer;
   /// Records how many FPS this camera is actually running at.
   int fpsCount = 0;
