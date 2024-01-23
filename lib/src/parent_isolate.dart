@@ -18,7 +18,7 @@ import "camera_isolate.dart";
 /// from every camera, every frame, every second. That could be up to 5 MB per second of savings.
 class VideoController extends IsolateParent<VideoCommand, IsolatePayload>{
   @override
-  Future<void> run() async {
+  Future<void> init() async {
     for (final name in CameraName.values) {
       if (name == CameraName.CAMERA_NAME_UNDEFINED) continue;
       await spawn(
@@ -30,7 +30,7 @@ class VideoController extends IsolateParent<VideoCommand, IsolatePayload>{
   }
 
   @override 
-  void onData(IsolatePayload data) {
+  void onData(IsolatePayload data, Object id) {
     switch (data) {
       case DetailsPayload(): 
         collection.videoServer.sendMessage(VideoData(details: data.details));
@@ -64,7 +64,7 @@ class VideoController extends IsolateParent<VideoCommand, IsolatePayload>{
     final command = VideoCommand(details: CameraDetails(status: CameraStatus.CAMERA_DISABLED));
     for (final name in CameraName.values) {
       if (name == CameraName.CAMERA_NAME_UNDEFINED) continue;
-      send(command, name);
+      send(data: command, id: name);
     }
   }
 }

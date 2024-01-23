@@ -12,7 +12,7 @@ dependencies:
     git: https://github.com/Levi-Lesches/opencv_ffi
   burt_network: 
     git: https://github.com/BinghamtonRover/Networking
-  typed_isolate: ^1.0.1
+  typed_isolate: ^3.0.0
 
 dev_dependencies:
   test: ^1.21.0

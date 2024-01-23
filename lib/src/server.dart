@@ -13,7 +13,7 @@ class VideoServer extends RoverServer {
     if (wrapper.name != VideoCommand().messageName) return;
     final command = VideoCommand.fromBuffer(wrapper.data);
     sendMessage(command);  // Echo the request
-    collection.parent.send(command, command.details.name);
+    collection.parent.send(data: command, id: command.details.name);
   }
 
   @override
