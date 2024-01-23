@@ -23,12 +23,16 @@ void RealSense_free(NativeRealSense* ptr) {
   cout << "Deleted" << endl;
 }
 
-void RealSense_init(NativeRealSense* ptr) {
-  reinterpret_cast<burt_rs::RealSense*>(ptr)->init();
+BurtRsStatus RealSense_init(NativeRealSense* ptr) {
+  return reinterpret_cast<burt_rs::RealSense*>(ptr)->init();
 }
 
 uint16_t* RealSense_getDepthFrame(NativeRealSense* ptr) {
   return reinterpret_cast<burt_rs::RealSense*>(ptr)->getDepthFrame();
+}
+
+const char* RealSense_getDeviceName(NativeRealSense* ptr) {
+  return reinterpret_cast<burt_rs::RealSense*>(ptr)->getDeviceName();
 }
 
 int RealSense_getWidth(NativeRealSense* ptr) {
@@ -40,7 +44,7 @@ int RealSense_getHeight(NativeRealSense* ptr) {
 }
 
 float RealSense_getDepthScale(NativeRealSense* ptr) {
-  return reinterpret_cast<burt_rs::RealSense*>(ptr)->getDepthScale();
+  return reinterpret_cast<burt_rs::RealSense*>(ptr)->depthScale;
 }
 
 void rs2_frame_free(rs2_frame* ptr) {

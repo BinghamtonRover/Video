@@ -1,24 +1,29 @@
 #include "realsense_ffi.h"
+#include <librealsense2/rs.hpp>
 
 namespace burt_rs {
   class RealSense {
     public: 
       // Fields
       rs2_error* error;
-      rs2_device* device;
+      rs2::device device;
+      rs2::sensor sensor;
+
       // Defines the number of columns for each frame or zero for auto resolve
       int width;
       // Defines the number of lines for each frame or zero for auto resolve  
       int height;
+      float depthScale;
 
       // Constructors/Destructors
       ~RealSense();
 
-      // Methods
+      BurtRsStatus init();
+      BurtRsStatus start_stream();
+
       void checkError(rs2_error* error);
-      void init();
       uint16_t* getDepthFrame();
-      float getDepthScale();
+      const char* getDeviceName();
 
     private:
       rs2_context* context;

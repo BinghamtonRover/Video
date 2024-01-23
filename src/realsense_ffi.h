@@ -20,6 +20,14 @@
 extern "C" {
 #endif
 
+typedef enum {
+	BurtRsStatus_ok,
+	BurtRsStatus_no_device,
+	BurtRsStatus_too_many_devices,
+	BurtRsStatus_resolution_unknown,
+	BurtRsStatus_scale_unknown,
+} BurtRsStatus;
+
 // A fake ("opaque") C-friendly struct that we'll use a pointer to.
 // This pointer will actually represent the RealSense class in C++
 struct NativeRealSense;
@@ -27,7 +35,8 @@ typedef struct NativeRealSense NativeRealSense;
 
 FFI_PLUGIN_EXPORT NativeRealSense* RealSense_create();
 FFI_PLUGIN_EXPORT void RealSense_free(NativeRealSense* ptr);
-FFI_PLUGIN_EXPORT void RealSense_init(NativeRealSense* ptr);
+FFI_PLUGIN_EXPORT BurtRsStatus RealSense_init(NativeRealSense* ptr);
+FFI_PLUGIN_EXPORT const char* RealSense_getDeviceName(NativeRealSense* ptr);
 FFI_PLUGIN_EXPORT int RealSense_getWidth(NativeRealSense* ptr);
 FFI_PLUGIN_EXPORT int RealSense_getHeight(NativeRealSense* ptr);
 FFI_PLUGIN_EXPORT uint16_t* RealSense_getDepthFrame(NativeRealSense* ptr);

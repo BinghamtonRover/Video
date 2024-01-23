@@ -12,11 +12,11 @@ sudo apt-get install libglfw3-dev libgl1-mesa-dev libglu1-mesa-dev at
 cd librealsense
 mkdir -p build
 cd build
-cmake .. -DBUILD_EXAMPLES=false -DBUILD_GRAPHICAL_EXAMPLES=false -DBUILT_TOOLS=true -DBUILD_WITH_OPENMP=true -DBUILD_SHARED_LIBS=true -DCMAKE_BUILD_TYPE=Release -DBUILD_EASY_LOGGINGPP=false -DBUILD_WITH_TM2=false -DBUILD_GLSL_EXTENSIONS=false
+cmake .. -DFORCE_LIBUVC=true -DCMAKE_POSITION_INDEPENDENT_CODE=true -DBUILD_EXAMPLES=true -DBUILD_GRAPHICAL_EXAMPLES=true -DBUILD_GLSL_EXTENSIONS=true -DBUILD_TOOLS=true -DBUILD_WITH_OPENMP=true -DBUILD_SHARED_LIBS=true -DCMAKE_BUILD_TYPE=Release 
 make -j8
 sudo make install
 cd ../..
 
 # Build our FFI wrappers
 make clean
-make
+make shared

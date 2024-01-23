@@ -1,4 +1,5 @@
 import "dart:ffi";
+import "dart:io";
 
 import "package:video/video.dart";
 import "package:burt_network/logging.dart";
@@ -10,8 +11,12 @@ class RealSense {
   late double scale;
   
   Future<void> init() async {
-    nativeLib.RealSense_init(device);
-    scale = nativeLib.RealSense_getDepthScale(device);
+    print("Initializing...");
+    final status = nativeLib.RealSense_init(device);
+    if (status != BurtRsStatus.BurtRsStatus_ok) {
+      logger.warning("Initialization failed!");
+      exit(1);
+    }
   }
 
   Future<void> dispose() async {
@@ -32,6 +37,8 @@ void main() async {
   final realsense = RealSense();
   await realsense.init();
   logger.info("RealSense initialized");
+  return;
+  print("Getting depth");
   final frameGenerator = realsense.getDepthFrame();
   final frame = <double>[];
   for(final value in frameGenerator){
