@@ -1,5 +1,4 @@
 import "dart:async";
-import "dart:ffi";
 
 import "package:opencv_ffi/opencv_ffi.dart";
 import "package:typed_isolate/typed_isolate.dart";
@@ -13,18 +12,17 @@ import "camera_isolate.dart";
 /// A parent isolate that spawns [CameraIsolate]s to manage the cameras.
 /// 
 /// With one isolate per camera, each camera can read in parallel. This class sends [VideoCommand]s
-/// from the dashboard to the appropriate [CameraIsolate], and receives [FrameData]s which it uses
+/// from the dashboard to the appropriate [CameraIsolate], and receives [IsolatePayload]s which it uses
 /// to read an [OpenCVImage] from native memory and send to the dashboard. By not sending the frame
 /// from child isolate to the parent (just the pointer), we save a whole JPG image's worth of bytes
 /// from every camera, every frame, every second. That could be up to 5 MB per second of savings.
-class VideoController extends IsolateParent<VideoCommand, FrameData>{
+class VideoController extends IsolateParent<VideoCommand, IsolatePayload>{
   @override
-  Future<void> run() async {
+  Future<void> init() async {
     for (final name in CameraName.values) {
       if (name == CameraName.CAMERA_NAME_UNDEFINED) continue;
       await spawn(
         CameraIsolate(
-          logLevel: Logger.level, 
           details: getDefaultDetails(name),
         ),
       );
@@ -32,13 +30,32 @@ class VideoController extends IsolateParent<VideoCommand, FrameData>{
   }
 
   @override 
-  void onData(FrameData data) {
-    if (data.address == null) {
-      collection.videoServer.sendMessage(VideoData(details: data.details));
-    } else {      
-      final frame = OpenCVImage(pointer: Pointer.fromAddress(data.address!), length: data.length!);
-      collection.videoServer.sendMessage(VideoData(frame: frame.data, details: data.details));
-      frame.dispose();
+  void onData(IsolatePayload data, Object id) {
+    switch (data) {
+      case DetailsPayload(): 
+        collection.videoServer.sendMessage(VideoData(details: data.details));
+      case FramePayload():
+        final frame = data.getFrame();
+        collection.videoServer.sendMessage(VideoData(frame: frame.data, details: data.details));
+        frame.dispose();
+      case LogPayload(): switch (data.level) {
+        // Turns out using deprecated members when you *have* to still results in a lint. 
+        // See https://github.com/dart-lang/linter/issues/4852 for why we ignore it.
+        case LogLevel.all: logger.info(data.message);
+        // ignore: deprecated_member_use
+        case LogLevel.verbose: logger.trace(data.message);
+        case LogLevel.trace: logger.trace(data.message);
+        case LogLevel.debug: logger.debug(data.message);
+        case LogLevel.info: logger.info(data.message);
+        case LogLevel.warning: logger.warning(data.message);
+        case LogLevel.error: logger.error(data.message);
+        // ignore: deprecated_member_use
+        case LogLevel.wtf: logger.info(data.message);
+        case LogLevel.fatal: logger.critical(data.message);
+        // ignore: deprecated_member_use
+        case LogLevel.nothing: logger.info(data.message);
+        case LogLevel.off: logger.info(data.message);
+      } 
     }
   }
 
@@ -47,7 +64,7 @@ class VideoController extends IsolateParent<VideoCommand, FrameData>{
     final command = VideoCommand(details: CameraDetails(status: CameraStatus.CAMERA_DISABLED));
     for (final name in CameraName.values) {
       if (name == CameraName.CAMERA_NAME_UNDEFINED) continue;
-      send(command, name);
+      send(data: command, id: name);
     }
   }
 }
