@@ -3,7 +3,7 @@ import "package:burt_network/burt_network.dart";
 import "collection.dart";
 
 /// Class for the video program to interact with the dashboard
-class VideoServer extends ServerSocket {
+class VideoServer extends RoverServer {
   /// Requires a port to communicate through
   VideoServer({required super.port}) : super(device: Device.VIDEO);
 
@@ -15,4 +15,7 @@ class VideoServer extends ServerSocket {
     sendMessage(command);  // Echo the request
     collection.parent.send(command, command.details.name);
   }
+
+  @override
+  void restart() => collection.restart();
 }

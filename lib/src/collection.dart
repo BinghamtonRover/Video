@@ -45,6 +45,19 @@ class Collection {
     await parent.run();
     logger.info("Video program initialized");
   }
+
+  /// Stops all cameras and disconnects from the hardware.
+  Future<void> dispose() async { 
+    await videoServer.dispose();
+    parent.stopAll();
+    parent.clear();
+  }
+
+  /// Restarts the video program.
+  Future<void> restart() async {
+    await dispose();
+    await init();
+  }
 }
 
 /// Holds all the devices connected
