@@ -39,6 +39,8 @@ class VideoController extends IsolateParent<VideoCommand, IsolatePayload>{
         collection.videoServer.sendMessage(VideoData(frame: frame.data, details: data.details));
         frame.dispose();
       case LogPayload(): switch (data.level) {
+        // Turns out using deprecated members when you *have* to still results in a lint. 
+        // See https://github.com/dart-lang/linter/issues/4852 for why we ignore it.
         case LogLevel.all: logger.info(data.message);
         // ignore: deprecated_member_use
         case LogLevel.verbose: logger.trace(data.message);
