@@ -77,76 +77,22 @@ class LibRealSenseBindings {
   late final _RealSense_getDeviceName = _RealSense_getDeviceNamePtr.asFunction<
       ffi.Pointer<pkg_ffi.Utf8> Function(ffi.Pointer<NativeRealSense>)>();
 
-  int RealSense_getWidth(
+  /// FFI_PLUGIN_EXPORT int RealSense_getWidth(NativeRealSense* ptr);
+  /// FFI_PLUGIN_EXPORT int RealSense_getHeight(NativeRealSense* ptr);
+  ffi.Pointer<BurtRsFrames> RealSense_getFrames(
     ffi.Pointer<NativeRealSense> ptr,
   ) {
-    return _RealSense_getWidth(
+    return _RealSense_getFrames(
       ptr,
     );
   }
 
-  late final _RealSense_getWidthPtr = _lookup<
-          ffi.NativeFunction<ffi.Int Function(ffi.Pointer<NativeRealSense>)>>(
-      'RealSense_getWidth');
-  late final _RealSense_getWidth = _RealSense_getWidthPtr.asFunction<
-      int Function(ffi.Pointer<NativeRealSense>)>();
-
-  int RealSense_getHeight(
-    ffi.Pointer<NativeRealSense> ptr,
-  ) {
-    return _RealSense_getHeight(
-      ptr,
-    );
-  }
-
-  late final _RealSense_getHeightPtr = _lookup<
-          ffi.NativeFunction<ffi.Int Function(ffi.Pointer<NativeRealSense>)>>(
-      'RealSense_getHeight');
-  late final _RealSense_getHeight = _RealSense_getHeightPtr.asFunction<
-      int Function(ffi.Pointer<NativeRealSense>)>();
-
-  ffi.Pointer<ffi.Uint16> RealSense_getDepthFrame(
-    ffi.Pointer<NativeRealSense> ptr,
-  ) {
-    return _RealSense_getDepthFrame(
-      ptr,
-    );
-  }
-
-  late final _RealSense_getDepthFramePtr = _lookup<
+  late final _RealSense_getFramesPtr = _lookup<
       ffi.NativeFunction<
-          ffi.Pointer<ffi.Uint16> Function(
-              ffi.Pointer<NativeRealSense>)>>('RealSense_getDepthFrame');
-  late final _RealSense_getDepthFrame = _RealSense_getDepthFramePtr.asFunction<
-      ffi.Pointer<ffi.Uint16> Function(ffi.Pointer<NativeRealSense>)>();
-
-  double RealSense_getDepthScale(
-    ffi.Pointer<NativeRealSense> ptr,
-  ) {
-    return _RealSense_getDepthScale(
-      ptr,
-    );
-  }
-
-  late final _RealSense_getDepthScalePtr = _lookup<
-          ffi.NativeFunction<ffi.Float Function(ffi.Pointer<NativeRealSense>)>>(
-      'RealSense_getDepthScale');
-  late final _RealSense_getDepthScale = _RealSense_getDepthScalePtr.asFunction<
-      double Function(ffi.Pointer<NativeRealSense>)>();
-
-  void rs2_frame_free(
-    ffi.Pointer<rs2_frame> ptr,
-  ) {
-    return _rs2_frame_free(
-      ptr,
-    );
-  }
-
-  late final _rs2_frame_freePtr =
-      _lookup<ffi.NativeFunction<ffi.Void Function(ffi.Pointer<rs2_frame>)>>(
-          'rs2_frame_free');
-  late final _rs2_frame_free =
-      _rs2_frame_freePtr.asFunction<void Function(ffi.Pointer<rs2_frame>)>();
+          ffi.Pointer<BurtRsFrames> Function(
+              ffi.Pointer<NativeRealSense>)>>('RealSense_getFrames');
+  late final _RealSense_getFrames = _RealSense_getFramesPtr.asFunction<
+      ffi.Pointer<BurtRsFrames> Function(ffi.Pointer<NativeRealSense>)>();
 }
 
 abstract class BurtRsStatus {
@@ -157,8 +103,29 @@ abstract class BurtRsStatus {
   static const int BurtRsStatus_scale_unknown = 4;
 }
 
+final class BurtRsConfig extends ffi.Struct {
+  @ffi.Int()
+  external int width;
+
+  @ffi.Int()
+  external int height;
+
+  @ffi.Float()
+  external double scale;
+}
+
+final class BurtRsFrames extends ffi.Struct {
+  external ffi.Pointer<ffi.Uint16> depth_frame;
+
+  external ffi.Pointer<ffi.Uint8> colorized_frame;
+
+  @ffi.Int()
+  external int depth_length;
+
+  @ffi.Int()
+  external int colorized_length;
+}
+
 /// A fake ("opaque") C-friendly struct that we'll use a pointer to.
 /// This pointer will actually represent the RealSense class in C++
 final class NativeRealSense extends ffi.Opaque {}
-
-final class rs2_frame extends ffi.Opaque {}
