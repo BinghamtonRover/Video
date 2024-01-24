@@ -4,34 +4,22 @@
 namespace burt_rs {
   class RealSense {
     public: 
-      // Fields
-      rs2_error* error;
-      rs2::device device;
-      rs2::sensor sensor;
+      BurtRsConfig config;
 
-      // Defines the number of columns for each frame or zero for auto resolve
-      int width;
-      // Defines the number of lines for each frame or zero for auto resolve  
-      int height;
-      float depthScale;
-
-      // Constructors/Destructors
+      RealSense();
       ~RealSense();
-
       BurtRsStatus init();
-      BurtRsStatus start_stream();
 
-      void checkError(rs2_error* error);
-      uint16_t* getDepthFrame();
+      BurtRsStatus startStream();
+      void stopStream();
+
+      BurtRsFrames* getFrames();
       const char* getDeviceName();
 
     private:
-      rs2_context* context;
-      rs2_device_list* device_list;
-      rs2_config* config;
-      rs2_pipeline* pipeline;
-      rs2_pipeline_profile* pipeline_profile;
-      rs2_stream_profile_list* stream_profile_list;
-      rs2_stream_profile* stream_profile;
+      rs2::device device;
+      rs2::depth_sensor sensor;
+      rs2::pipeline pipeline;
+      rs2::colorizer colorizer = rs2::colorizer();
   };
 }

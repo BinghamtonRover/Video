@@ -38,110 +38,51 @@ BurtRsStatus burt_rs::RealSense::init() {
     device = devices[0];
   }
   sensor = device.first<rs2::depth_sensor>();
+  auto scale = sensor.get_depth_scale();
+  if (scale == 0) {
+    return BurtRsStatus::BurtRsStatus_scale_unknown;
+  } else {
+    config.scale = scale;
+  }
   return BurtRsStatus::BurtRsStatus_ok;
 }
 
-BurtRsStatus burt_rs::RealSense::start_stream() {
-  rs2::pipeline pipe;
-  rs2::pipeline_profile profile = pipe.start();
-  auto depth_stream = profile.get_stream(RS2_STREAM_DEPTH).as<rs2::video_stream_profile>();
-  width = depth_stream.width();
-  height = depth_stream.height();
+BurtRsStatus burt_rs::RealSense::startStream() {
+  auto profile = pipeline.start();
+  auto frames = pipeline.wait_for_frames();
+  auto frame = frames.get_depth_frame();
+  auto width = frame.get_width();
+  auto height = frame.get_height();
+
   if (width == 0 || height == 0) {
     return BurtRsStatus::BurtRsStatus_resolution_unknown;
   } else {
+    config.width = width;
+    config.height = height;
     return BurtRsStatus::BurtRsStatus_ok;
   }
 }
 
-  // rs2::context ctx;
-  // rs2::device_list devices = ctx.query_devices();
-  // rs2::pipeline pipe;
-  // rs2::pipeline_profile selection = pipe.start();
-  // auto sensor = selection.get_device().first<rs2::depth_sensor>();
-  // return;
-  // if (devices.size() == 0) {
-  //   std::cout << "No devices found" << endl;
-  //   return;
-  // }
-  // std::cout << "Found devices: " << endl;
-  // int index = 0;
-  // for (rs2::device device : devices) {
-  //   index++;
-  //   // vector<rs2::sensor> sensors = device.query_sensors();
-  //   // int numSensors = sensors.size();
-  //   std::cout << "Device " << index++ << endl;
-  //   // " has " << numSensors << " sensors" << endl;
-  // }
-  // return;
+void burt_rs::RealSense::stopStream() {
+  pipeline.stop();
+}
 
+burt_rs::RealSense::~RealSense() {
+  stopStream();
+}
 
-  // context = rs2_create_context(25402, &error);
-  // checkError(error);
-
-  // device_list = rs2_query_devices(context, &error);
-  // checkError(error);
-  
-  // int device_count = rs2_get_device_count(device_list, &error);
-  // checkError(error);
-  // if(device_count == 0) exit(EXIT_FAILURE);
-
-  // device = rs2_create_device(device_list, 0, &error);
-  // checkError(error);
-
-  // pipeline = rs2_create_pipeline(context, &error);
-  // checkError(error);
-
-  // config = rs2_create_config(&error);
-  // checkError(error);
-
-  // rs2_config_enable_stream(config, STREAM, STREAM_INDEX, WIDTH, HEIGHT, FORMAT, FPS, &error);
-  // checkError(error);
-
-  // pipeline_profile = rs2_pipeline_start_with_config(pipeline, config, &error);
-  // if(error){
-  //   printf("The connected device doesn't support depth streaming!\n");
-  //   exit(EXIT_FAILURE);
-  // }
-
-  // stream_profile_list = rs2_pipeline_profile_get_streams(pipeline_profile, &error);
-  // if(error){
-  //   printf("Failed to create stream profile list!\n");
-  //   exit(EXIT_FAILURE);
-  // }
-
-  // stream_profile = (rs2_stream_profile*)rs2_get_stream_profile(stream_profile_list, 0, &error);
-  // if(error){
-  //   printf("Failed to create stream profile!\n");
-  //   exit(EXIT_FAILURE);
-  // }
-
-  // rs2_stream stream; rs2_format format; int index; int unique_id; int framerate;
-  // rs2_get_stream_profile_data(stream_profile, &stream, &format, &index, &unique_id, &framerate, &error);
-  // if(error){
-  //   printf("Failed to get stream profile data!\n");
-  //   exit(EXIT_FAILURE);
-  // }
-
-  // rs2_get_video_stream_resolution(stream_profile, &width, &height, &error);
-  // if(error){
-  //   printf("Failed to get video stream resolution data!\n");
-  //   exit(EXIT_FAILURE);
-  // }
-  // cout << "Done initializing" << endl;
-// }
-
-// burt_rs::RealSense::~RealSense() {
-//   rs2_delete_pipeline_profile(pipeline_profile);
-//   rs2_delete_stream_profiles_list(stream_profile_list);
-//   //cout << "delete3" << endl;
-//   //rs2_delete_stream_profile(stream_profile);
-//   rs2_delete_config(config);
-//   rs2_delete_pipeline(pipeline);
-//   // rs2_delete_device(device);
-//   rs2_delete_device_list(device_list);
-//   rs2_delete_context(context);
-// }
+BurtRsFrames* burt_rs::RealSense::getFrames() {
+  BurtRsFrames* result = new BurtRsFrames;
+  rs2::frameset frames;
+  pipeline.poll_for_frames(&frames);
+  rs2::frame depth = frames.get_depth_frame();
+  rs2::frame colorized = colorizer.colorize(depth);
+  result->depth_frame = (uint16_t*) depth.get_data();
+  result->depth_length = depth.get_data_size();
+  result->colorized_frame = (uint8_t*) colorized.get_data();
+  result->colorized_length = colorized.get_data_size();
+  return result;
+}
 
 // uint16_t* burt_rs::RealSense::getDepthFrame() {
 //   rs2_frame* frames = rs2_pipeline_wait_for_frames(pipeline, 15000, &error);
