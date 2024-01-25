@@ -8,7 +8,7 @@ using namespace std;
 
 // -------------------- Device methods --------------------
 burt_rs::RealSense::RealSense() { }
-burt_rs::RealSense::~RealSense() { stopStream(); }
+burt_rs::RealSense::~RealSense() { }
 
 BurtRsStatus burt_rs::RealSense::init() {
   rs2::context context;
@@ -65,8 +65,9 @@ void burt_rs::RealSense::stopStream() {
 
 BurtRsFrames* burt_rs::RealSense::getFrames() {
   BurtRsFrames* result = new BurtRsFrames;
-  rs2::frameset frames;
-  pipeline.poll_for_frames(&frames);
+  // rs2::frameset frames;
+  // if (!pipeline.poll_for_frames(&frames)) return nullptr;
+  rs2::frameset frames = pipeline.wait_for_frames();
   rs2::frame frame = frames.get_depth_frame();
   rs2::frame colorized = colorizer.colorize(frame);
   frame.keep();

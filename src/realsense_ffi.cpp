@@ -31,6 +31,10 @@ const char* RealSense_getDeviceName(NativeRealSense* ptr) {
   return reinterpret_cast<burt_rs::RealSense*>(ptr)->getDeviceName();
 }
 
+BurtRsConfig RealSense_getDeviceConfig(NativeRealSense* ptr) {
+  return reinterpret_cast<burt_rs::RealSense*>(ptr)->config;
+}
+
 BurtRsStatus RealSense_startStream(NativeRealSense* ptr) {
   return reinterpret_cast<burt_rs::RealSense*>(ptr)->startStream();
 }

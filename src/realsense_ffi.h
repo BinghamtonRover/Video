@@ -46,6 +46,7 @@ FFI_PLUGIN_EXPORT NativeRealSense* RealSense_create();
 FFI_PLUGIN_EXPORT void RealSense_free(NativeRealSense* ptr);
 FFI_PLUGIN_EXPORT BurtRsStatus RealSense_init(NativeRealSense* ptr);
 FFI_PLUGIN_EXPORT const char* RealSense_getDeviceName(NativeRealSense* ptr);
+FFI_PLUGIN_EXPORT BurtRsConfig RealSense_getDeviceConfig(NativeRealSense* ptr);
 
 // Streams
 FFI_PLUGIN_EXPORT BurtRsStatus RealSense_startStream(NativeRealSense* ptr);

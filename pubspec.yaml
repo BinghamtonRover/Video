@@ -15,6 +15,10 @@ dependencies:
   typed_isolate: ^3.0.0
   ffi: ^2.1.0
 
+dependency_overrides:
+  opencv_ffi: 
+    path: ../opencv_ffi
+
 dev_dependencies:
   ffigen: ^11.0.0
   test: ^1.21.0

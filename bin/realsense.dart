@@ -1,9 +1,13 @@
 import "dart:ffi";
+import "dart:typed_data";
 import "dart:io";
 
 import "package:ffi/ffi.dart";
 import "package:video/video.dart";
+import "package:opencv_ffi/opencv_ffi.dart" as opencv;
 import "package:burt_network/logging.dart";
+import "package:burt_network/burt_network.dart";
+
 
 final logger = BurtLogger();
 
@@ -33,12 +37,12 @@ class RealSense {
   }
 
   Future<void> dispose() async {
-    nativeLib.RealSense_stopStream(device);
+    // nativeLib.RealSense_stopStream(device);
     nativeLib.RealSense_free(device);
     logger.info("Disposed of RealSense device");
   }
 
-  // Iterable<double> getDepthFrame() sync* { 
+  // Iterable<double> getDepthFrame() sync* {
   //   final width = nativeLib.RealSense_getWidth(device);
   //   final height = nativeLib.RealSense_getHeight(device);
   //   final frame = nativeLib.RealSense_getDepthFrame(device);
@@ -46,13 +50,42 @@ class RealSense {
   //       yield frame[i] * scale;
   //     }
   // }
+
+  Uint8List getColorizedFrame() {
+    final framesPtr = nativeLib.RealSense_getFrames(device);
+    if (framesPtr == nullptr) {
+      logger.warning("No frame returned");
+      exit(3);
+    }
+    final frames = framesPtr.ref;
+    final colorized = frames.colorized_frame;
+    return colorized.asTypedList(frames.colorized_length);
+  }
 }
 
 void main() async {
   Logger.level = LogLevel.trace;
   final realsense = RealSense();
+  final videoServer = VideoServer(port: 8002);
   await realsense.init();
-  await realsense.dispose();
+  await videoServer.init();
+
+  logger.debug("Starting stream");
+  await realsense.startStream();
+
+  while (true) {
+    logger.debug("Reading frame");
+    final frame = realsense.getColorizedFrame();
+    logger.info("Got a frame: ${frame.length}");
+    final Pointer<Mat> matrix = opencv.getMatrix(height, width, frame);
+    final opencv.OpenCVImage? jpg = opencv.encodeJpg(matrix, quality: 50);
+    final details = CameraDetails(name: CameraName.AUTONOMY_DEPTH);
+    final message = VideoData(frame: jpg, details: details);
+    videoServer.sendMessage(message);
+    await Future<void>.delayed(Duration(milliseconds: 100));
+  }
+
+  // // await realsense.dispose();
   
   // print("Getting depth");
   // final frameGenerator = realsense.getDepthFrame();
