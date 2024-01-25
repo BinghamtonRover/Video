@@ -27,27 +27,21 @@ BurtRsStatus RealSense_init(NativeRealSense* ptr) {
   return reinterpret_cast<burt_rs::RealSense*>(ptr)->init();
 }
 
-BurtRsFrames* RealSense_getDepthFrame(NativeRealSense* ptr) {
-  return reinterpret_cast<burt_rs::RealSense*>(ptr)->getFrames();
-}
-
 const char* RealSense_getDeviceName(NativeRealSense* ptr) {
   return reinterpret_cast<burt_rs::RealSense*>(ptr)->getDeviceName();
 }
 
-// int RealSense_getWidth(NativeRealSense* ptr) {
-//   return reinterpret_cast<burt_rs::RealSense*>(ptr)->burtConfig.width;
-// }
+BurtRsStatus RealSense_startStream(NativeRealSense* ptr) {
+  return reinterpret_cast<burt_rs::RealSense*>(ptr)->startStream();
+}
+void RealSense_stopStream(NativeRealSense* ptr) {
+  reinterpret_cast<burt_rs::RealSense*>(ptr)->stopStream();
+}
 
-// int RealSense_getHeight(NativeRealSense* ptr) {
-//   return reinterpret_cast<burt_rs::RealSense*>(ptr)->burtConfig.height;
-// }
+BurtRsFrames* RealSense_getFrames(NativeRealSense* ptr) {
+  return reinterpret_cast<burt_rs::RealSense*>(ptr)->getFrames();
+}
 
-// float RealSense_getDepthScale(NativeRealSense* ptr) {
-//   return reinterpret_cast<burt_rs::RealSense*>(ptr)->burtConfig.scale;
-// }
-
-void rs2_frame_free(rs2_frame* ptr) {
-  // Can't use `delete` here because rs2_frames are allocated using malloc/calloc, not `new`
-  free(ptr);
+void BurtRsFrames_free(BurtRsFrames* ptr) {
+  freeFrames(ptr);
 }

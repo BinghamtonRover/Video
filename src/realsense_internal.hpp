@@ -9,17 +9,18 @@ namespace burt_rs {
       RealSense();
       ~RealSense();
       BurtRsStatus init();
+      const char* getDeviceName();
 
       BurtRsStatus startStream();
       void stopStream();
 
       BurtRsFrames* getFrames();
-      const char* getDeviceName();
 
     private:
       rs2::device device;
-      rs2::depth_sensor sensor;
       rs2::pipeline pipeline;
       rs2::colorizer colorizer = rs2::colorizer();
   };
 }
+
+void freeFrames(BurtRsFrames* frames);

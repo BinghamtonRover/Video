@@ -33,6 +33,7 @@ typedef struct {
 	uint8_t* colorized_frame;
 	int depth_length;
 	int colorized_length;
+	void* frame_pointer;
 } BurtRsFrames;
 
 // A fake ("opaque") C-friendly struct that we'll use a pointer to.
@@ -40,16 +41,19 @@ typedef struct {
 struct NativeRealSense;
 typedef struct NativeRealSense NativeRealSense;
 
+// Initialization
 FFI_PLUGIN_EXPORT NativeRealSense* RealSense_create();
 FFI_PLUGIN_EXPORT void RealSense_free(NativeRealSense* ptr);
 FFI_PLUGIN_EXPORT BurtRsStatus RealSense_init(NativeRealSense* ptr);
 FFI_PLUGIN_EXPORT const char* RealSense_getDeviceName(NativeRealSense* ptr);
-// FFI_PLUGIN_EXPORT int RealSense_getWidth(NativeRealSense* ptr);
-// FFI_PLUGIN_EXPORT int RealSense_getHeight(NativeRealSense* ptr);
-FFI_PLUGIN_EXPORT BurtRsFrames *RealSense_getFrames(NativeRealSense *ptr);
-// FFI_PLUGIN_EXPORT float RealSense_getDepthScale(NativeRealSense* ptr);
 
-// FFI_PLUGIN_EXPORT void rs2_frame_free(rs2_frame* ptr);
+// Streams
+FFI_PLUGIN_EXPORT BurtRsStatus RealSense_startStream(NativeRealSense* ptr);
+FFI_PLUGIN_EXPORT void RealSense_stopStream(NativeRealSense* ptr);
+
+// Frames
+FFI_PLUGIN_EXPORT BurtRsFrames* RealSense_getFrames(NativeRealSense* ptr);
+FFI_PLUGIN_EXPORT void BurtRsFrames_free(BurtRsFrames* ptr);
 
 #ifdef __cplusplus
 }

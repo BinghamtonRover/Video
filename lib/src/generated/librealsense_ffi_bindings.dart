@@ -24,6 +24,7 @@ class LibRealSenseBindings {
           lookup)
       : _lookup = lookup;
 
+  /// Initialization
   ffi.Pointer<NativeRealSense> RealSense_create() {
     return _RealSense_create();
   }
@@ -77,8 +78,36 @@ class LibRealSenseBindings {
   late final _RealSense_getDeviceName = _RealSense_getDeviceNamePtr.asFunction<
       ffi.Pointer<pkg_ffi.Utf8> Function(ffi.Pointer<NativeRealSense>)>();
 
-  /// FFI_PLUGIN_EXPORT int RealSense_getWidth(NativeRealSense* ptr);
-  /// FFI_PLUGIN_EXPORT int RealSense_getHeight(NativeRealSense* ptr);
+  /// Streams
+  int RealSense_startStream(
+    ffi.Pointer<NativeRealSense> ptr,
+  ) {
+    return _RealSense_startStream(
+      ptr,
+    );
+  }
+
+  late final _RealSense_startStreamPtr = _lookup<
+          ffi.NativeFunction<ffi.Int32 Function(ffi.Pointer<NativeRealSense>)>>(
+      'RealSense_startStream');
+  late final _RealSense_startStream = _RealSense_startStreamPtr.asFunction<
+      int Function(ffi.Pointer<NativeRealSense>)>();
+
+  void RealSense_stopStream(
+    ffi.Pointer<NativeRealSense> ptr,
+  ) {
+    return _RealSense_stopStream(
+      ptr,
+    );
+  }
+
+  late final _RealSense_stopStreamPtr = _lookup<
+          ffi.NativeFunction<ffi.Void Function(ffi.Pointer<NativeRealSense>)>>(
+      'RealSense_stopStream');
+  late final _RealSense_stopStream = _RealSense_stopStreamPtr.asFunction<
+      void Function(ffi.Pointer<NativeRealSense>)>();
+
+  /// Frames
   ffi.Pointer<BurtRsFrames> RealSense_getFrames(
     ffi.Pointer<NativeRealSense> ptr,
   ) {
@@ -93,6 +122,20 @@ class LibRealSenseBindings {
               ffi.Pointer<NativeRealSense>)>>('RealSense_getFrames');
   late final _RealSense_getFrames = _RealSense_getFramesPtr.asFunction<
       ffi.Pointer<BurtRsFrames> Function(ffi.Pointer<NativeRealSense>)>();
+
+  void BurtRsFrames_free(
+    ffi.Pointer<BurtRsFrames> ptr,
+  ) {
+    return _BurtRsFrames_free(
+      ptr,
+    );
+  }
+
+  late final _BurtRsFrames_freePtr =
+      _lookup<ffi.NativeFunction<ffi.Void Function(ffi.Pointer<BurtRsFrames>)>>(
+          'BurtRsFrames_free');
+  late final _BurtRsFrames_free = _BurtRsFrames_freePtr.asFunction<
+      void Function(ffi.Pointer<BurtRsFrames>)>();
 }
 
 abstract class BurtRsStatus {
@@ -124,6 +167,8 @@ final class BurtRsFrames extends ffi.Struct {
 
   @ffi.Int()
   external int colorized_length;
+
+  external ffi.Pointer<ffi.Void> frame_pointer;
 }
 
 /// A fake ("opaque") C-friendly struct that we'll use a pointer to.
