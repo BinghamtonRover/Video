@@ -8,8 +8,7 @@ environment:
 
 # Add regular dependencies here.
 dependencies:
-  opencv_ffi: 
-    git: https://github.com/Levi-Lesches/opencv_ffi
+  opencv_ffi: ^1.2.0
   burt_network: 
     git: https://github.com/BinghamtonRover/Networking
   typed_isolate: ^3.0.0

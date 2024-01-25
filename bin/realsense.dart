@@ -21,7 +21,8 @@ class RealSense {
     final status = nativeLib.RealSense_init(device);
     if (status != BurtRsStatus.BurtRsStatus_ok) {
       logger.warning("Initialization failed!");
-      exit(1);
+      // exit(1);
+      return;
     }
     final name = nativeLib.RealSense_getDeviceName(device);
     final nameString = name.toDartString();
@@ -33,7 +34,8 @@ class RealSense {
     final status = nativeLib.RealSense_startStream(device);
     if (status != BurtRsStatus.BurtRsStatus_ok) {
       logger.warning("Stream failed!");
-      exit(2);
+      // exit(2);
+      return;
     }
     final config = nativeLib.RealSense_getDeviceConfig(device);
     height = config.height;
@@ -89,10 +91,9 @@ void main() async {
       logger.warning("Could not encode matrix: $matrix");
       exit(4);
     }
-    File("temp.png").writeAsBytesSync(jpg.data);
-    break;
-    final details = CameraDetails(name: CameraName.AUTONOMY_DEPTH);
-    final message = VideoData(frame: jpg.data, details: details);
+    final bytes = jpg.data;
+    final details = CameraDetails(status: CameraStatus.CAMERA_ENABLED, name: CameraName.AUTONOMY_DEPTH);
+    final message = VideoData(frame: bytes, details: details);
     videoServer.sendMessage(message);
     await Future<void>.delayed(const Duration(milliseconds: 100));
   }
