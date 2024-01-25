@@ -5,10 +5,7 @@ import "package:video/video.dart";
 
 class RealSenseStub extends RealSenseInterface {
   @override
-  bool init() {
-    logger.warning("Using virtual RealSense");
-    return true;
-  }
+  bool init() => true;
 
   @override void dispose() { }
 
