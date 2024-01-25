@@ -1,8 +1,10 @@
 import "dart:ffi";
+import "dart:typed_data";
 
 import "package:burt_network/burt_network.dart";
 import "package:burt_network/logging.dart";
 import "package:opencv_ffi/opencv_ffi.dart";
+import "package:video/video.dart";
 
 /// A payload containing some data to report back to the parent isolate.
 /// 
@@ -50,4 +52,18 @@ class LogPayload extends IsolatePayload {
   final String message;
   /// A const constructor.
   const LogPayload({required this.level, required this.message});
+}
+
+class DepthFramePayload extends IsolatePayload {
+  final int address;  // uint8_t*
+  final int length;
+  final int framesAddress;
+  const DepthFramePayload({
+    required this.address,
+    required this.length,
+    required this.framesAddress,
+  });
+
+  Uint8List get depthFrame => Pointer<Uint8>.fromAddress(address).asTypedList(length);
+  Pointer<BurtRsFrames> get framesPointer => Pointer<BurtRsFrames>.fromAddress(framesAddress);
 }

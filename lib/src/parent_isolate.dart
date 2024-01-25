@@ -1,31 +1,33 @@
 import "dart:async";
 
-import "package:opencv_ffi/opencv_ffi.dart";
+import "package:opencv_ffi/opencv_ffi.dart" as opencv;
 import "package:typed_isolate/typed_isolate.dart";
 import "package:burt_network/burt_network.dart";
 import "package:burt_network/logging.dart";
 
-import "collection.dart";
-import "frame.dart";
-import "camera_isolate.dart";
+import "package:video/video.dart";
+
 
 /// A parent isolate that spawns [CameraIsolate]s to manage the cameras.
 /// 
 /// With one isolate per camera, each camera can read in parallel. This class sends [VideoCommand]s
 /// from the dashboard to the appropriate [CameraIsolate], and receives [IsolatePayload]s which it uses
-/// to read an [OpenCVImage] from native memory and send to the dashboard. By not sending the frame
+/// to read an [opencv.OpenCVImage] from native memory and send to the dashboard. By not sending the frame
 /// from child isolate to the parent (just the pointer), we save a whole JPG image's worth of bytes
 /// from every camera, every frame, every second. That could be up to 5 MB per second of savings.
 class VideoController extends IsolateParent<VideoCommand, IsolatePayload>{
   @override
   Future<void> init() async {
     for (final name in CameraName.values) {
-      if (name == CameraName.CAMERA_NAME_UNDEFINED) continue;
-      await spawn(
-        CameraIsolate(
-          details: getDefaultDetails(name),
-        ),
-      );
+      switch (name) {
+        case CameraName.CAMERA_NAME_UNDEFINED: continue;
+        case CameraName.AUTONOMY_DEPTH: continue;
+        // All other cameras share the same logic, even future cameras
+        default:  // ignore: no_default_cases
+          final details = getDefaultDetails(name);
+          final isolate = OpenCVCameraIsolate(details: details);
+          await spawn(isolate);
+      }
     }
   }
 
@@ -38,6 +40,9 @@ class VideoController extends IsolateParent<VideoCommand, IsolatePayload>{
         final frame = data.getFrame();
         collection.videoServer.sendMessage(VideoData(frame: frame.data, details: data.details));
         frame.dispose();
+      case DepthFramePayload(): 
+        collection.videoServer.sendDepthFrame(VideoData(frame: data.depthFrame));
+        nativeLib.BurtRsFrames_free(data.framesPointer);
       case LogPayload(): switch (data.level) {
         // Turns out using deprecated members when you *have* to still results in a lint. 
         // See https://github.com/dart-lang/linter/issues/4852 for why we ignore it.
