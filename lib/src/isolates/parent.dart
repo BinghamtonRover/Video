@@ -4,10 +4,8 @@ import "package:opencv_ffi/opencv_ffi.dart" as opencv;
 import "package:typed_isolate/typed_isolate.dart";
 import "package:burt_network/burt_network.dart";
 import "package:burt_network/logging.dart";
-import "package:video/src/realsense_isolate.dart";
 
 import "package:video/video.dart";
-
 
 /// A parent isolate that spawns [CameraIsolate]s to manage the cameras.
 /// 

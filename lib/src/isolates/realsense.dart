@@ -2,10 +2,11 @@ import "dart:ffi";
 
 import "package:burt_network/generated.dart";
 import "package:burt_network/logging.dart";
+
 import "package:video/video.dart";
 
 class RealSenseIsolate extends CameraIsolate {
-  late final RealSense camera = RealSense();
+  late final RealSenseInterface camera = RealSenseInterface.forPlatform();
   bool hasError = false;
   RealSenseIsolate({required super.details});
 
@@ -41,10 +42,11 @@ class RealSenseIsolate extends CameraIsolate {
   @override
   void sendFrame() {
     if (hasError) return;
-    final frames = camera.getFrames();
-    if (frames == null) return updateDetails(CameraDetails(status: CameraStatus.CAMERA_NOT_RESPONDING));
-    final colorFrame = frames.colorized.ref;
-    send(FramePayload(details: details, address: colorFrame.data.address, length: colorFrame.length));
-    send(DepthFramePayload(frames.depth.address));
+    final depthPointer = camera.getDepthFrame();
+    if (depthPointer == nullptr) return updateDetails(CameraDetails(status: CameraStatus.CAMERA_NOT_RESPONDING));
+    final colorized = camera.colorize(depthPointer);
+    if (colorized == null) return updateDetails(CameraDetails(status: CameraStatus.CAMERA_NOT_RESPONDING));
+    send(FramePayload(details: details, address: colorized.pointer.address, length: colorized.data.length));
+    send(DepthFramePayload(depthPointer.address));
   }
 }
