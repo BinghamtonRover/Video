@@ -14,6 +14,8 @@ final logger = BurtLogger();
 class RealSense {
   final device = nativeLib.RealSense_create();
   late double scale;
+  late int height;
+  late int width;
   
   Future<void> init() async {
     final status = nativeLib.RealSense_init(device);
@@ -33,6 +35,9 @@ class RealSense {
       logger.warning("Stream failed!");
       exit(2);
     }
+    final config = nativeLib.RealSense_getDeviceConfig(device);
+    height = config.height;
+    width = config.width;
     logger.info("Stream started");
   }
 
@@ -77,12 +82,19 @@ void main() async {
     logger.debug("Reading frame");
     final frame = realsense.getColorizedFrame();
     logger.info("Got a frame: ${frame.length}");
-    final Pointer<opencv.Mat> matrix = opencv.getMatrix(height, width, frame);
+    final Pointer<opencv.Mat> matrix = opencv.getMatrix(realsense.height, realsense.width, frame);
+    logger.trace("Matrix pointer: $matrix");
     final opencv.OpenCVImage? jpg = opencv.encodeJpg(matrix, quality: 50);
+    if (jpg == null) {
+      logger.warning("Could not encode matrix: $matrix");
+      exit(4);
+    }
+    File("temp.png").writeAsBytesSync(jpg.data);
+    break;
     final details = CameraDetails(name: CameraName.AUTONOMY_DEPTH);
-    final message = VideoData(frame: jpg, details: details);
+    final message = VideoData(frame: jpg.data, details: details);
     videoServer.sendMessage(message);
-    await Future<void>.delayed(Duration(milliseconds: 100));
+    await Future<void>.delayed(const Duration(milliseconds: 100));
   }
 
   // // await realsense.dispose();
