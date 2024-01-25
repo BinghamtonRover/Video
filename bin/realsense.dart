@@ -77,7 +77,7 @@ void main() async {
     logger.debug("Reading frame");
     final frame = realsense.getColorizedFrame();
     logger.info("Got a frame: ${frame.length}");
-    final Pointer<Mat> matrix = opencv.getMatrix(height, width, frame);
+    final Pointer<opencv.Mat> matrix = opencv.getMatrix(height, width, frame);
     final opencv.OpenCVImage? jpg = opencv.encodeJpg(matrix, quality: 50);
     final details = CameraDetails(name: CameraName.AUTONOMY_DEPTH);
     final message = VideoData(frame: jpg, details: details);

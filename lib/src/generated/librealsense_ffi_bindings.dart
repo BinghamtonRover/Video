@@ -78,6 +78,21 @@ class LibRealSenseBindings {
   late final _RealSense_getDeviceName = _RealSense_getDeviceNamePtr.asFunction<
       ffi.Pointer<pkg_ffi.Utf8> Function(ffi.Pointer<NativeRealSense>)>();
 
+  BurtRsConfig RealSense_getDeviceConfig(
+    ffi.Pointer<NativeRealSense> ptr,
+  ) {
+    return _RealSense_getDeviceConfig(
+      ptr,
+    );
+  }
+
+  late final _RealSense_getDeviceConfigPtr = _lookup<
+          ffi
+          .NativeFunction<BurtRsConfig Function(ffi.Pointer<NativeRealSense>)>>(
+      'RealSense_getDeviceConfig');
+  late final _RealSense_getDeviceConfig = _RealSense_getDeviceConfigPtr
+      .asFunction<BurtRsConfig Function(ffi.Pointer<NativeRealSense>)>();
+
   /// Streams
   int RealSense_startStream(
     ffi.Pointer<NativeRealSense> ptr,
