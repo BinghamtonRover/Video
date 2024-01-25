@@ -1,3 +1,5 @@
+import "dart:ffi";
+
 import "package:burt_network/generated.dart";
 import "package:burt_network/logging.dart";
 import "package:video/video.dart";
@@ -41,7 +43,8 @@ class RealSenseIsolate extends CameraIsolate {
     if (hasError) return;
     final frames = camera.getFrames();
     if (frames == null) return updateDetails(CameraDetails(status: CameraStatus.CAMERA_NOT_RESPONDING));
-    send(FramePayload(details: details, address: frames.colorized.address, length: frames.colorized.length));
-    send(DepthFramePayload(frames.depth));
+    final colorFrame = frames.colorized.ref;
+    send(FramePayload(details: details, address: colorFrame.data.address, length: colorFrame.length));
+    send(DepthFramePayload(frames.depth.address));
   }
 }

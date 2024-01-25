@@ -44,6 +44,22 @@ class FramePayload extends IsolatePayload {
   OpenCVImage getFrame() => OpenCVImage(pointer: Pointer.fromAddress(address), length: length);
 }
 
+class RsFramePayload extends IsolatePayload {
+  /// The details of the camera this frame came from.
+  final CameraDetails details;
+  /// The address in FFI memory this frame starts at.
+  final int address;
+
+  /// A const constructor.
+  const RsFramePayload({required this.details, required this.address});
+
+  Pointer<BurtRsFrame> get _framePointer => Pointer<BurtRsFrame>.fromAddress(address);
+  BurtRsFrame get _frame => _framePointer.ref;
+  
+  Uint8List get frame => Pointer<Uint8>.fromAddress(_frame.data.address).asTypedList(frame.length);
+  void dispose() => nativeLib.BurtRsFrame_free(_framePointer);
+}
+
 /// A class to send log messages across isolates. The parent isolate is responsible for logging.
 class LogPayload extends IsolatePayload {
   /// The level to log this message.
@@ -55,10 +71,12 @@ class LogPayload extends IsolatePayload {
 }
 
 class DepthFramePayload extends IsolatePayload {
-  final RealSenseFrame frame;
-  const DepthFramePayload(this.frame);
+  final int address;
+  const DepthFramePayload(this.address);
 
-  Uint8List get depthFrame => Pointer<Uint8>.fromAddress(frame.address).asTypedList(frame.length);
-  Pointer<BurtRsFrame> get framesPointer => Pointer<BurtRsFrame>.fromAddress(frame.rsAddress);
-  void dispose() => nativeLib.BurtRsFrame_free(framesPointer);
+  Pointer<BurtRsFrame> get _framePointer => Pointer<BurtRsFrame>.fromAddress(address); 
+  BurtRsFrame get _frame => _framePointer.ref;
+
+  Uint8List get depthFrame => Pointer<Uint8>.fromAddress(_frame.data.address).asTypedList(_frame.length);
+  void dispose() => nativeLib.BurtRsFrame_free(_framePointer);
 }

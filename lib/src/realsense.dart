@@ -3,8 +3,7 @@ import "package:ffi/ffi.dart";
 
 import "package:video/video.dart";
 
-typedef RealSenseFrame = ({int address, int length, int rsAddress});
-typedef RealSenseFrames = ({RealSenseFrame colorized, RealSenseFrame depth});
+typedef RealSenseFrames = ({Pointer<BurtRsFrame> colorized, Pointer<BurtRsFrame> depth});
 
 class RealSense {
   final device = nativeLib.RealSense_create();
@@ -37,15 +36,10 @@ class RealSense {
   }
 
   RealSenseFrames? getFrames() {
-    final depthPtr = nativeLib.RealSense_getDepthFrame(device);
-    if (depthPtr == nullptr) return null;
-    final depthResult = depthPtr.ref;
-    final colorPtr = nativeLib.BurtRsFrame_colorize(depthPtr);
-    if (colorPtr == nullptr) return null;
-    final colorResult = colorPtr.ref;
-    return (
-      depth: (address: depthResult.data.address, length: depthResult.length, rsAddress: depthPtr.address), 
-      colorized: (address: colorResult.data.address, length: colorResult.length, rsAddress: colorPtr.address),
-    );
+    final depthPointer = nativeLib.RealSense_getDepthFrame(device);
+    if (depthPointer == nullptr) return null;
+    final colorizedPointer = nativeLib.BurtRsFrame_colorize(depthPointer);
+    if (colorizedPointer == nullptr) return null;
+    return (depth: depthPointer, colorized: colorizedPointer);
   }
 }

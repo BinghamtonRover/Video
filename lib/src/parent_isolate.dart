@@ -44,9 +44,12 @@ class VideoController extends IsolateParent<VideoCommand, IsolatePayload>{
         final frame = data.getFrame();
         collection.videoServer.sendMessage(VideoData(frame: frame.data, details: data.details));
         frame.dispose();
+      case RsFramePayload(): 
+        collection.videoServer.sendMessage(VideoData(frame: data.frame, details: data.details));
+        data.dispose();
       case DepthFramePayload(): 
         collection.videoServer.sendDepthFrame(VideoData(frame: data.depthFrame));
-        Timer.run(() => nativeLib.BurtRsFrame_free(data.framesPointer));
+        data.dispose();
       case LogPayload(): switch (data.level) {
         // Turns out using deprecated members when you *have* to still results in a lint. 
         // See https://github.com/dart-lang/linter/issues/4852 for why we ignore it.
