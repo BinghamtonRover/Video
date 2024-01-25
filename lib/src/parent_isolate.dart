@@ -4,6 +4,7 @@ import "package:opencv_ffi/opencv_ffi.dart" as opencv;
 import "package:typed_isolate/typed_isolate.dart";
 import "package:burt_network/burt_network.dart";
 import "package:burt_network/logging.dart";
+import "package:video/src/realsense_isolate.dart";
 
 import "package:video/video.dart";
 
@@ -21,7 +22,10 @@ class VideoController extends IsolateParent<VideoCommand, IsolatePayload>{
     for (final name in CameraName.values) {
       switch (name) {
         case CameraName.CAMERA_NAME_UNDEFINED: continue;
-        case CameraName.AUTONOMY_DEPTH: continue;
+        case CameraName.AUTONOMY_DEPTH: 
+          final details = getDefaultDetails(name);
+          final isolate = RealSenseIsolate(details: details);
+          await spawn(isolate);
         // All other cameras share the same logic, even future cameras
         default:  // ignore: no_default_cases
           final details = getDefaultDetails(name);
@@ -42,7 +46,7 @@ class VideoController extends IsolateParent<VideoCommand, IsolatePayload>{
         frame.dispose();
       case DepthFramePayload(): 
         collection.videoServer.sendDepthFrame(VideoData(frame: data.depthFrame));
-        nativeLib.BurtRsFrames_free(data.framesPointer);
+        Timer.run(() => nativeLib.BurtRsFrame_free(data.framesPointer));
       case LogPayload(): switch (data.level) {
         // Turns out using deprecated members when you *have* to still results in a lint. 
         // See https://github.com/dart-lang/linter/issues/4852 for why we ignore it.

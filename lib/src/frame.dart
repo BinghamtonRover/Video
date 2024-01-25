@@ -3,7 +3,7 @@ import "dart:typed_data";
 
 import "package:burt_network/burt_network.dart";
 import "package:burt_network/logging.dart";
-import "package:opencv_ffi/opencv_ffi.dart";
+import "package:opencv_ffi/opencv_ffi.dart" show OpenCVImage;
 import "package:video/video.dart";
 
 /// A payload containing some data to report back to the parent isolate.
@@ -55,15 +55,10 @@ class LogPayload extends IsolatePayload {
 }
 
 class DepthFramePayload extends IsolatePayload {
-  final int address;  // uint8_t*
-  final int length;
-  final int framesAddress;
-  const DepthFramePayload({
-    required this.address,
-    required this.length,
-    required this.framesAddress,
-  });
+  final RealSenseFrame frame;
+  const DepthFramePayload(this.frame);
 
-  Uint8List get depthFrame => Pointer<Uint8>.fromAddress(address).asTypedList(length);
-  Pointer<BurtRsFrames> get framesPointer => Pointer<BurtRsFrames>.fromAddress(framesAddress);
+  Uint8List get depthFrame => Pointer<Uint8>.fromAddress(frame.address).asTypedList(frame.length);
+  Pointer<BurtRsFrame> get framesPointer => Pointer<BurtRsFrame>.fromAddress(frame.rsAddress);
+  void dispose() => nativeLib.BurtRsFrame_free(framesPointer);
 }

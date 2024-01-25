@@ -1,8 +1,6 @@
 import "dart:ffi";
-import "dart:typed_data";
 import "dart:io";
 
-import "package:ffi/ffi.dart";
 import "package:video/video.dart";
 import "package:opencv_ffi/opencv_ffi.dart" as opencv;
 import "package:burt_network/logging.dart";
@@ -11,80 +9,34 @@ import "package:burt_network/burt_network.dart";
 
 final logger = BurtLogger();
 
-class RealSense {
-  final device = nativeLib.RealSense_create();
-  late double scale;
-  late int height;
-  late int width;
-  
-  Future<void> init() async {
-    final status = nativeLib.RealSense_init(device);
-    if (status != BurtRsStatus.BurtRsStatus_ok) {
-      logger.warning("Initialization failed!");
-      // exit(1);
-      return;
-    }
-    final name = nativeLib.RealSense_getDeviceName(device);
-    final nameString = name.toDartString();
-    logger.info("RealSense initialized");
-    logger.trace("Device: $nameString");
-  }
-
-  Future<void> startStream() async {
-    final status = nativeLib.RealSense_startStream(device);
-    if (status != BurtRsStatus.BurtRsStatus_ok) {
-      logger.warning("Stream failed!");
-      // exit(2);
-      return;
-    }
-    final config = nativeLib.RealSense_getDeviceConfig(device);
-    height = config.height;
-    width = config.width;
-    logger.info("Stream started");
-  }
-
-  Future<void> dispose() async {
-    // nativeLib.RealSense_stopStream(device);
-    nativeLib.RealSense_free(device);
-    logger.info("Disposed of RealSense device");
-  }
-
-  // Iterable<double> getDepthFrame() sync* {
-  //   final width = nativeLib.RealSense_getWidth(device);
-  //   final height = nativeLib.RealSense_getHeight(device);
-  //   final frame = nativeLib.RealSense_getDepthFrame(device);
-  //     for (int i = 0; i < width * height; i++){
-  //       yield frame[i] * scale;
-  //     }
-  // }
-
-  Uint8List getColorizedFrame() {
-    final framesPtr = nativeLib.RealSense_getFrames(device);
-    if (framesPtr == nullptr) {
-      logger.warning("No frame returned");
-      exit(3);
-    }
-    final frames = framesPtr.ref;
-    final colorized = frames.colorized_frame;
-    return colorized.asTypedList(frames.colorized_length);
-  }
-}
-
 void main() async {
   Logger.level = LogLevel.trace;
-  final realsense = RealSense();
+  late final RealSense realsense = RealSense();
   final videoServer = VideoServer(port: 8002);
-  await realsense.init();
   await videoServer.init();
 
-  logger.debug("Starting stream");
-  await realsense.startStream();
+  logger.info("Opening camera");
+  if (!realsense.init()) {
+    logger.critical("Could not open the RealSense");
+    exit(1);
+  } 
+  logger.info("Starting stream");
+  if (!realsense.startStream()) {
+    logger.critical("Could not start RealSense stream");
+  }
 
   while (true) {
     logger.debug("Reading frame");
-    final frame = realsense.getColorizedFrame();
-    logger.info("Got a frame: ${frame.length}");
-    final Pointer<opencv.Mat> matrix = opencv.getMatrix(realsense.height, realsense.width, frame);
+    final frames = realsense.getFrames();
+    if (frames == null) {
+      logger.warning("No frame"); 
+      continue;
+    }
+    // Don't need the depth data, just the colorized version
+    nativeLib.BurtRsFrame_free(Pointer.fromAddress(frames.depth.address));
+    final colorPointer = Pointer<Uint8>.fromAddress(frames.colorized.address);
+    final colorFrame = colorPointer.asTypedList(frames.colorized.length);
+    final Pointer<opencv.Mat> matrix = opencv.getMatrix(realsense.height, realsense.width, colorFrame);
     logger.trace("Matrix pointer: $matrix");
     final opencv.OpenCVImage? jpg = opencv.encodeJpg(matrix, quality: 50);
     if (jpg == null) {

@@ -42,10 +42,14 @@ void RealSense_stopStream(NativeRealSense* ptr) {
   reinterpret_cast<burt_rs::RealSense*>(ptr)->stopStream();
 }
 
-BurtRsFrames* RealSense_getFrames(NativeRealSense* ptr) {
-  return reinterpret_cast<burt_rs::RealSense*>(ptr)->getFrames();
+BurtRsFrame* RealSense_getDepthFrame(NativeRealSense* ptr) {
+  return reinterpret_cast<burt_rs::RealSense*>(ptr)->getDepthFrame();
 }
 
-void BurtRsFrames_free(BurtRsFrames* ptr) {
-  freeFrames(ptr);
+BurtRsFrame* BurtRsFrame_colorize(BurtRsFrame* framePtr) {
+  return colorize(framePtr);
+}
+
+void BurtRsFrame_free(BurtRsFrame* ptr) {
+  freeFrame(ptr);
 }

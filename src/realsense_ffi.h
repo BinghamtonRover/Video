@@ -29,12 +29,10 @@ typedef struct {
 } BurtRsConfig;
 
 typedef struct {
-	uint16_t* depth_frame;
-	uint8_t* colorized_frame;
-	int depth_length;
-	int colorized_length;
-	void* frame_pointer;
-} BurtRsFrames;
+	const void* data;
+	int length;
+	const void* rs_pointer;
+} BurtRsFrame;
 
 // A fake ("opaque") C-friendly struct that we'll use a pointer to.
 // This pointer will actually represent the RealSense class in C++
@@ -53,8 +51,9 @@ FFI_PLUGIN_EXPORT BurtRsStatus RealSense_startStream(NativeRealSense* ptr);
 FFI_PLUGIN_EXPORT void RealSense_stopStream(NativeRealSense* ptr);
 
 // Frames
-FFI_PLUGIN_EXPORT BurtRsFrames* RealSense_getFrames(NativeRealSense* ptr);
-FFI_PLUGIN_EXPORT void BurtRsFrames_free(BurtRsFrames* ptr);
+FFI_PLUGIN_EXPORT BurtRsFrame* RealSense_getDepthFrame(NativeRealSense* ptr);
+FFI_PLUGIN_EXPORT BurtRsFrame* BurtRsFrame_colorize(BurtRsFrame* framePtr);
+FFI_PLUGIN_EXPORT void BurtRsFrame_free(BurtRsFrame* ptr);
 
 #ifdef __cplusplus
 }

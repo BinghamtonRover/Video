@@ -34,6 +34,7 @@ abstract class CameraIsolate extends IsolateChild<IsolatePayload, VideoCommand> 
   @override
   Future<void> run() async {
     sendLog(LogLevel.debug, "Initializing camera: $name");
+    initCamera();
     statusTimer = Timer.periodic(const Duration(seconds: 5), sendStatus);
     start();
   }

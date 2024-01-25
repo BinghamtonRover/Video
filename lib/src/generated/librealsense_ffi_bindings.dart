@@ -123,34 +123,49 @@ class LibRealSenseBindings {
       void Function(ffi.Pointer<NativeRealSense>)>();
 
   /// Frames
-  ffi.Pointer<BurtRsFrames> RealSense_getFrames(
+  ffi.Pointer<BurtRsFrame> RealSense_getDepthFrame(
     ffi.Pointer<NativeRealSense> ptr,
   ) {
-    return _RealSense_getFrames(
+    return _RealSense_getDepthFrame(
       ptr,
     );
   }
 
-  late final _RealSense_getFramesPtr = _lookup<
+  late final _RealSense_getDepthFramePtr = _lookup<
       ffi.NativeFunction<
-          ffi.Pointer<BurtRsFrames> Function(
-              ffi.Pointer<NativeRealSense>)>>('RealSense_getFrames');
-  late final _RealSense_getFrames = _RealSense_getFramesPtr.asFunction<
-      ffi.Pointer<BurtRsFrames> Function(ffi.Pointer<NativeRealSense>)>();
+          ffi.Pointer<BurtRsFrame> Function(
+              ffi.Pointer<NativeRealSense>)>>('RealSense_getDepthFrame');
+  late final _RealSense_getDepthFrame = _RealSense_getDepthFramePtr.asFunction<
+      ffi.Pointer<BurtRsFrame> Function(ffi.Pointer<NativeRealSense>)>();
 
-  void BurtRsFrames_free(
-    ffi.Pointer<BurtRsFrames> ptr,
+  ffi.Pointer<BurtRsFrame> BurtRsFrame_colorize(
+    ffi.Pointer<BurtRsFrame> framePtr,
   ) {
-    return _BurtRsFrames_free(
+    return _BurtRsFrame_colorize(
+      framePtr,
+    );
+  }
+
+  late final _BurtRsFrame_colorizePtr = _lookup<
+      ffi.NativeFunction<
+          ffi.Pointer<BurtRsFrame> Function(
+              ffi.Pointer<BurtRsFrame>)>>('BurtRsFrame_colorize');
+  late final _BurtRsFrame_colorize = _BurtRsFrame_colorizePtr.asFunction<
+      ffi.Pointer<BurtRsFrame> Function(ffi.Pointer<BurtRsFrame>)>();
+
+  void BurtRsFrame_free(
+    ffi.Pointer<BurtRsFrame> ptr,
+  ) {
+    return _BurtRsFrame_free(
       ptr,
     );
   }
 
-  late final _BurtRsFrames_freePtr =
-      _lookup<ffi.NativeFunction<ffi.Void Function(ffi.Pointer<BurtRsFrames>)>>(
-          'BurtRsFrames_free');
-  late final _BurtRsFrames_free = _BurtRsFrames_freePtr.asFunction<
-      void Function(ffi.Pointer<BurtRsFrames>)>();
+  late final _BurtRsFrame_freePtr =
+      _lookup<ffi.NativeFunction<ffi.Void Function(ffi.Pointer<BurtRsFrame>)>>(
+          'BurtRsFrame_free');
+  late final _BurtRsFrame_free = _BurtRsFrame_freePtr.asFunction<
+      void Function(ffi.Pointer<BurtRsFrame>)>();
 }
 
 abstract class BurtRsStatus {
@@ -172,18 +187,13 @@ final class BurtRsConfig extends ffi.Struct {
   external double scale;
 }
 
-final class BurtRsFrames extends ffi.Struct {
-  external ffi.Pointer<ffi.Uint16> depth_frame;
-
-  external ffi.Pointer<ffi.Uint8> colorized_frame;
+final class BurtRsFrame extends ffi.Struct {
+  external ffi.Pointer<ffi.Void> data;
 
   @ffi.Int()
-  external int depth_length;
+  external int length;
 
-  @ffi.Int()
-  external int colorized_length;
-
-  external ffi.Pointer<ffi.Void> frame_pointer;
+  external ffi.Pointer<ffi.Void> rs_pointer;
 }
 
 /// A fake ("opaque") C-friendly struct that we'll use a pointer to.

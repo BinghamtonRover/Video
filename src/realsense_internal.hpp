@@ -14,13 +14,14 @@ namespace burt_rs {
       BurtRsStatus startStream();
       void stopStream();
 
-      BurtRsFrames* getFrames();
+      BurtRsFrame* getDepthFrame();
 
     private:
       rs2::device device;
       rs2::pipeline pipeline;
-      rs2::colorizer colorizer = rs2::colorizer();
   };
 }
 
-void freeFrames(BurtRsFrames* frames);
+static rs2::colorizer colorizer = rs2::colorizer();
+BurtRsFrame* colorize(BurtRsFrame* frame);
+void freeFrame(BurtRsFrame* frames);

@@ -5,4 +5,5 @@ export "src/server.dart";
 export "src/ffi.dart";
 export "src/periodic_timer.dart";
 export "src/frame.dart";
+export "src/realsense.dart";
 export "src/camera.dart";
