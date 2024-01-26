@@ -14,5 +14,5 @@ class RealSenseStub extends RealSenseInterface {
 
   @override String getName() => "Virtual RealSense";
   @override Pointer<RealSenseFrame> getDepthFrame() => nullptr;
-  @override OpenCVImage? colorize(Pointer<RealSenseFrame> depthFrame) => null;
+  @override OpenCVImage? colorize(Pointer<RealSenseFrame> depthFrame, {int quality = 75}) => null;
 }

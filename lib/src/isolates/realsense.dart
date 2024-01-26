@@ -43,8 +43,11 @@ class RealSenseIsolate extends CameraIsolate {
   void sendFrame() {
     if (hasError) return;
     final depthPointer = camera.getDepthFrame();
-    if (depthPointer == nullptr) return updateDetails(CameraDetails(status: CameraStatus.CAMERA_NOT_RESPONDING));
-    final colorized = camera.colorize(depthPointer);
+    sendLog(LogLevel.trace, "Got depth frame: $depthPointer");
+    // if (depthPointer.isEmpty) return updateDetails(CameraDetails(status: CameraStatus.CAMERA_NOT_RESPONDING));
+    if (depthPointer.isEmpty) return;
+    final colorized = camera.colorize(depthPointer, quality: 50);
+    sendLog(LogLevel.trace, "Got colorized frame: $colorized");
     if (colorized == null) return updateDetails(CameraDetails(status: CameraStatus.CAMERA_NOT_RESPONDING));
     send(FramePayload(details: details, address: colorized.pointer.address, length: colorized.data.length));
     send(DepthFramePayload(depthPointer.address));

@@ -66,28 +66,35 @@ void burt_rs::RealSense::stopStream() {
 BurtRsFrame* burt_rs::RealSense::getDepthFrame() {
   rs2::frameset frames;
   if (!pipeline.poll_for_frames(&frames)) return nullptr;
-  rs2::frame frame = frames.get_depth_frame();
-  frame.keep();
+  rs2::depth_frame frame = frames.get_depth_frame();
+  rs2::depth_frame* frame2 = new rs2::depth_frame(frame);
+  // frame.keep();
   auto result = new BurtRsFrame;
-  result->data = frame.get_data();
-  result->length = frame.get_data_size();
-  result->rs_pointer = &frame;
+  result->data = frame2->get_data();
+  result->length = frame2->get_data_size();
+  result->rs_pointer = frame2;
   return result;
 }
 
 BurtRsFrame* colorize(BurtRsFrame* depthFrame) {
-  const rs2::frame* framePtr = reinterpret_cast<const rs2::frame*>(depthFrame->rs_pointer);
-  rs2::frame frame = *framePtr;
-  rs2::frame colorized = colorizer.colorize(frame);
-  colorized.keep();
+  cout << "[BurtRS] Colorizing " << depthFrame << endl;
+  rs2::depth_frame* framePtr = reinterpret_cast<rs2::depth_frame*>(depthFrame->rs_pointer);
+  cout << "[BurtRS] rs2::framePtr: " << framePtr << endl;
+  rs2::depth_frame frame = *framePtr;
+  cout << "[BurtRS] Running colorizer..." << endl;
+  rs2::frame colorized = colorizer.process(*framePtr);
+  rs2::frame* colorized2 = new rs2::depth_frame(frame);
+  colorized2->keep();
+  cout << "[BurtRS] Result: " << colorized2 << endl;
+  cout << "[BurtRS] Kept result" << endl;
   auto result = new BurtRsFrame;
-  result->data = colorized.get_data();
-  result->length = colorized.get_data_size();
-  result->rs_pointer = &colorized;
+  result->data = colorized2->get_data();
+  result->length = colorized2->get_data_size();
+  result->rs_pointer = colorized2;
   return result;
 }
 
-void freeFrames(BurtRsFrame* frames) {
-  rs2::frame* frame = (rs2::frame*) frames->rs_pointer;
+void freeFrame(BurtRsFrame* frames) {
+  rs2::frame* frame = reinterpret_cast<rs2::frame*>(frames->rs_pointer);
   frame->~frame();
 }

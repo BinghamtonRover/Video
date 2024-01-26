@@ -31,7 +31,7 @@ typedef struct {
 typedef struct {
 	const void* data;
 	int length;
-	const void* rs_pointer;
+	void* rs_pointer;
 } BurtRsFrame;
 
 // A fake ("opaque") C-friendly struct that we'll use a pointer to.

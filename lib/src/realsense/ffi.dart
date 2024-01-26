@@ -17,6 +17,11 @@ extension BurtRsFrameUtils on Pointer<RealSenseFrame> {
     final struct = ref;
     return struct.data.cast<Uint8>().asTypedList(struct.length);
   }
+
+  bool get isEmpty {
+    if (this == nullptr) return true;
+    return ref.data == nullptr;
+  }
 }
 
 String _getPath() {

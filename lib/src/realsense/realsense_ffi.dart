@@ -47,10 +47,16 @@ class RealSenseFFI extends RealSenseInterface {
 
   @override
   OpenCVImage? colorize(Pointer<RealSenseFrame> depthFrame, {int quality = 75}) { 
+    logger.trace("Colorizing frame: $depthFrame");
     final colorizedPointer = realsenseLib.BurtRsFrame_colorize(depthFrame);
-    if (colorizedPointer == nullptr) return null;
+    logger.trace("  Result: $colorizedPointer");
+    if (colorizedPointer.isEmpty) return null;
+    logger.trace("  Converting to matrix...");
     final image = getMatrix(_height, _width, colorizedPointer.frame);
+    logger.trace("  Matrix: $image");
     final jpg = encodeJpg(image, quality: quality);
+    // colorizedPointer.dispose();
+    logger.trace("  Jpg: $jpg");
     return jpg;
   }
 }

@@ -19,5 +19,5 @@ abstract class RealSenseInterface {
 
   String getName();
   Pointer<RealSenseFrame> getDepthFrame();
-  OpenCVImage? colorize(Pointer<RealSenseFrame> depthFrame);
+  OpenCVImage? colorize(Pointer<RealSenseFrame> depthFrame, {int quality});
 }
