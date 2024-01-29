@@ -55,9 +55,11 @@ class RealSenseIsolate extends CameraIsolate {
     sendLog(LogLevel.trace, "  Got matrix...");
     final OpenCVImage? jpg = encodeJpg(matrix, quality: 50);
     sendLog(LogLevel.trace, "  Done");
+    nativeLib.Mat_destroy(matrix);
     if (jpg == null) return;
     
     send(FramePayload(details: details, address: jpg.pointer.address, length: jpg.data.length));
     // send(DepthFramePayload(frames.address));
+    frames.dispose();
   }
 }

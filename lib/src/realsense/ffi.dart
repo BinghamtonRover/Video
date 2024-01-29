@@ -6,11 +6,7 @@ import "../generated/librealsense_ffi_bindings.dart";
 export "../generated/librealsense_ffi_bindings.dart";
 
 extension NativeFramesUtils on Pointer<NativeFrames> {
-  void dispose() {
-    if (this == nullptr) return;
-    print("Disposing frame: $this");
-    realsenseLib.NativeFrames_free(this);
-  }
+  void dispose() => realsenseLib.NativeFrames_free(this);
 
   Uint8List get depthFrame {
     final NativeFrames struct = ref;
