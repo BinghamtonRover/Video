@@ -25,10 +25,11 @@ class VideoController extends IsolateParent<VideoCommand, IsolatePayload>{
           final isolate = RealSenseIsolate(details: details);
           await spawn(isolate);
         // All other cameras share the same logic, even future cameras
-        default:  // ignore: no_default_cases
-          final details = getDefaultDetails(name);
-          final isolate = OpenCVCameraIsolate(details: details);
-          await spawn(isolate);
+        default: continue;
+        // default:  // ignore: no_default_cases
+        //   final details = getDefaultDetails(name);
+        //   final isolate = OpenCVCameraIsolate(details: details);
+        //   await spawn(isolate);
       }
     }
   }

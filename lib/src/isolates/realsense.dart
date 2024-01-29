@@ -45,20 +45,20 @@ class RealSenseIsolate extends CameraIsolate {
     // Get frames from RealSense
     final frames = camera.getFrames();
     sendLog(LogLevel.trace, "Got frames: ");
-    if (frames.isEmpty) return;
+    if (frames == nullptr) return;
     sendLog(LogLevel.trace, "  Depth: ${frames.ref.depth_data}");
     sendLog(LogLevel.trace, "  Colorized: ${frames.ref.colorized_data}");
-    
-    // Compress colorized frame
-    sendLog(LogLevel.trace, "Encoding JPG...");
-    final Pointer<Mat> matrix = getMatrix(camera.height, camera.width, frames.colorizedFrame);
-    sendLog(LogLevel.trace, "  Got matrix...");
-    final OpenCVImage? jpg = encodeJpg(matrix, quality: 50);
-    sendLog(LogLevel.trace, "  Done");
+
+    // // Compress colorized frame
+    final Pointer<Uint8> rawColorized = frames.ref.depth_data;
+    final Pointer<Mat> matrix = getMatrix(camera.height, camera.width, rawColorized);
+    final OpenCVImage? jpg = encodeJpg(matrix, quality: 30);
     nativeLib.Mat_destroy(matrix);
-    if (jpg == null) return;
+    sendLog(LogLevel.trace, "  Done");
     
-    send(FramePayload(details: details, address: jpg.pointer.address, length: jpg.data.length));
+    if (jpg != null) {
+      send(FramePayload(details: details, address: jpg.pointer.address, length: jpg.data.length));
+    }
     // send(DepthFramePayload(frames.address));
     frames.dispose();
   }

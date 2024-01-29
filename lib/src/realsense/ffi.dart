@@ -17,8 +17,6 @@ extension NativeFramesUtils on Pointer<NativeFrames> {
     final NativeFrames struct = ref;
     return struct.colorized_data.asTypedList(struct.colorized_length);
   }
-
-  bool get isEmpty => this == nullptr;
 }
 
 String _getPath() {

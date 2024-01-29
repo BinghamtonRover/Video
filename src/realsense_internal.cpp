@@ -4,6 +4,9 @@
 #include <iostream>
 #include <unistd.h>
 
+#define WIDTH 640
+#define HEIGHT 0
+
 using namespace std;
 
 // -------------------- Device methods --------------------
@@ -42,7 +45,9 @@ const char* burt_rs::RealSense::getDeviceName() {
 // -------------------- Stream methods --------------------
 
 BurtRsStatus burt_rs::RealSense::startStream() {
-  auto profile = pipeline.start();
+  rs2::config rs_config;
+  rs_config.enable_stream(RS2_STREAM_DEPTH, WIDTH, HEIGHT);
+  auto profile = pipeline.start(rs_config);
   auto frames = pipeline.wait_for_frames();
   auto frame = frames.get_depth_frame();
   auto width = frame.get_width();
@@ -65,16 +70,12 @@ void burt_rs::RealSense::stopStream() {
 
 NativeFrames* burt_rs::RealSense::getDepthFrame() {
   // Get the depth and color frames
-  // cout << "[BurtRS] Getting frames... " << endl;
   rs2::frameset frames;
   if (!pipeline.poll_for_frames(&frames)) return nullptr;
-  // cout << "[BurtRS]   Getting depth frame" << endl;
   rs2::depth_frame depth_frame = frames.get_depth_frame();
-  // cout << "[BurtRS]   Getting color frame" << endl;
   rs2::frame colorized_frame = colorizer.colorize(depth_frame);
 
   // Copy both frames -- TODO: optimize this to be a move instead
-  // cout << "[BurtRS]   Initializing copies" << endl;
   int depth_length = depth_frame.get_data_size();
   int colorized_length = colorized_frame.get_data_size();
   if (depth_length == 0 || colorized_length == 0) return nullptr;
@@ -82,19 +83,16 @@ NativeFrames* burt_rs::RealSense::getDepthFrame() {
   uint8_t* colorized_copy = new uint8_t[colorized_length];
 
   // Copy all the data in the depth frame
-  // cout << "[BurtRS]   Copying depth frame" << endl;
   const uint8_t* depth_data = static_cast<const uint8_t*>(depth_frame.get_data());
   for (int i = 0; i < depth_length; i++) {
     depth_copy[i] = depth_data[i];
   }
 
   // Copy all the data in the colorized frame
-  // cout << "[BurtRS]   Copying colorized frame" << endl;
   const uint8_t* colorized_data = static_cast<const uint8_t*>(colorized_frame.get_data());
   for (int i = 0; i < colorized_length; i++) {
     colorized_copy[i] = colorized_data[i];
   }
-  // cout << "[BurtRS]   Done!" << endl;
 
   // Return both frames
   return new NativeFrames {
@@ -108,4 +106,5 @@ NativeFrames* burt_rs::RealSense::getDepthFrame() {
 void freeFrame(NativeFrames* frames) {
   delete[] frames->depth_data;
   delete[] frames->colorized_data;
+  delete frames;
 }
