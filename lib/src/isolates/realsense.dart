@@ -2,6 +2,7 @@ import "dart:ffi";
 
 import "package:burt_network/generated.dart";
 import "package:burt_network/logging.dart";
+import "package:opencv_ffi/opencv_ffi.dart";
 
 import "package:video/video.dart";
 
@@ -41,15 +42,22 @@ class RealSenseIsolate extends CameraIsolate {
 
   @override
   void sendFrame() {
-    if (hasError) return;
-    final depthPointer = camera.getDepthFrame();
-    sendLog(LogLevel.trace, "Got depth frame: $depthPointer");
-    // if (depthPointer.isEmpty) return updateDetails(CameraDetails(status: CameraStatus.CAMERA_NOT_RESPONDING));
-    if (depthPointer.isEmpty) return;
-    final colorized = camera.colorize(depthPointer, quality: 50);
-    sendLog(LogLevel.trace, "Got colorized frame: $colorized");
-    if (colorized == null) return updateDetails(CameraDetails(status: CameraStatus.CAMERA_NOT_RESPONDING));
-    send(FramePayload(details: details, address: colorized.pointer.address, length: colorized.data.length));
-    send(DepthFramePayload(depthPointer.address));
+    // Get frames from RealSense
+    final frames = camera.getFrames();
+    sendLog(LogLevel.trace, "Got frames: ");
+    if (frames.isEmpty) return;
+    sendLog(LogLevel.trace, "  Depth: ${frames.ref.depth_data}");
+    sendLog(LogLevel.trace, "  Colorized: ${frames.ref.colorized_data}");
+    
+    // Compress colorized frame
+    sendLog(LogLevel.trace, "Encoding JPG...");
+    final Pointer<Mat> matrix = getMatrix(camera.height, camera.width, frames.colorizedFrame);
+    sendLog(LogLevel.trace, "  Got matrix...");
+    final OpenCVImage? jpg = encodeJpg(matrix, quality: 50);
+    sendLog(LogLevel.trace, "  Done");
+    if (jpg == null) return;
+    
+    send(FramePayload(details: details, address: jpg.pointer.address, length: jpg.data.length));
+    send(DepthFramePayload(frames.address));
   }
 }

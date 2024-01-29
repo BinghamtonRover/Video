@@ -1,14 +1,13 @@
 import "dart:ffi";
 import "package:ffi/ffi.dart";
-import "package:opencv_ffi/opencv_ffi.dart";
 
 import "package:video/video.dart";
 
 class RealSenseFFI extends RealSenseInterface {
   final device = realsenseLib.RealSense_create();
-  late double scale;
-  late int _height;
-  late int _width;
+  @override late double scale;
+  @override int height = 0;
+  @override int width = 0;
   
   @override
   bool init() {
@@ -26,8 +25,9 @@ class RealSenseFFI extends RealSenseInterface {
       return false;
     }
     final config = realsenseLib.RealSense_getDeviceConfig(device);
-    _height = config.height;
-    _width = config.width;
+    height = config.height;
+    width = config.width;
+    scale = config.scale;
     return true;
   }
 
@@ -40,23 +40,20 @@ class RealSenseFFI extends RealSenseInterface {
   }
 
   @override
-  Pointer<RealSenseFrame> getDepthFrame() {
-    final depthPointer = realsenseLib.RealSense_getDepthFrame(device);
-    return depthPointer;
-  }
+  Pointer<NativeFrames> getFrames() => realsenseLib.RealSense_getDepthFrame(device);
 
-  @override
-  OpenCVImage? colorize(Pointer<RealSenseFrame> depthFrame, {int quality = 75}) { 
-    logger.trace("Colorizing frame: $depthFrame");
-    final colorizedPointer = realsenseLib.BurtRsFrame_colorize(depthFrame);
-    logger.trace("  Result: $colorizedPointer");
-    if (colorizedPointer.isEmpty) return null;
-    logger.trace("  Converting to matrix...");
-    final image = getMatrix(_height, _width, colorizedPointer.frame);
-    logger.trace("  Matrix: $image");
-    final jpg = encodeJpg(image, quality: quality);
-    // colorizedPointer.dispose();
-    logger.trace("  Jpg: $jpg");
-    return jpg;
-  }
+  // @override
+  // OpenCVImage? colorize(Pointer<RealSenseFrame> depthFrame, {int quality = 75}) { 
+  //   logger.trace("Colorizing frame: $depthFrame");
+  //   final colorizedPointer = realsenseLib.BurtRsFrame_colorize(depthFrame);
+  //   logger.trace("  Result: $colorizedPointer");
+  //   if (colorizedPointer.isEmpty) return null;
+  //   logger.trace("  Converting to matrix...");
+  //   final image = getMatrix(_height, _width, colorizedPointer.frame);
+  //   logger.trace("  Matrix: $image");
+  //   final jpg = encodeJpg(image, quality: quality);
+  //   // colorizedPointer.dispose();
+  //   logger.trace("  Jpg: $jpg");
+  //   return jpg;
+  // }
 }

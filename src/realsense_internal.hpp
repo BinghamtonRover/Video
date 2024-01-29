@@ -14,7 +14,7 @@ namespace burt_rs {
       BurtRsStatus startStream();
       void stopStream();
 
-      BurtRsFrame* getDepthFrame();
+      NativeFrames* getDepthFrame();
 
     private:
       rs2::device device;
@@ -23,5 +23,5 @@ namespace burt_rs {
 }
 
 static rs2::colorizer colorizer = rs2::colorizer();
-BurtRsFrame* colorize(BurtRsFrame* frame);
-void freeFrame(BurtRsFrame* frames);
+// NativeFrames* colorize(NativeFrames* frame);
+void freeFrame(NativeFrames* frames);

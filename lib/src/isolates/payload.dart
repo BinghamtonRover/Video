@@ -1,5 +1,4 @@
 import "dart:ffi";
-import "dart:typed_data";
 
 import "package:burt_network/burt_network.dart";
 import "package:burt_network/logging.dart";
@@ -45,22 +44,6 @@ class FramePayload extends IsolatePayload {
   OpenCVImage getFrame() => OpenCVImage(pointer: Pointer.fromAddress(address), length: length);
 }
 
-class RsFramePayload extends IsolatePayload {
-  /// The details of the camera this frame came from.
-  final CameraDetails details;
-  /// The address in FFI memory this frame starts at.
-  final int address;
-
-  /// A const constructor.
-  const RsFramePayload({required this.details, required this.address});
-
-  Pointer<RealSenseFrame> get _framePointer => Pointer<RealSenseFrame>.fromAddress(address);
-  RealSenseFrame get _frame => _framePointer.ref;
-  
-  Uint8List get frame => Pointer<Uint8>.fromAddress(_frame.data.address).asTypedList(frame.length);
-  void dispose() => _framePointer.dispose();
-}
-
 /// A class to send log messages across isolates. The parent isolate is responsible for logging.
 class LogPayload extends IsolatePayload {
   /// The level to log this message.
@@ -75,9 +58,6 @@ class DepthFramePayload extends IsolatePayload {
   final int address;
   const DepthFramePayload(this.address);
 
-  Pointer<RealSenseFrame> get _framePointer => Pointer<RealSenseFrame>.fromAddress(address); 
-  RealSenseFrame get _frame => _framePointer.ref;
-
-  Uint8List get depthFrame => Pointer<Uint8>.fromAddress(_frame.data.address).asTypedList(_frame.length);
-  void dispose() => _framePointer.dispose();
+  Pointer<NativeFrames> get frame => Pointer<NativeFrames>.fromAddress(address); 
+  void dispose() => frame.dispose();
 }

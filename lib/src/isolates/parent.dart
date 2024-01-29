@@ -42,11 +42,8 @@ class VideoController extends IsolateParent<VideoCommand, IsolatePayload>{
         final frame = data.getFrame();
         collection.videoServer.sendMessage(VideoData(frame: frame.data, details: data.details));
         frame.dispose();
-      case RsFramePayload(): 
-        collection.videoServer.sendMessage(VideoData(frame: data.frame, details: data.details));
-        data.dispose();
       case DepthFramePayload(): 
-        collection.videoServer.sendDepthFrame(VideoData(frame: data.depthFrame));
+        collection.videoServer.sendDepthFrame(VideoData(frame: data.frame.depthFrame));
         data.dispose();
       case LogPayload(): switch (data.level) {
         // Turns out using deprecated members when you *have* to still results in a lint. 

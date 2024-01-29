@@ -1,7 +1,6 @@
 import "dart:ffi";
 import "dart:io";
 
-import "package:opencv_ffi/opencv_ffi.dart";
 import "package:video/video.dart";
 
 import "realsense_ffi.dart";
@@ -17,7 +16,10 @@ abstract class RealSenseInterface {
   bool startStream();
   void stopStream();
 
+  int get width;
+  int get height;
+  double get scale;
+
   String getName();
-  Pointer<RealSenseFrame> getDepthFrame();
-  OpenCVImage? colorize(Pointer<RealSenseFrame> depthFrame, {int quality});
+  Pointer<NativeFrames> getFrames();
 }

@@ -5,23 +5,23 @@ import "dart:typed_data";
 import "../generated/librealsense_ffi_bindings.dart";
 export "../generated/librealsense_ffi_bindings.dart";
 
-typedef RealSenseFrame = BurtRsFrame;
-
-extension BurtRsFrameUtils on Pointer<RealSenseFrame> {
+extension NativeFramesUtils on Pointer<NativeFrames> {
   void dispose() {
     if (this == nullptr) return;
-    realsenseLib.BurtRsFrame_free(this);
+    realsenseLib.NativeFrames_free(this);
   }
 
-  Uint8List get frame {
-    final struct = ref;
-    return struct.data.cast<Uint8>().asTypedList(struct.length);
+  Uint16List get depthFrame {
+    final NativeFrames struct = ref;
+    return struct.depth_data.asTypedList(struct.depth_length);
   }
 
-  bool get isEmpty {
-    if (this == nullptr) return true;
-    return ref.data == nullptr;
+  Uint8List get colorizedFrame {
+    final NativeFrames struct = ref;
+    return struct.colorized_data.asTypedList(struct.colorized_length);
   }
+
+  bool get isEmpty => this == nullptr;
 }
 
 String _getPath() {

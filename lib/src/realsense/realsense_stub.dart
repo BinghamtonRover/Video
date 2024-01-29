@@ -1,6 +1,5 @@
 import "dart:ffi";
 
-import "package:opencv_ffi/opencv_ffi.dart";
 import "package:video/video.dart";
 
 class RealSenseStub extends RealSenseInterface {
@@ -12,7 +11,11 @@ class RealSenseStub extends RealSenseInterface {
   @override bool startStream() => true;
   @override void stopStream() { }
 
+  @override int get width => 0;
+  @override int get height => 0;
+  @override double get scale => 0;
+
+
   @override String getName() => "Virtual RealSense";
-  @override Pointer<RealSenseFrame> getDepthFrame() => nullptr;
-  @override OpenCVImage? colorize(Pointer<RealSenseFrame> depthFrame, {int quality = 75}) => null;
+  @override Pointer<NativeFrames> getFrames() => nullptr;
 }
