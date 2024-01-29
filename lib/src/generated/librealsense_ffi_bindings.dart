@@ -173,7 +173,7 @@ final class BurtRsConfig extends ffi.Struct {
 }
 
 final class NativeFrames extends ffi.Struct {
-  external ffi.Pointer<ffi.Uint16> depth_data;
+  external ffi.Pointer<ffi.Uint8> depth_data;
 
   @ffi.Int()
   external int depth_length;

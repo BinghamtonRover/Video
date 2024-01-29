@@ -44,9 +44,11 @@ packages:
   burt_network:
     dependency: "direct main"
     description:
-      path: "../burt_network"
-      relative: true
-    source: path
+      path: "."
+      ref: HEAD
+      resolved-ref: "7c912ca2ac98a8442a2d068873eef20ebb1bb05d"
+      url: "https://github.com/BinghamtonRover/Networking"
+    source: git
     version: "1.1.0"
   cli_util:
     dependency: transitive
@@ -222,7 +224,7 @@ packages:
       path: "../opencv_ffi"
       relative: true
     source: path
-    version: "1.2.0"
+    version: "1.1.0"
   package_config:
     dependency: transitive
     description:

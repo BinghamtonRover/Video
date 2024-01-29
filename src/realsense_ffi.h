@@ -29,7 +29,7 @@ typedef struct {
 } BurtRsConfig;
 
 typedef struct {
-	const uint16_t* depth_data;
+	const uint8_t* depth_data;
 	int depth_length;
 	const uint8_t* colorized_data;
 	int colorized_length;

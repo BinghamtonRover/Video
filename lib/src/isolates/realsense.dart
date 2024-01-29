@@ -58,6 +58,6 @@ class RealSenseIsolate extends CameraIsolate {
     if (jpg == null) return;
     
     send(FramePayload(details: details, address: jpg.pointer.address, length: jpg.data.length));
-    send(DepthFramePayload(frames.address));
+    // send(DepthFramePayload(frames.address));
   }
 }
