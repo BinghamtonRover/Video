@@ -44,10 +44,20 @@ packages:
   burt_network:
     dependency: "direct main"
     description:
-      path: "../burt_network"
-      relative: true
-    source: path
+      path: "."
+      ref: HEAD
+      resolved-ref: "7c912ca2ac98a8442a2d068873eef20ebb1bb05d"
+      url: "https://github.com/BinghamtonRover/Networking"
+    source: git
     version: "1.1.0"
+  cli_util:
+    dependency: transitive
+    description:
+      name: cli_util
+      sha256: c05b7406fdabc7a49a3929d4af76bcaccbbffcbcdcf185b082e1ae07da323d19
+      url: "https://pub.dev"
+    source: hosted
+    version: "0.4.1"
   collection:
     dependency: transitive
     description:
@@ -81,13 +91,21 @@ packages:
     source: hosted
     version: "3.0.3"
   ffi:
-    dependency: transitive
+    dependency: "direct main"
     description:
       name: ffi
       sha256: "7bf0adc28a23d395f19f3f1eb21dd7cfd1dd9f8e1c50051c069122e6853bc878"
       url: "https://pub.dev"
     source: hosted
     version: "2.1.0"
+  ffigen:
+    dependency: "direct dev"
+    description:
+      name: ffigen
+      sha256: dead012f29db2be71ea152458f5eab600de98fbc244e01088ae6bf2616bceca7
+      url: "https://pub.dev"
+    source: hosted
+    version: "11.0.0"
   file:
     dependency: transitive
     description:
@@ -203,10 +221,12 @@ packages:
   opencv_ffi:
     dependency: "direct main"
     description:
-      path: "../opencv_ffi"
-      relative: true
-    source: path
-    version: "1.1.0"
+      path: "."
+      ref: HEAD
+      resolved-ref: "2169f646936e7fe3be6d68a40e4ec704a42ca80e"
+      url: "https://github.com/Levi-Lesches/opencv_ffi"
+    source: git
+    version: "1.2.0"
   package_config:
     dependency: transitive
     description:
@@ -232,7 +252,7 @@ packages:
     source: hosted
     version: "1.5.1"
   protobuf:
-    dependency: transitive
+    dependency: "direct main"
     description:
       name: protobuf
       sha256: "68645b24e0716782e58948f8467fd42a880f255096a821f9e7d0ec625b00c84d"
@@ -247,6 +267,14 @@ packages:
       url: "https://pub.dev"
     source: hosted
     version: "2.1.4"
+  quiver:
+    dependency: transitive
+    description:
+      name: quiver
+      sha256: b1c1ac5ce6688d77f65f3375a9abb9319b3cb32486bdc7a1e0fdf004d7ba4e47
+      url: "https://pub.dev"
+    source: hosted
+    version: "3.2.1"
   shelf:
     dependency: transitive
     description:
@@ -431,5 +459,13 @@ packages:
       url: "https://pub.dev"
     source: hosted
     version: "3.1.2"
+  yaml_edit:
+    dependency: transitive
+    description:
+      name: yaml_edit
+      sha256: "1579d4a0340a83cf9e4d580ea51a16329c916973bffd5bd4b45e911b25d46bfd"
+      url: "https://pub.dev"
+    source: hosted
+    version: "2.1.1"
 sdks:
   dart: ">=3.2.0 <4.0.0"

@@ -5,9 +5,7 @@ import "package:burt_network/burt_network.dart";
 import "package:burt_network/logging.dart";
 import "package:opencv_ffi/opencv_ffi.dart";
 
-import "constants.dart";
-import "parent_isolate.dart";
-import "server.dart";
+import "package:video/video.dart";
 
 /// Default details for a camera
 ///
@@ -63,5 +61,5 @@ class Collection {
 /// Holds all the devices connected
 final collection = Collection();
 
-/// Logs messages to the terminal and dashboard.
+/// Displays logs in the terminal and sends them to the Dashboard
 final logger = BurtLogger(socket: collection.videoServer);
