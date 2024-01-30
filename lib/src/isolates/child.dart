@@ -9,6 +9,13 @@ import "package:video/video.dart";
 
 const maxPacketLength = 60000;  // max UDP packet size in bytes
 
+extension on CameraDetails {
+  bool get interferesWithAutonomy => hasResolutionHeight()
+    || hasResolutionWidth()
+    || hasFps()
+    || hasStatus();
+}
+
 abstract class CameraIsolate extends IsolateChild<IsolatePayload, VideoCommand> {
   /// Holds the current details of the camera.
   final CameraDetails details;
@@ -44,7 +51,13 @@ abstract class CameraIsolate extends IsolateChild<IsolatePayload, VideoCommand> 
   }
 
   @override
-  void onData(VideoCommand data) => updateDetails(data.details);
+  void onData(VideoCommand data) {
+    if (data.details.interferesWithAutonomy) {
+      sendLog(LogLevel.error, "That would break autonomy");
+    } else {
+      updateDetails(data.details);
+    }
+  }
 
   /// Updates the camera's [details], which will take effect on the next [sendFrame] call.
   void updateDetails(CameraDetails newDetails) {
