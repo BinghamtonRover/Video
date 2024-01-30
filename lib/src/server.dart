@@ -17,6 +17,10 @@ class VideoServer extends RoverServer {
     if (wrapper.name != VideoCommand().messageName) return;
     final command = VideoCommand.fromBuffer(wrapper.data);
     sendMessage(command);  // Echo the request
+    if (command.details.name == CameraName.ROVER_FRONT) {
+      // ROVER_FRONT is on the same camera as AUTONOMY_DEPTH
+      command.details.name = CameraName.AUTONOMY_DEPTH;
+    }
     collection.parent.send(data: command, id: command.details.name);
   }
 

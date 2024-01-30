@@ -28,7 +28,6 @@ class RealSenseFFI extends RealSenseInterface {
     height = config.height;
     width = config.width;
     scale = config.scale;
-    print("Resolution: $width x $height");
     return true;
   }
 
