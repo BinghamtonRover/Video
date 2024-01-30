@@ -40,7 +40,7 @@ class VideoController extends IsolateParent<VideoCommand, IsolatePayload>{
       case DetailsPayload(): 
         collection.videoServer.sendMessage(VideoData(details: data.details));
       case FramePayload():
-        final frame = data.getFrame();
+        final frame = data.frame;
         collection.videoServer.sendMessage(VideoData(frame: frame.data, details: data.details));
         frame.dispose();
       case DepthFramePayload(): 

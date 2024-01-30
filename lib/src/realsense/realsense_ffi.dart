@@ -3,7 +3,9 @@ import "package:ffi/ffi.dart";
 
 import "package:video/video.dart";
 
+/// An FFI implementation of [RealSenseInterface] using [librealsense](https://github.com/IntelRealSense/librealsense).
 class RealSenseFFI extends RealSenseInterface {
+  /// The native FFI device. 
   final device = realsenseLib.RealSense_create();
   @override late double scale;
   @override int height = 0;

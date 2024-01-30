@@ -4,6 +4,7 @@ import "package:burt_network/burt_network.dart";
 
 import "collection.dart";
 
+/// The socket to send autonomy data to.
 final autonomySocket = SocketInfo(address: InternetAddress("192.168.1.30"), port: 8003);
 
 /// Class for the video program to interact with the dashboard
@@ -24,6 +25,7 @@ class VideoServer extends RoverServer {
     collection.parent.send(data: command, id: command.details.name);
   }
 
+  /// Sends the depth frame to [autonomySocket].
   void sendDepthFrame(VideoData frame) => 
     sendMessage(frame, destinationOverride: autonomySocket);
 

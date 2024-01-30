@@ -7,10 +7,34 @@ import "package:opencv_ffi/opencv_ffi.dart";
 
 import "package:video/video.dart";
 
+extension on CameraDetails {
+  bool get interferesWithAutonomy => hasResolutionHeight()
+    || hasResolutionWidth()
+    || hasFps()
+    || hasStatus();
+}
+
+/// An isolate to read RGB, depth, and colorized frames from the RealSense. 
+/// 
+/// While using the RealSense SDK for depth streaming, OpenCV cannot access the standard RGB frames,
+/// so it is necessary for this isolate to grab the RGB frames as well.
+/// 
+/// Since the RealSense is being used for autonomy, certain settings that could interfere with the
+/// autonomy program are not allowed to be changed, even for the RGB camera.
 class RealSenseIsolate extends CameraIsolate {
+  /// The native RealSense object. MUST be `late` so it isn't initialized on the parent isolate.
   late final RealSenseInterface camera = RealSenseInterface.forPlatform();
-  bool hasError = false;
+  /// Creates an isolate to read from the RealSense camera.
   RealSenseIsolate({required super.details});
+
+  @override
+  void onData(VideoCommand data) {
+    if (data.details.interferesWithAutonomy) {
+      sendLog(LogLevel.error, "That would break autonomy");
+    } else {
+      super.onData(data);
+    }
+  }
 
   @override
   void initCamera() {

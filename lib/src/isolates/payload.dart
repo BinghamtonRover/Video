@@ -35,13 +35,18 @@ class FramePayload extends IsolatePayload {
   final int length;
 
   /// A const constructor.
-  const FramePayload({required this.details, required this.address, required this.length});
+  FramePayload({required this.details, required OpenCVImage image}) : 
+    address = image.pointer.address,
+    length = image.data.length;
 
   /// The underlying data held at [address]. 
   /// 
   /// This cannot be a normal field as [Pointer]s cannot be sent across isolates, and this should
   /// not be a getter because the underlying memory needs to be freed and cannot be used again. 
-  OpenCVImage getFrame() => OpenCVImage(pointer: Pointer.fromAddress(address), length: length);
+  OpenCVImage get frame => OpenCVImage(pointer: Pointer.fromAddress(address), length: length);
+
+  /// Frees the data in this frame.
+  void dispose() => frame.dispose();
 }
 
 /// A class to send log messages across isolates. The parent isolate is responsible for logging.
@@ -54,10 +59,17 @@ class LogPayload extends IsolatePayload {
   const LogPayload({required this.level, required this.message});
 }
 
+/// A depth frame to be sent to the Autonomy program.
 class DepthFramePayload extends IsolatePayload {
+  /// The address of the data in memory, since pointers cannot be sent across isolates.
   final int address;
-  const DepthFramePayload(this.address);
+  /// Saves the address of the pointer to send across isolates.
+  DepthFramePayload(Pointer<NativeFrames> pointer) : 
+    address = pointer.address;
 
+  /// The native frame being referenced by this pointer.
   Pointer<NativeFrames> get frame => Pointer<NativeFrames>.fromAddress(address); 
+
+  /// Frees the memory associated with the frame.
   void dispose() => frame.dispose();
 }

@@ -7,18 +7,14 @@ import "package:opencv_ffi/opencv_ffi.dart";
 
 import "package:video/video.dart";
 
-const maxPacketLength = 60000;  // max UDP packet size in bytes
+/// The maximum size of a UDP packet, in bytes (minus a few to be safe).
+const maxPacketLength = 60000;
 
-extension on CameraDetails {
-  bool get interferesWithAutonomy => hasResolutionHeight()
-    || hasResolutionWidth()
-    || hasFps()
-    || hasStatus();
-}
-
+/// A child isolate that manages a single camera and streams frames from it.
 abstract class CameraIsolate extends IsolateChild<IsolatePayload, VideoCommand> {
   /// Holds the current details of the camera.
   final CameraDetails details;
+  /// A constructor with initial details.
   CameraIsolate({required this.details}) : super(id: details.name);
 
   /// A timer to periodically send the camera status to the dashboard.
@@ -51,13 +47,7 @@ abstract class CameraIsolate extends IsolateChild<IsolatePayload, VideoCommand> 
   }
 
   @override
-  void onData(VideoCommand data) {
-    if (data.details.interferesWithAutonomy) {
-      sendLog(LogLevel.error, "That would break autonomy");
-    } else {
-      updateDetails(data.details);
-    }
-  }
+  void onData(VideoCommand data) => updateDetails(data.details);
 
   /// Updates the camera's [details], which will take effect on the next [sendFrame] call.
   void updateDetails(CameraDetails newDetails) {
@@ -66,6 +56,9 @@ abstract class CameraIsolate extends IsolateChild<IsolatePayload, VideoCommand> 
     start();
   }
 
+  /// Disposes of this camera and all other resources.
+  /// 
+  /// After running this, the camera should need to be opened again.
   void dispose() {
     disposeCamera();
     frameTimer?.cancel();
@@ -73,14 +66,26 @@ abstract class CameraIsolate extends IsolateChild<IsolatePayload, VideoCommand> 
     statusTimer?.cancel();
   }
 
+  /// Initializes the camera and starts streaming.
   void initCamera();
+
+  /// Closes and releases the camera. 
+  /// 
+  /// This is separate from [dispose] so the isolate can keep reporting its status.
   void disposeCamera();
+
+  /// Reads frame/s from the camera and sends it/them.
   void sendFrames();
 
+  /// Sends an individual frame to the dashboard. 
+  /// 
+  /// This function also checks if the frame is too big to send, and if so, 
+  /// lowers the JPG quality by 1%. If the quality reaches 25% (visually noticeable),
+  /// an error is logged instead. 
   void sendFrame(OpenCVImage image, {CameraDetails? detailsOverride}) {
     final details = detailsOverride ?? this.details;
     if (image.data.length < maxPacketLength) {  // Frame can be sent
-      send(FramePayload(details: details, address: image.pointer.address, length: image.data.length));
+      send(FramePayload(details: details, image: image));
     } else if (details.quality > 25) {  // Frame too large, lower quality
       sendLog(LogLevel.debug, "Lowering quality for $name from ${details.quality}");
       details.quality -= 1;  // maybe next frame can send

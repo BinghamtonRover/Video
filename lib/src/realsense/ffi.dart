@@ -5,17 +5,18 @@ import "dart:typed_data";
 import "../generated/librealsense_ffi_bindings.dart";
 export "../generated/librealsense_ffi_bindings.dart";
 
+/// Utils on a [Pointer] to [NativeFrames].
 extension NativeFramesUtils on Pointer<NativeFrames> {
+  /// Frees the memory of all the frames.
   void dispose() => realsenseLib.NativeFrames_free(this);
 
+  /// The depth frame, as raw bytes.
+  /// 
+  /// NOTE: The RealSense SDK returns [Uint16]s, but this is cast to a [Uint8] for UDP transfer. Be
+  /// sure to re-cast it on the processing side!
   Uint8List get depthFrame {
     final NativeFrames struct = ref;
     return struct.depth_data.asTypedList(struct.depth_length);
-  }
-
-  Uint8List get colorizedFrame {
-    final NativeFrames struct = ref;
-    return struct.colorized_data.asTypedList(struct.colorized_length);
   }
 }
 
