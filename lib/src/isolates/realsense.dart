@@ -37,7 +37,7 @@ class RealSenseIsolate extends CameraIsolate {
   }
 
   @override
-  void sendFrame() {
+  void sendFrames() {
     // Get frames from RealSense
     final frames = camera.getFrames();
     if (frames == nullptr) return;
@@ -49,7 +49,7 @@ class RealSenseIsolate extends CameraIsolate {
     if (colorizedJpg == null) {
       sendLog(LogLevel.debug, "Could not encode colorized frame"); 
     } else {
-      send(FramePayload(details: details, address: colorizedJpg.pointer.address, length: colorizedJpg.data.length));
+      sendFrame(colorizedJpg);
     }
 
     // Compress RGB frame
@@ -60,7 +60,7 @@ class RealSenseIsolate extends CameraIsolate {
       sendLog(LogLevel.debug, "Could not encode RGB frame"); 
     } else {
       final newDetails = details.deepCopy()..name = CameraName.ROVER_FRONT;
-      send(FramePayload(details: newDetails, address: rgbJpg.pointer.address, length: rgbJpg.data.length));
+      sendFrame(rgbJpg, detailsOverride: newDetails);
     }
 
     fpsCount++;

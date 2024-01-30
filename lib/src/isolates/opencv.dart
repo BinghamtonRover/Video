@@ -34,20 +34,14 @@ class OpenCVCameraIsolate extends CameraIsolate {
   /// - If the frame is too large, reduces the quality (increases JPG compression)
   /// - If the quality is already low, alerts the dashboard
   @override
-  void sendFrame() {
+  void sendFrames() {
     final frame = camera.getJpg(quality: details.quality);
     if (frame == null) {  // Error getting the frame
       sendLog(LogLevel.warning, "Camera $name didn't respond");
       updateDetails(CameraDetails(status: CameraStatus.CAMERA_NOT_RESPONDING));
-    } else if (frame.data.length < 60000) {  // Frame can be sent
-      send(FramePayload(address: frame.pointer.address, length: frame.data.length, details: details));
-      fpsCount++;
-    } else if (details.quality > 25) {  // Frame too large, try lowering quality
-      sendLog(LogLevel.debug, "Lowering quality for $name from ${details.quality}");
-      updateDetails(CameraDetails(quality: details.quality - 1));
-    } else {  // Frame too large, cannot lower quality anymore
-      sendLog(LogLevel.warning, "$name's frames are too large (${frame.data.length} bytes, quality=${details.quality})");
-      updateDetails(CameraDetails(status: CameraStatus.FRAME_TOO_LARGE));
-    }
+      return;
+    } 
+    sendFrame(frame);
+    fpsCount++;
   }
 }

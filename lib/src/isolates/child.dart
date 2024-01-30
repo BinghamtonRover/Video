@@ -3,8 +3,11 @@ import "dart:async";
 import "package:burt_network/burt_network.dart";
 import "package:burt_network/logging.dart";
 import "package:typed_isolate/typed_isolate.dart";
+import "package:opencv_ffi/opencv_ffi.dart";
 
 import "package:video/video.dart";
+
+const maxPacketLength = 60000;  // max UDP packet size in bytes
 
 abstract class CameraIsolate extends IsolateChild<IsolatePayload, VideoCommand> {
   /// Holds the current details of the camera.
@@ -59,14 +62,27 @@ abstract class CameraIsolate extends IsolateChild<IsolatePayload, VideoCommand> 
 
   void initCamera();
   void disposeCamera();
-  void sendFrame();
+  void sendFrames();
+
+  void sendFrame(OpenCVImage image, {CameraDetails? detailsOverride}) {
+    final details = detailsOverride ?? this.details;
+    if (image.data.length < maxPacketLength) {  // Frame can be sent
+      send(FramePayload(details: details, address: image.pointer.address, length: image.data.length));
+    } else if (details.quality > 25) {  // Frame too large, lower quality
+      sendLog(LogLevel.debug, "Lowering quality for $name from ${details.quality}");
+      details.quality -= 1;  // maybe next frame can send
+    } else {  // Frame too large, quality cannot be lowered
+      sendLog(LogLevel.warning, "Frame from camera $name are too large (${image.data.length})");
+      updateDetails(CameraDetails(status: CameraStatus.FRAME_TOO_LARGE));
+    }
+  }
 
   /// Starts the camera and timers.
   void start() {
     if (details.status != CameraStatus.CAMERA_ENABLED) return;
     sendLog(LogLevel.debug, "Starting camera $name. Status=${details.status}");
     final interval = details.fps == 0 ? Duration.zero : Duration(milliseconds: 1000 ~/ details.fps);
-    frameTimer = PeriodicTimer(interval, sendFrame);
+    frameTimer = PeriodicTimer(interval, sendFrames);
     fpsTimer = Timer.periodic(const Duration(seconds: 5), (_) {
       sendLog(LogLevel.trace, "Camera $name sent ${fpsCount ~/ 5} frames");
       fpsCount = 0;
