@@ -23,5 +23,4 @@ namespace burt_rs {
 }
 
 static rs2::colorizer colorizer = rs2::colorizer();
-// NativeFrames* colorize(NativeFrames* frame);
 void freeFrame(NativeFrames* frames);
