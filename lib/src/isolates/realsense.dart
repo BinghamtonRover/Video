@@ -1,7 +1,9 @@
+import "dart:io";
 import "dart:ffi";
 
 import "package:burt_network/generated.dart";
 import "package:burt_network/logging.dart";
+import "package:protobuf/protobuf.dart";
 import "package:opencv_ffi/opencv_ffi.dart";
 
 import "package:video/video.dart";
@@ -44,22 +46,33 @@ class RealSenseIsolate extends CameraIsolate {
   void sendFrame() {
     // Get frames from RealSense
     final frames = camera.getFrames();
-    sendLog(LogLevel.trace, "Got frames: ");
     if (frames == nullptr) return;
-    sendLog(LogLevel.trace, "  Depth: ${frames.ref.depth_data}");
-    sendLog(LogLevel.trace, "  Colorized: ${frames.ref.colorized_data}");
 
-    // // Compress colorized frame
-    final Pointer<Uint8> rawColorized = frames.ref.depth_data;
-    final Pointer<Mat> matrix = getMatrix(camera.height, camera.width, rawColorized);
-    final OpenCVImage? jpg = encodeJpg(matrix, quality: 30);
-    nativeLib.Mat_destroy(matrix);
-    sendLog(LogLevel.trace, "  Done");
-    
-    if (jpg != null) {
-      send(FramePayload(details: details, address: jpg.pointer.address, length: jpg.data.length));
+    // Compress colorized frame
+    final Pointer<Uint8> rawColorized = frames.ref.colorized_data;
+    final Pointer<Mat> colorizedMatrix = getMatrix(camera.height, camera.width, rawColorized);
+    final OpenCVImage? colorizedJpg = encodeJpg(colorizedMatrix, quality: details.quality);
+    if (colorizedJpg == null) {
+      sendLog(LogLevel.debug, "Could not encode colorized frame"); 
+    } else {
+      send(FramePayload(details: details, address: colorizedJpg.pointer.address, length: colorizedJpg.data.length));
     }
+
+    // Compress RGB frame
+    final Pointer<Uint8> rawRGB = frames.ref.rgb_data;
+    final Pointer<Mat> rgbMatrix = getMatrix(camera.height, camera.width, rawRGB);
+    final OpenCVImage? rgbJpg = encodeJpg(rgbMatrix, quality: details.quality);
+    if (rgbJpg == null) {
+      sendLog(LogLevel.debug, "Could not encode RGB frame"); 
+    } else {
+      final newDetails = details.deepCopy()..name = CameraName.ROVER_FRONT;
+      send(FramePayload(details: newDetails, address: rgbJpg.pointer.address, length: rgbJpg.data.length));
+    }
+
+    fpsCount++;
     // send(DepthFramePayload(frames.address));
+    nativeLib.Mat_destroy(colorizedMatrix);
+    nativeLib.Mat_destroy(rgbMatrix);
     frames.dispose();
   }
 }

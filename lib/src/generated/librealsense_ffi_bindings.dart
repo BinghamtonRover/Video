@@ -182,6 +182,11 @@ final class NativeFrames extends ffi.Struct {
 
   @ffi.Int()
   external int colorized_length;
+
+  external ffi.Pointer<ffi.Uint8> rgb_data;
+
+  @ffi.Int()
+  external int rgb_length;
 }
 
 /// A fake ("opaque") C-friendly struct that we'll use a pointer to.

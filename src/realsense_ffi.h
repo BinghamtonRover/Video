@@ -33,6 +33,8 @@ typedef struct {
 	int depth_length;
 	const uint8_t* colorized_data;
 	int colorized_length;
+	const uint8_t* rgb_data;
+	int rgb_length;
 } NativeFrames;
 
 // A fake ("opaque") C-friendly struct that we'll use a pointer to.
@@ -54,7 +56,6 @@ FFI_PLUGIN_EXPORT void RealSense_stopStream(NativeRealSense* ptr);
 // Frames
 FFI_PLUGIN_EXPORT NativeFrames* RealSense_getDepthFrame(NativeRealSense* ptr);
 FFI_PLUGIN_EXPORT void NativeFrames_free(NativeFrames* ptr);
-// FFI_PLUGIN_EXPORT NativeFrames* colorize(NativeFrames* framePtr);
 
 #ifdef __cplusplus
 }

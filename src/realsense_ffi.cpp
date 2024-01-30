@@ -46,10 +46,6 @@ NativeFrames* RealSense_getDepthFrame(NativeRealSense* ptr) {
   return reinterpret_cast<burt_rs::RealSense*>(ptr)->getDepthFrame();
 }
 
-// NativeFrames* colorize(NativeFrames* framePtr) {
-//   return colorize(framePtr);
-// }
-
 void NativeFrames_free(NativeFrames* ptr) {
   freeFrame(ptr);
 }
