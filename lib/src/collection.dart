@@ -48,6 +48,7 @@ class Collection {
   Future<void> dispose() async { 
     parent.stopAll();
     parent.killAll();
+    parent.isolates.clear();
     await videoServer.dispose();
   }
 

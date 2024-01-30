@@ -72,6 +72,7 @@ class VideoController extends IsolateParent<VideoCommand, IsolatePayload>{
     final command = VideoCommand(details: CameraDetails(status: CameraStatus.CAMERA_DISABLED));
     for (final name in CameraName.values) {
       if (name == CameraName.CAMERA_NAME_UNDEFINED) continue;
+      if (name == CameraName.ROVER_FRONT) continue;
       send(data: command, id: name);
     }
   }
