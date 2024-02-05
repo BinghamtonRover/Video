@@ -104,7 +104,9 @@ class RealSenseIsolate extends CameraIsolate {
     */
     int sum = 0; 
     final matrix = <List<double>>[];
-    final size = (camera.height / newHeight) * (camera.width / newWidth);
+    final boxH = camera.height / newHeight;
+    final bowW = camera.width / newWidth;
+    final size = boxH * bowW;
     int currRow = 0;
     int currColumn = 0;
     for(int row = 0; row < camera.width / newWidth; row++){
