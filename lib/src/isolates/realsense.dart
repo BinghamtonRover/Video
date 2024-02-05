@@ -93,4 +93,26 @@ class RealSenseIsolate extends CameraIsolate {
     nativeLib.Mat_destroy(rgbMatrix);
     frames.dispose();
   }
+
+  List<List<double>> compressDepthFrame(Pointer<Uint8> depthFrame, int newHeight, int newWidth){
+    /*
+    depthFrame is a 1D array with length camera.height * camera.width
+    depthFrame[row*camera.width + column] = matrix[row]][column] 
+    1. Turn DepthFrame to 2D Matrix
+    2. break it up into a gride of newWidth * newHeight
+    Each box will be (camera.height / newHeight) * (camera.width / newWidth)
+    */
+    int sum = 0; 
+    final matrix = <List<double>>[];
+    final size = (camera.height / newHeight) * (camera.width / newWidth);
+    int currRow = 0;
+    int currColumn = 0;
+    for(int row = 0; row < camera.width / newWidth; row++){
+      for(int column = 0; column < camera.height / newHeight; column++){
+        sum += depthFrame[row * camera.width + column];
+
+      }
+    }
+    return matrix;
+  }
 }
