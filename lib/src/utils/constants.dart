@@ -7,7 +7,7 @@ import "package:burt_network/generated.dart";
 /// Map for MAC or LINUX devices
 Map<CameraName, String> cameraNames = {
   CameraName.ROVER_FRONT: "/dev/realsense_rgb",
-  CameraName.ROVER_REAR: "...",
+  CameraName.ROVER_REAR: "/dev/rear_camera",
   CameraName.AUTONOMY_DEPTH: "/dev/realsense_depth",
   CameraName.SUBSYSTEM1: "/dev/subsystem1",
   CameraName.SUBSYSTEM2: "/dev/subsystem2",
