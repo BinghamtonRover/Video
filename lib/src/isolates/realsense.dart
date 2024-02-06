@@ -94,26 +94,37 @@ class RealSenseIsolate extends CameraIsolate {
     frames.dispose();
   }
 
-  List<List<double>> compressDepthFrame(Pointer<Uint8> depthFrame, int newHeight, int newWidth){
+  /// Returns a compressed 2D array from depthFrame with a new width and height
+  /// Divides the [depthFrame] into [newWidth] by [newHeight] boxes and then calculates the average of each box. 
+  /// Each item in nested list is an average of the box
+  List<List<double>> compressDepthFrame(Pointer<Uint8> depthFrame, int newWidth, int newHeight){
     /*
     depthFrame is a 1D array with length camera.height * camera.width
-    depthFrame[row*camera.width + column] = matrix[row]][column] 
+    depthFrame[row*camera.width + column] = matrix[row][column] 
     1. Turn DepthFrame to 2D Matrix
     2. break it up into a gride of newWidth * newHeight
     Each box will be (camera.height / newHeight) * (camera.width / newWidth)
     */
-    int sum = 0; 
+    double sum = 0; 
     final matrix = <List<double>>[];
-    final boxH = camera.height / newHeight;
-    final bowW = camera.width / newWidth;
-    final size = boxH * bowW;
-    int currRow = 0;
-    int currColumn = 0;
-    for(int row = 0; row < camera.width / newWidth; row++){
-      for(int column = 0; column < camera.height / newHeight; column++){
-        sum += depthFrame[row * camera.width + column];
+    final boxHeight = camera.height ~/ newHeight;
+    final boxWidth = camera.width ~/ newWidth;
+    final size = boxHeight * boxWidth;
 
+    for(int row = 0; row < camera.height; row += boxHeight){
+      final mRow = <double>[];
+      for(int column = 0; column < camera.width; column += camera.width ~/ newWidth){
+        // Calculate the average of a box with width [boxWidth] and height [boxHeight]
+        for(int i = 0; i < boxWidth; i++){
+          for(int j = 0; j < boxHeight; j++){
+            if(depthFrame[(row + i) * camera.width + (column + j)] != 0){
+              sum += depthFrame[(row + i) * camera.width + (column + j)];
+            }
+          }
+        }
+        mRow.add(sum / size);
       }
+      matrix.add(mRow);
     }
     return matrix;
   }
