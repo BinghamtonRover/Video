@@ -19,6 +19,15 @@ CameraDetails getDefaultDetails(CameraName name) => CameraDetails(
   status: CameraStatus.CAMERA_ENABLED,
 );
 
+CameraDetails getRealsenseDetails(CameraName name) => CameraDetails(
+  name: name,
+  resolutionWidth: 300,
+  resolutionHeight: 300,
+  quality: 50,
+  fps: 0,
+  status: CameraStatus.CAMERA_ENABLED,
+);
+
 /// Returns the camera depending on device program is running
 ///
 /// Uses [cameraNames] or [cameraIndexes]

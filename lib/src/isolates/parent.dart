@@ -22,7 +22,7 @@ class VideoController extends IsolateParent<VideoCommand, IsolatePayload>{
         case CameraName.CAMERA_NAME_UNDEFINED: continue;
         case CameraName.ROVER_FRONT: continue;  // shares feed with AUTONOMY_DEPTH
         case CameraName.AUTONOMY_DEPTH: 
-          final details = getDefaultDetails(name);
+          final details = getRealsenseDetails(name);
           final isolate = RealSenseIsolate(details: details);
           await spawn(isolate);
         // All other cameras share the same logic, even future cameras
