@@ -4,7 +4,8 @@
 #include <iostream>
 #include <unistd.h>
 
-#define WIDTH 640
+#define DEPTH_WIDTH 640
+#define RGB_WIDTH 320
 #define HEIGHT 0
 
 using namespace std;
@@ -46,8 +47,8 @@ const char* burt_rs::RealSense::getDeviceName() {
 
 BurtRsStatus burt_rs::RealSense::startStream() {
   rs2::config rs_config;
-  rs_config.enable_stream(RS2_STREAM_DEPTH, WIDTH, HEIGHT);
-  rs_config.enable_stream(RS2_STREAM_COLOR, WIDTH, HEIGHT, RS2_FORMAT_BGR8);
+  rs_config.enable_stream(RS2_STREAM_DEPTH, DEPTH_WIDTH, HEIGHT);
+  rs_config.enable_stream(RS2_STREAM_COLOR, RGB_WIDTH, HEIGHT, RS2_FORMAT_BGR8);
   auto profile = pipeline.start(rs_config);
   auto frames = pipeline.wait_for_frames();
   auto frame = frames.get_depth_frame();
