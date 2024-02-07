@@ -4,6 +4,7 @@ import "package:burt_network/generated.dart";
 import "package:burt_network/logging.dart";
 import "package:protobuf/protobuf.dart";
 import "package:opencv_ffi/opencv_ffi.dart";
+import "package:video/src/utils/aruco.dart";
 
 import "package:video/video.dart";
 
@@ -76,9 +77,12 @@ class RealSenseIsolate extends CameraIsolate {
       sendFrame(colorizedJpg);
     }
 
-    // Compress RGB frame
+    // Get RGB frame
     final Pointer<Uint8> rawRGB = frames.ref.rgb_data;
     final Pointer<Mat> rgbMatrix = getMatrix(camera.height, camera.width, rawRGB);
+    detectAndAnnotateFrames(rgbMatrix);  // detect ArUco tags
+
+    // Compress the RGB frame into a JPG
     final OpenCVImage? rgbJpg = encodeJpg(rgbMatrix, quality: details.quality);
     if (rgbJpg == null) {
       sendLog(LogLevel.debug, "Could not encode RGB frame"); 
