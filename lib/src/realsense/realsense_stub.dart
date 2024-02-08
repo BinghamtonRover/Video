@@ -5,7 +5,7 @@ import "package:video/video.dart";
 /// A stub implementation for platforms or devices without the RealSense SDK.
 class RealSenseStub extends RealSenseInterface {
   @override
-  bool init() => true;
+  bool init() => false;
 
   @override void dispose() { }
 

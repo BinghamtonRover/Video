@@ -4,7 +4,6 @@ import "package:burt_network/generated.dart";
 import "package:burt_network/logging.dart";
 import "package:protobuf/protobuf.dart";
 import "package:opencv_ffi/opencv_ffi.dart";
-import "package:video/src/utils/aruco.dart";
 
 import "package:video/video.dart";
 
