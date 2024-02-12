@@ -4,7 +4,8 @@
 #include <iostream>
 #include <unistd.h>
 
-#define WIDTH 640
+#define DEPTH_WIDTH 640
+#define RGB_WIDTH 320
 #define HEIGHT 0
 
 using namespace std;
@@ -46,19 +47,24 @@ const char* burt_rs::RealSense::getDeviceName() {
 
 BurtRsStatus burt_rs::RealSense::startStream() {
   rs2::config rs_config;
-  rs_config.enable_stream(RS2_STREAM_DEPTH, WIDTH, HEIGHT);
-  rs_config.enable_stream(RS2_STREAM_COLOR, WIDTH, HEIGHT, RS2_FORMAT_BGR8);
+  rs_config.enable_stream(RS2_STREAM_DEPTH, DEPTH_WIDTH, HEIGHT);
+  rs_config.enable_stream(RS2_STREAM_COLOR, RGB_WIDTH, HEIGHT, RS2_FORMAT_BGR8);
   auto profile = pipeline.start(rs_config);
   auto frames = pipeline.wait_for_frames();
-  auto frame = frames.get_depth_frame();
-  auto width = frame.get_width();
-  auto height = frame.get_height();
+  auto depth_frame = frames.get_depth_frame();
+  auto rgb_frame = frames.get_color_frame();
+  auto depth_width = depth_frame.get_width();
+  auto depth_height = depth_frame.get_height();
+  auto rgb_width = rgb_frame.get_width();
+  auto rgb_height = rgb_frame.get_height();
 
-  if (width == 0 || height == 0) {
+  if (rgb_width == 0 || rgb_height == 0 || depth_width == 0 || depth_height == 0) {
     return BurtRsStatus::BurtRsStatus_resolution_unknown;
   } else {
-    config.width = width;
-    config.height = height;
+    config.depth_width = depth_width;
+    config.depth_height = depth_height;
+    config.rgb_width = rgb_width;
+    config.rgb_height = rgb_height;
     return BurtRsStatus::BurtRsStatus_ok;
   }
 }

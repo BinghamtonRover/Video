@@ -12,8 +12,8 @@ class RealSenseStub extends RealSenseInterface {
   @override bool startStream() => true;
   @override void stopStream() { }
 
-  @override int get width => 0;
-  @override int get height => 0;
+  @override Resolution get depthResolution => (height: 0, width: 0);
+  @override Resolution get rgbResolution => (height: 0, width: 0);
   @override double get scale => 0;
 
 

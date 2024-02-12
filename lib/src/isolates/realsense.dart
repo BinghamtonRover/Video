@@ -68,7 +68,7 @@ class RealSenseIsolate extends CameraIsolate {
 
     // Compress colorized frame
     final Pointer<Uint8> rawColorized = frames.ref.colorized_data;
-    final Pointer<Mat> colorizedMatrix = getMatrix(camera.height, camera.width, rawColorized);
+    final Pointer<Mat> colorizedMatrix = getMatrix(camera.depthResolution.height, camera.depthResolution.width, rawColorized);
     final OpenCVImage? colorizedJpg = encodeJpg(colorizedMatrix, quality: details.quality);
     if (colorizedJpg == null) {
       sendLog(LogLevel.debug, "Could not encode colorized frame"); 
@@ -78,7 +78,7 @@ class RealSenseIsolate extends CameraIsolate {
 
     // Get RGB frame
     final Pointer<Uint8> rawRGB = frames.ref.rgb_data;
-    final Pointer<Mat> rgbMatrix = getMatrix(camera.height, camera.width, rawRGB);
+    final Pointer<Mat> rgbMatrix = getMatrix(camera.rgbResolution.height, camera.rgbResolution.width, rawRGB);
     detectAndAnnotateFrames(rgbMatrix);  // detect ArUco tags
 
     // Compress the RGB frame into a JPG

@@ -163,10 +163,16 @@ abstract class BurtRsStatus {
 
 final class BurtRsConfig extends ffi.Struct {
   @ffi.Int()
-  external int width;
+  external int depth_width;
 
   @ffi.Int()
-  external int height;
+  external int depth_height;
+
+  @ffi.Int()
+  external int rgb_width;
+
+  @ffi.Int()
+  external int rgb_height;
 
   @ffi.Float()
   external double scale;
