@@ -19,6 +19,9 @@ CameraDetails getDefaultDetails(CameraName name) => CameraDetails(
   status: CameraStatus.CAMERA_ENABLED,
 );
 
+/// Default details for the RealSense camera. 
+/// 
+/// These settings are balanced between autonomy depth and normal RGB.
 CameraDetails getRealsenseDetails(CameraName name) => CameraDetails(
   name: name,
   resolutionWidth: 300,
