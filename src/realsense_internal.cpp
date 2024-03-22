@@ -48,7 +48,7 @@ const char* burt_rs::RealSense::getDeviceName() {
 BurtRsStatus burt_rs::RealSense::startStream() {
   rs2::config rs_config;
   rs_config.enable_stream(RS2_STREAM_DEPTH, DEPTH_WIDTH, HEIGHT);
-  rs_config.enable_stream(RS2_STREAM_COLOR, RGB_WIDTH, HEIGHT, RS2_FORMAT_BGR8);
+  // rs_config.enable_stream(RS2_STREAM_COLOR, RGB_WIDTH, HEIGHT, RS2_FORMAT_BGR8);
   auto profile = pipeline.start(rs_config);
   auto frames = pipeline.wait_for_frames();
   auto depth_frame = frames.get_depth_frame();
@@ -86,11 +86,11 @@ NativeFrames* burt_rs::RealSense::getDepthFrame() {
   // Copy both frames -- TODO: optimize this to be a move instead
   int depth_length = depth_frame.get_data_size();
   int colorized_length = colorized_frame.get_data_size();
-  int rgb_length = rgb_frame.get_data_size();
-  if (depth_length == 0 || colorized_length == 0 || rgb_length == 0) return nullptr;
+  // int rgb_length = rgb_frame.get_data_size();
+  // if (depth_length == 0 || colorized_length == 0 || rgb_length == 0) return nullptr;
   uint8_t* depth_copy = new uint8_t[depth_length];
   uint8_t* colorized_copy = new uint8_t[colorized_length];
-  uint8_t* rgb_copy = new uint8_t[rgb_length];
+//  uint8_t* rgb_copy = new uint8_t[rgb_length];
 
   // Copy all the data in the depth frame
   const uint8_t* depth_data = static_cast<const uint8_t*>(depth_frame.get_data());
@@ -105,10 +105,10 @@ NativeFrames* burt_rs::RealSense::getDepthFrame() {
   }
 
   // Copy all the data in the RGB frame
-  const uint8_t* rgb_data = static_cast<const uint8_t*>(rgb_frame.get_data());
+  /* const uint8_t* rgb_data = static_cast<const uint8_t*>(rgb_frame.get_data());
   for (int i = 0; i < rgb_length; i++) {
     rgb_copy[i] = rgb_data[i];
-  }
+  }*/
 
   // Return both frames
   return new NativeFrames {
@@ -116,8 +116,8 @@ NativeFrames* burt_rs::RealSense::getDepthFrame() {
     depth_length: depth_length,
     colorized_data: colorized_copy,
     colorized_length: colorized_length,
-    rgb_data: rgb_copy,
-    rgb_length: rgb_length,
+    rgb_data: nullptr,
+    rgb_length: 0,
   };
 }
 
