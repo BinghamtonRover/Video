@@ -51,16 +51,15 @@ class Collection {
   /// Function to initialize cameras
   Future<void> init() async {
     logger..trace("Running in trace mode")..debug("Running in debug mode");
-    await videoServer.init();
     await parent.init();
+    await videoServer.init();
     logger.info("Video program initialized");
   }
 
   /// Stops all cameras and disconnects from the hardware.
   Future<void> dispose() async { 
     parent.stopAll();
-    parent.killAll();
-    parent.isolates.clear();
+    await parent.dispose();
     await videoServer.dispose();
   }
 

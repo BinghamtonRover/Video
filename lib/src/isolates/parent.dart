@@ -17,6 +17,7 @@ import "package:video/video.dart";
 class VideoController extends IsolateParent<VideoCommand, IsolatePayload>{
   @override
   Future<void> init() async {
+    super.init();
     for (final name in CameraName.values) {
       switch (name) {
         case CameraName.CAMERA_NAME_UNDEFINED: continue;

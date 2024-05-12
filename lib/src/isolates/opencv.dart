@@ -1,3 +1,5 @@
+import "dart:ffi";
+
 import "package:opencv_ffi/opencv_ffi.dart";
 import "package:burt_network/burt_network.dart";
 import "package:burt_network/logging.dart";
@@ -36,6 +38,7 @@ class OpenCVCameraIsolate extends CameraIsolate {
   @override
   void sendFrames() {
     final matrix = camera.getFrame();
+    if (matrix == nullptr) return;
     final frame = encodeJpg(matrix, quality: details.quality);
     matrix.dispose();
     if (frame == null) {  // Error getting the frame
