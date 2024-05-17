@@ -58,7 +58,8 @@ BurtRsStatus burt_rs::RealSense::startStream() {
   // auto rgb_width = rgb_frame.get_width();
   // auto rgb_height = rgb_frame.get_height();
 
-  if (rgb_width == 0 || rgb_height == 0 || depth_width == 0 || depth_height == 0) {
+  // if (rgb_width == 0 || rgb_height == 0 || depth_width == 0 || depth_height == 0) {
+  if (depth_width == 0 || depth_height == 0) {
     return BurtRsStatus::BurtRsStatus_resolution_unknown;
   } else {
     config.depth_width = depth_width;
