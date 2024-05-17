@@ -84,6 +84,7 @@ class RealSenseIsolate extends CameraIsolate {
     frames.dispose();
   }
 
+  /// Sends the RealSense's RGB frame and optionally detects ArUco tags.
   void sendRgbFrame(Pointer<Uint8> rawRGB) {
     if (rawRGB == nullptr) return;
     final Pointer<Mat> rgbMatrix = getMatrix(camera.rgbResolution.height, camera.rgbResolution.width, rawRGB);
