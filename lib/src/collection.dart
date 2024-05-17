@@ -2,7 +2,6 @@ import "dart:async";
 import "dart:io";
 
 import "package:burt_network/burt_network.dart";
-import "package:burt_network/logging.dart";
 import "package:opencv_ffi/opencv_ffi.dart";
 
 import "package:video/video.dart";
