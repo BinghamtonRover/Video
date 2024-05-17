@@ -13,7 +13,7 @@ CameraDetails getDefaultDetails(CameraName name) => CameraDetails(
   name: name,
   resolutionWidth: 300,
   resolutionHeight: 300,
-  quality: 50,
+  quality: 75,
   fps: 24,
   status: CameraStatus.CAMERA_ENABLED,
 );

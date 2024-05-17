@@ -19,6 +19,7 @@ class OpenCVCameraIsolate extends CameraIsolate {
   @override
   void initCamera() {
     camera = getCamera(name);
+    camera.setResolution(details.resolutionWidth, details.resolutionHeight);
     if (!camera.isOpened) {
       sendLog(LogLevel.warning, "Camera $name is not connected");
       updateDetails(CameraDetails(status: CameraStatus.CAMERA_DISCONNECTED));
@@ -38,6 +39,7 @@ class OpenCVCameraIsolate extends CameraIsolate {
   void sendFrames() {
     final matrix = camera.getFrame();
     if (matrix == nullptr) return;
+    // detectAndAnnotateFrames(matrix);
     final frame = encodeJpg(matrix, quality: details.quality);
     matrix.dispose();
     if (frame == null) {  // Error getting the frame

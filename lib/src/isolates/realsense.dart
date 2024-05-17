@@ -76,24 +76,30 @@ class RealSenseIsolate extends CameraIsolate {
       sendFrame(colorizedJpg);
     }
 
-    // Get RGB frame
-    final Pointer<Uint8> rawRGB = frames.ref.rgb_data;
-    final Pointer<Mat> rgbMatrix = getMatrix(camera.rgbResolution.height, camera.rgbResolution.width, rawRGB);
-    detectAndAnnotateFrames(rgbMatrix);  // detect ArUco tags
-
-    // Compress the RGB frame into a JPG
-    final OpenCVImage? rgbJpg = encodeJpg(rgbMatrix, quality: details.quality);
-    if (rgbJpg == null) {
-      sendLog(LogLevel.debug, "Could not encode RGB frame"); 
-    } else {
-      final newDetails = details.deepCopy()..name = CameraName.ROVER_FRONT;
-      sendFrame(rgbJpg, detailsOverride: newDetails);
-    }
+    sendRgbFrame(frames.ref.rgb_data);
 
     fpsCount++;
-    // send(DepthFramePayload(frames.address));
+    // send(DepthFramePayload(frames.address));  // For autonomy
     nativeLib.Mat_destroy(colorizedMatrix);
-    nativeLib.Mat_destroy(rgbMatrix);
     frames.dispose();
+  }
+
+  /// Sends the RealSense's RGB frame and optionally detects ArUco tags.
+  void sendRgbFrame(Pointer<Uint8> rawRGB) {
+    if (rawRGB == nullptr) return;
+    final Pointer<Mat> rgbMatrix = getMatrix(camera.rgbResolution.height, camera.rgbResolution.width, rawRGB);
+    //detectAndAnnotateFrames(rgbMatrix);  // detect ArUco tags
+
+    // Compress the RGB frame into a JPG
+    if (rgbMatrix != nullptr) {
+      final OpenCVImage? rgbJpg = encodeJpg(rgbMatrix, quality: details.quality);
+      if (rgbJpg == null) {
+        sendLog(LogLevel.debug, "Could not encode RGB frame"); 
+      } else {
+        final newDetails = details.deepCopy()..name = CameraName.ROVER_FRONT;
+        sendFrame(rgbJpg, detailsOverride: newDetails);
+      }
+      nativeLib.Mat_destroy(rgbMatrix);
+    }
   }
 }

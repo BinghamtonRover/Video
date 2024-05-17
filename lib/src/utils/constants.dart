@@ -6,12 +6,14 @@ import "package:burt_network/generated.dart";
 ///
 /// Map for MAC or LINUX devices
 Map<CameraName, String> cameraNames = {
-  CameraName.ROVER_FRONT: "/dev/realsense_rgb",
-  CameraName.ROVER_REAR: "/dev/rear_camera",
-  CameraName.AUTONOMY_DEPTH: "/dev/realsense_depth",
-  CameraName.SUBSYSTEM1: "/dev/subsystem1",
-  CameraName.SUBSYSTEM2: "/dev/subsystem2",
-  CameraName.SUBSYSTEM3: "/dev/subsystem3",
+  CameraName.ROVER_FRONT: "/dev/rover-cam_realsense_rgb",
+  CameraName.ROVER_REAR: "/dev/rover-cam_rear",
+  CameraName.AUTONOMY_DEPTH: "/dev/rover-cam_realsense_depth",
+  CameraName.SUBSYSTEM1: "/dev/rover-cam_bottom-right",
+  CameraName.SUBSYSTEM2: "/dev/rover-cam_bottom-left",
+//  CameraName.SUBSYSTEM1: "/dev/rover-cam_subsystem_1",
+//  CameraName.SUBSYSTEM2: "/dev/rover-cam_subsystem_2",
+  CameraName.SUBSYSTEM3: "/dev/rover-cam_subsystem_3",
 };
 
 /// Map for WINDOWS devices

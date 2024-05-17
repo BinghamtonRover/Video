@@ -19,7 +19,7 @@ abstract class CameraIsolate extends IsolateChild<IsolatePayload, VideoCommand> 
   /// A timer to periodically send the camera status to the dashboard.
   Timer? statusTimer;
   /// A timer to read from the camera at an FPS given by [details].
-  PeriodicTimer? frameTimer;
+  Timer? frameTimer;
   /// A timer to log out the [fpsCount] every 5 seconds using [sendLog].
   Timer? fpsTimer;
   /// Records how many FPS this camera is actually running at.
@@ -99,7 +99,7 @@ abstract class CameraIsolate extends IsolateChild<IsolatePayload, VideoCommand> 
     if (details.status != CameraStatus.CAMERA_ENABLED) return;
     sendLog(LogLevel.debug, "Starting camera $name. Status=${details.status}");
     final interval = details.fps == 0 ? Duration.zero : Duration(milliseconds: 1000 ~/ details.fps);
-    frameTimer = PeriodicTimer(interval, sendFrames);
+    frameTimer = Timer.periodic(interval, (_) => sendFrames());
     fpsTimer = Timer.periodic(const Duration(seconds: 5), (_) {
       sendLog(LogLevel.trace, "Camera $name sent ${fpsCount ~/ 5} frames");
       fpsCount = 0;
