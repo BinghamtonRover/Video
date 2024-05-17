@@ -52,19 +52,21 @@ BurtRsStatus burt_rs::RealSense::startStream() {
   auto profile = pipeline.start(rs_config);
   auto frames = pipeline.wait_for_frames();
   auto depth_frame = frames.get_depth_frame();
-  auto rgb_frame = frames.get_color_frame();
+  // auto rgb_frame = frames.get_color_frame();
   auto depth_width = depth_frame.get_width();
   auto depth_height = depth_frame.get_height();
-  auto rgb_width = rgb_frame.get_width();
-  auto rgb_height = rgb_frame.get_height();
+  // auto rgb_width = rgb_frame.get_width();
+  // auto rgb_height = rgb_frame.get_height();
 
   if (rgb_width == 0 || rgb_height == 0 || depth_width == 0 || depth_height == 0) {
     return BurtRsStatus::BurtRsStatus_resolution_unknown;
   } else {
     config.depth_width = depth_width;
     config.depth_height = depth_height;
-    config.rgb_width = rgb_width;
-    config.rgb_height = rgb_height;
+    // config.rgb_width = rgb_width;
+    // config.rgb_height = rgb_height;
+    config.rgb_width = 0;
+    config.rgb_height = 0;
     return BurtRsStatus::BurtRsStatus_ok;
   }
 }
@@ -81,7 +83,7 @@ NativeFrames* burt_rs::RealSense::getDepthFrame() {
   if (!pipeline.poll_for_frames(&frames)) return nullptr;
   rs2::depth_frame depth_frame = frames.get_depth_frame();
   rs2::frame colorized_frame = colorizer.colorize(depth_frame);
-  rs2::frame rgb_frame = frames.get_color_frame();
+  // rs2::frame rgb_frame = frames.get_color_frame();
 
   // Copy both frames -- TODO: optimize this to be a move instead
   int depth_length = depth_frame.get_data_size();
@@ -90,7 +92,7 @@ NativeFrames* burt_rs::RealSense::getDepthFrame() {
   // if (depth_length == 0 || colorized_length == 0 || rgb_length == 0) return nullptr;
   uint8_t* depth_copy = new uint8_t[depth_length];
   uint8_t* colorized_copy = new uint8_t[colorized_length];
-//  uint8_t* rgb_copy = new uint8_t[rgb_length];
+  // uint8_t* rgb_copy = new uint8_t[rgb_length];
 
   // Copy all the data in the depth frame
   const uint8_t* depth_data = static_cast<const uint8_t*>(depth_frame.get_data());
