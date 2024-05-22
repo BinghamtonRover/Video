@@ -29,6 +29,17 @@ class OpenCVCameraIsolate extends CameraIsolate {
   @override
   void disposeCamera() => camera.dispose();
 
+  @override
+  void updateDetails(CameraDetails newDetails, {bool restart = false}) {
+    super.updateDetails(newDetails, restart: false);
+    camera.setResolution(details.resolutionWidth, details.resolutionHeight);
+    camera.zoom = details.zoom;
+    camera.pan = details.pan;
+    camera.tilt = details.tilt;
+    camera.focus = details.focus;
+    camera.autofocus = details.focus;
+  }
+
   /// Reads a frame from the camera and sends it to the dashboard.
   /// 
   /// Checks for multiple errors along the way: 

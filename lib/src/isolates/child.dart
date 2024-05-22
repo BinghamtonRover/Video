@@ -49,10 +49,12 @@ abstract class CameraIsolate extends IsolateChild<IsolatePayload, VideoCommand> 
   void onData(VideoCommand data) => updateDetails(data.details);
 
   /// Updates the camera's [details], which will take effect on the next [sendFrame] call.
-  void updateDetails(CameraDetails newDetails) {
+  void updateDetails(CameraDetails newDetails, {bool restart = true}) {
     details.mergeFromMessage(newDetails);
-    stop();
-    start();
+    if (restart) {
+      stop();
+      start();
+    }
   }
 
   /// Disposes of this camera and all other resources.
