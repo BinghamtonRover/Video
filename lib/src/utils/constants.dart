@@ -1,12 +1,15 @@
 import "package:burt_network/generated.dart";
 
+/// Whether to use realsense for front camera or just regular Camera
+const bool frontCamera = true;
+
 /// These list maps OpenCV IDs (index) to [CameraName]s.
 ///
 /// This is HIGHLY dependent on the EXACT order of the USB ports.
 ///
 /// Map for MAC or LINUX devices
 Map<CameraName, String> cameraNames = {
-  CameraName.ROVER_FRONT: "/dev/rover-cam_realsense_rgb",
+  CameraName.ROVER_FRONT: frontCamera ? "/dev/rover-cam_realsense_rgb" : "/dev/rover-cam_subsystem_3",
   CameraName.ROVER_REAR: "/dev/rover-cam_subsystem_3",
   CameraName.AUTONOMY_DEPTH: "/dev/rover-cam_realsense_depth",
   CameraName.SUBSYSTEM1: "/dev/rover-cam_subsystem_1",
@@ -18,7 +21,7 @@ Map<CameraName, String> cameraNames = {
 Map<CameraName, int> cameraIndexes = {
   CameraName.ROVER_REAR: 0,
   CameraName.AUTONOMY_DEPTH: 4,
-  CameraName.ROVER_FRONT: 5,
+  CameraName.ROVER_FRONT: frontCamera ? 5 : 6,
   CameraName.SUBSYSTEM1: 1,
   CameraName.SUBSYSTEM2: 2,
   CameraName.SUBSYSTEM3: 3,
