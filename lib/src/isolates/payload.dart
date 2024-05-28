@@ -58,17 +58,15 @@ class LogPayload extends IsolatePayload {
   const LogPayload({required this.level, required this.message});
 }
 
+/// Update: no longer sending depth frames
+/// Processing will be done on the video program -> Detection of obstacles will be sent to autonomy
 /// A depth frame to be sent to the Autonomy program.
-class DepthFramePayload extends IsolatePayload {
+class AutonomyPayload extends IsolatePayload {
   /// The address of the data in memory, since pointers cannot be sent across isolates.
   final int address;
   /// Saves the address of the pointer to send across isolates.
-  DepthFramePayload(Pointer<NativeFrames> pointer) : 
+  AutonomyPayload(Pointer<NativeFrames> pointer) : 
     address = pointer.address;
 
-  /// The native frame being referenced by this pointer.
-  Pointer<NativeFrames> get frame => Pointer<NativeFrames>.fromAddress(address); 
-
-  /// Frees the memory associated with the frame.
-  void dispose() => frame.dispose();
+  
 }

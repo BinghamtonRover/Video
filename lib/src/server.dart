@@ -17,7 +17,7 @@ class VideoServer extends RoverServer {
     // ignore message if not a video message
     if (wrapper.name != VideoCommand().messageName) return;
     final command = VideoCommand.fromBuffer(wrapper.data);
-    sendMessage(command);  // Echo the request
+    sendMessage(command);  // Echo the request - why?
     if (command.details.name == CameraName.ROVER_FRONT) {
       // ROVER_FRONT is on the same camera as AUTONOMY_DEPTH
       command.details.name = CameraName.AUTONOMY_DEPTH;
@@ -26,9 +26,9 @@ class VideoServer extends RoverServer {
   }
 
   /// Sends the depth frame to [autonomySocket].
-  void sendDepthFrame(VideoData frame) => 
-    sendMessage(frame, destinationOverride: autonomySocket);
-
+  void sendToAutonomy(VideoData decisionData) => 
+    sendMessage(decisionData, destinationOverride: autonomySocket);
+ 
   @override
   Future<void> restart() => collection.restart();
 

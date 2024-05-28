@@ -1,4 +1,5 @@
 import "dart:async";
+import "dart:ffi";
 
 import "package:opencv_ffi/opencv_ffi.dart" as opencv;
 import "package:typed_isolate/typed_isolate.dart";
@@ -43,9 +44,8 @@ class VideoController extends IsolateParent<VideoCommand, IsolatePayload>{
         final frame = data.frame;
         collection.videoServer.sendMessage(VideoData(frame: frame.data, details: data.details));
         frame.dispose();
-      case DepthFramePayload(): 
-        collection.videoServer.sendDepthFrame(VideoData(frame: data.frame.depthFrame));
-        data.dispose();
+      case AutonomyPayload(): 
+        collection.videoServer.sendToAutonomy(VideoData(leftObstacle: BoolState.NO, rightObstacle: BoolState.NO, centerObstacle: BoolState.NO, bottomObstacle: BoolState.NO));
       case LogPayload(): switch (data.level) {
         // Turns out using deprecated members when you *have* to still results in a lint. 
         // See https://github.com/dart-lang/linter/issues/4852 for why we ignore it.
