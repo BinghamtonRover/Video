@@ -1,6 +1,7 @@
+import "dart:ffi";
+
 import "package:opencv_ffi/opencv_ffi.dart";
 import "package:burt_network/burt_network.dart";
-import "package:burt_network/logging.dart";
 
 import "package:video/video.dart";
 
@@ -18,6 +19,7 @@ class OpenCVCameraIsolate extends CameraIsolate {
   @override
   void initCamera() {
     camera = getCamera(name);
+    camera.setResolution(details.resolutionWidth, details.resolutionHeight);
     if (!camera.isOpened) {
       sendLog(LogLevel.warning, "Camera $name is not connected");
       updateDetails(CameraDetails(status: CameraStatus.CAMERA_DISCONNECTED));
@@ -27,6 +29,17 @@ class OpenCVCameraIsolate extends CameraIsolate {
   @override
   void disposeCamera() => camera.dispose();
 
+  @override
+  void updateDetails(CameraDetails newDetails, {bool restart = false}) {
+    super.updateDetails(newDetails, restart: false);
+    camera.setResolution(details.resolutionWidth, details.resolutionHeight);
+    camera.zoom = details.zoom;
+    camera.pan = details.pan;
+    camera.tilt = details.tilt;
+    camera.focus = details.focus;
+    camera.autofocus = details.focus;
+  }
+
   /// Reads a frame from the camera and sends it to the dashboard.
   /// 
   /// Checks for multiple errors along the way: 
@@ -35,7 +48,11 @@ class OpenCVCameraIsolate extends CameraIsolate {
   /// - If the quality is already low, alerts the dashboard
   @override
   void sendFrames() {
-    final frame = camera.getJpg(quality: details.quality);
+    final matrix = camera.getFrame();
+    if (matrix == nullptr) return;
+    // detectAndAnnotateFrames(matrix);
+    final frame = encodeJpg(matrix, quality: details.quality);
+    matrix.dispose();
     if (frame == null) {  // Error getting the frame
       sendLog(LogLevel.warning, "Camera $name didn't respond");
       updateDetails(CameraDetails(status: CameraStatus.CAMERA_NOT_RESPONDING));

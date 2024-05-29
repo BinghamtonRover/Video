@@ -8,8 +8,8 @@ class RealSenseFFI extends RealSenseInterface {
   /// The native FFI device. 
   final device = realsenseLib.RealSense_create();
   @override late double scale;
-  @override int height = 0;
-  @override int width = 0;
+  @override Resolution depthResolution = (height: 0, width: 0);
+  @override Resolution rgbResolution = (height: 0, width: 0);
   
   @override
   bool init() {
@@ -27,8 +27,8 @@ class RealSenseFFI extends RealSenseInterface {
       return false;
     }
     final config = realsenseLib.RealSense_getDeviceConfig(device);
-    height = config.height;
-    width = config.width;
+    depthResolution = (height: config.depth_height, width: config.depth_width);
+    rgbResolution = (height: config.rgb_height, width: config.rgb_width);
     scale = config.scale;
     return true;
   }

@@ -1,7 +1,6 @@
 import "dart:async";
 
 import "package:burt_network/burt_network.dart";
-import "package:burt_network/logging.dart";
 import "package:typed_isolate/typed_isolate.dart";
 import "package:opencv_ffi/opencv_ffi.dart";
 
@@ -20,7 +19,7 @@ abstract class CameraIsolate extends IsolateChild<IsolatePayload, VideoCommand> 
   /// A timer to periodically send the camera status to the dashboard.
   Timer? statusTimer;
   /// A timer to read from the camera at an FPS given by [details].
-  PeriodicTimer? frameTimer;
+  Timer? frameTimer;
   /// A timer to log out the [fpsCount] every 5 seconds using [sendLog].
   Timer? fpsTimer;
   /// Records how many FPS this camera is actually running at.
@@ -50,10 +49,12 @@ abstract class CameraIsolate extends IsolateChild<IsolatePayload, VideoCommand> 
   void onData(VideoCommand data) => updateDetails(data.details);
 
   /// Updates the camera's [details], which will take effect on the next [sendFrame] call.
-  void updateDetails(CameraDetails newDetails) {
+  void updateDetails(CameraDetails newDetails, {bool restart = true}) {
     details.mergeFromMessage(newDetails);
-    stop();
-    start();
+    if (restart) {
+      stop();
+      start();
+    }
   }
 
   /// Disposes of this camera and all other resources.
@@ -100,7 +101,8 @@ abstract class CameraIsolate extends IsolateChild<IsolatePayload, VideoCommand> 
     if (details.status != CameraStatus.CAMERA_ENABLED) return;
     sendLog(LogLevel.debug, "Starting camera $name. Status=${details.status}");
     final interval = details.fps == 0 ? Duration.zero : Duration(milliseconds: 1000 ~/ details.fps);
-    frameTimer = PeriodicTimer(interval, sendFrames);
+    // frameTimer = Timer.periodic(interval, (_) => sendFrames());
+    frameTimer = Timer.periodic(const Duration(milliseconds: 100), (_) => sendFrames());
     fpsTimer = Timer.periodic(const Duration(seconds: 5), (_) {
       sendLog(LogLevel.trace, "Camera $name sent ${fpsCount ~/ 5} frames");
       fpsCount = 0;

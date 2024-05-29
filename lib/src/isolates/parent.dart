@@ -3,7 +3,6 @@ import "dart:async";
 import "package:opencv_ffi/opencv_ffi.dart" as opencv;
 import "package:typed_isolate/typed_isolate.dart";
 import "package:burt_network/burt_network.dart";
-import "package:burt_network/logging.dart";
 
 import "package:video/video.dart";
 
@@ -17,12 +16,13 @@ import "package:video/video.dart";
 class VideoController extends IsolateParent<VideoCommand, IsolatePayload>{
   @override
   Future<void> init() async {
+    super.init();
     for (final name in CameraName.values) {
       switch (name) {
         case CameraName.CAMERA_NAME_UNDEFINED: continue;
         case CameraName.ROVER_FRONT: continue;  // shares feed with AUTONOMY_DEPTH
         case CameraName.AUTONOMY_DEPTH: 
-          final details = getDefaultDetails(name);
+          final details = getRealsenseDetails(name);
           final isolate = RealSenseIsolate(details: details);
           await spawn(isolate);
         // All other cameras share the same logic, even future cameras

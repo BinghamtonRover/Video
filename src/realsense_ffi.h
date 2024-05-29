@@ -23,8 +23,10 @@ typedef enum {
 } BurtRsStatus;
 
 typedef struct {
-	int width;
-	int height;
+	int depth_width;
+	int depth_height;
+	int rgb_width;
+	int rgb_height;
 	float scale;
 } BurtRsConfig;
 

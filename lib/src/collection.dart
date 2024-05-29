@@ -2,7 +2,6 @@ import "dart:async";
 import "dart:io";
 
 import "package:burt_network/burt_network.dart";
-import "package:burt_network/logging.dart";
 import "package:opencv_ffi/opencv_ffi.dart";
 
 import "package:video/video.dart";
@@ -14,8 +13,20 @@ CameraDetails getDefaultDetails(CameraName name) => CameraDetails(
   name: name,
   resolutionWidth: 300,
   resolutionHeight: 300,
-  quality: 50,
+  quality: 75,
   fps: 24,
+  status: CameraStatus.CAMERA_ENABLED,
+);
+
+/// Default details for the RealSense camera. 
+/// 
+/// These settings are balanced between autonomy depth and normal RGB.
+CameraDetails getRealsenseDetails(CameraName name) => CameraDetails(
+  name: name,
+  resolutionWidth: 300,
+  resolutionHeight: 300,
+  quality: 50,
+  fps: 0,
   status: CameraStatus.CAMERA_ENABLED,
 );
 
@@ -39,16 +50,15 @@ class Collection {
   /// Function to initialize cameras
   Future<void> init() async {
     logger..trace("Running in trace mode")..debug("Running in debug mode");
-    await videoServer.init();
     await parent.init();
+    await videoServer.init();
     logger.info("Video program initialized");
   }
 
   /// Stops all cameras and disconnects from the hardware.
   Future<void> dispose() async { 
     parent.stopAll();
-    parent.killAll();
-    parent.isolates.clear();
+    await parent.dispose();
     await videoServer.dispose();
   }
 
