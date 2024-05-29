@@ -13,7 +13,7 @@ dependencies:
     # Not using a dependency override here so that our CI can use the Git version as well
     git: https://github.com/Levi-Lesches/opencv_ffi
   burt_network: 
-    git: https://github.com/BinghamtonRover/Networking
+    path: ../burt_network
   typed_isolate: ^4.0.0
   ffi: ^2.1.0
   protobuf: ^3.1.0

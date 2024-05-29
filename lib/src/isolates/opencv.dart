@@ -1,4 +1,5 @@
 import "dart:ffi";
+import "dart:math";
 
 import "package:opencv_ffi/opencv_ffi.dart";
 import "package:burt_network/burt_network.dart";
@@ -50,7 +51,16 @@ class OpenCVCameraIsolate extends CameraIsolate {
   void sendFrames() {
     final matrix = camera.getFrame();
     if (matrix == nullptr) return;
-    // detectAndAnnotateFrames(matrix);
+    /// ArUco detection and image annotation (highlights the aruco on dashboard)
+    /// send ArUco data for autonomy to make decisions
+    final arucoResults = detectAndSendToAutonomy(matrix, details.resolutionWidth);
+    // logger.info("Is ArUco detected: ${arucoResults.arucoDetected}");
+    if (arucoResults.arucoDetected == BoolState.YES) {
+      logger.info("ArUco Position: ${arucoResults.arucoPosition}");
+      logger.info("ArUco Size: ${arucoResults.arucoSize}");
+    }
+    send(AutonomyPayload(arucoResults));
+
     final frame = encodeJpg(matrix, quality: details.quality);
     matrix.dispose();
     if (frame == null) {  // Error getting the frame

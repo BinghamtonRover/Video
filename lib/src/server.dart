@@ -5,7 +5,10 @@ import "package:burt_network/burt_network.dart";
 import "collection.dart";
 
 /// The socket to send autonomy data to.
-final autonomySocket = SocketInfo(address: InternetAddress("192.168.1.30"), port: 8003);
+/// socket for testings
+final autonomySocket = SocketInfo(address: InternetAddress.loopbackIPv4, port: 8003);
+
+// final autonomySocket = SocketInfo(address: InternetAddress("192.168.1.30"), port: 8003);
 
 /// Class for the video program to interact with the dashboard
 class VideoServer extends RoverServer {
@@ -17,7 +20,7 @@ class VideoServer extends RoverServer {
     // ignore message if not a video message
     if (wrapper.name != VideoCommand().messageName) return;
     final command = VideoCommand.fromBuffer(wrapper.data);
-    sendMessage(command);  // Echo the request
+    sendMessage(command);  // Echo the request - why?
     if (command.details.name == CameraName.ROVER_FRONT) {
       // ROVER_FRONT is on the same camera as AUTONOMY_DEPTH
       command.details.name = CameraName.AUTONOMY_DEPTH;
@@ -26,9 +29,9 @@ class VideoServer extends RoverServer {
   }
 
   /// Sends the depth frame to [autonomySocket].
-  void sendDepthFrame(VideoData frame) => 
-    sendMessage(frame, destinationOverride: autonomySocket);
-
+  void sendToAutonomy(VideoData decisionData) => 
+    sendMessage(decisionData, destinationOverride: autonomySocket);
+ 
   @override
   Future<void> restart() => collection.restart();
 
