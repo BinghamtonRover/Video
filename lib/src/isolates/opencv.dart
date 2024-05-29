@@ -53,13 +53,17 @@ class OpenCVCameraIsolate extends CameraIsolate {
     if (matrix == nullptr) return;
     /// ArUco detection and image annotation (highlights the aruco on dashboard)
     /// send ArUco data for autonomy to make decisions
-    final arucoResults = detectAndSendToAutonomy(matrix, details.resolutionWidth);
-    // logger.info("Is ArUco detected: ${arucoResults.arucoDetected}");
+    /// Comment out lines 57 - 63 if you want to view ArUco tags on the dashboard without ne
+    final arucoResults = detectAndSendToAutonomy(matrix, camera.getProperty(3));
+
+    // logger.debug("Is ArUco detected: ${arucoResults.arucoDetected}");
     if (arucoResults.arucoDetected == BoolState.YES) {
-      logger.info("ArUco Position: ${arucoResults.arucoPosition}");
-      logger.info("ArUco Size: ${arucoResults.arucoSize}");
+      logger.debug("ArUco Position: ${arucoResults.arucoPosition}");
+      logger.debug("ArUco Size: ${arucoResults.arucoSize}");
     }
-    send(AutonomyPayload(arucoResults));
+    
+    /// Comment this out if you want to see ArUco tags on the dashboard without needing an autonomy server open
+    // send(AutonomyPayload(arucoResults));
 
     final frame = encodeJpg(matrix, quality: details.quality);
     matrix.dispose();
