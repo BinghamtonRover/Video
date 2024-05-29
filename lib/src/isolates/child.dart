@@ -100,7 +100,7 @@ abstract class CameraIsolate extends IsolateChild<IsolatePayload, VideoCommand> 
   void start() {
     if (details.status != CameraStatus.CAMERA_ENABLED) return;
     sendLog(LogLevel.debug, "Starting camera $name. Status=${details.status}");
-    final interval = details.fps == 0 ? Duration.zero : Duration(milliseconds: 1000 ~/ details.fps);
+    // final interval = details.fps == 0 ? Duration.zero : Duration(milliseconds: 1000 ~/ details.fps);
     // frameTimer = Timer.periodic(interval, (_) => sendFrames());
     frameTimer = Timer.periodic(const Duration(milliseconds: 100), (_) => sendFrames());
     fpsTimer = Timer.periodic(const Duration(seconds: 5), (_) {
