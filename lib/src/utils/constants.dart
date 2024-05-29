@@ -12,10 +12,11 @@ Map<CameraName, String> cameraNames = {
   CameraName.SUBSYSTEM1: "/dev/rover-cam_subsystem_1",
   CameraName.SUBSYSTEM2: "/dev/rover-cam_subsystem_2",
   CameraName.SUBSYSTEM3: "/dev/rover-cam_subsystem_3",
-  //CameraName.BOTTOM_LEFT: "/dev/rover-cam_bottom_left",
-  //CameraName.BOTTOM_RIGHT: "/dev/rover-cam_bottom_right",
+  CameraName.BOTTOM_LEFT: "/dev/rover-cam_bottom_left",
+  CameraName.BOTTOM_RIGHT: "/dev/rover-cam_bottom_right",
 };
 
+/// Map for WINDOWS devices
 /// Map for WINDOWS devices
 Map<CameraName, int> cameraIndexes = {
   CameraName.ROVER_REAR: 20,
@@ -24,6 +25,6 @@ Map<CameraName, int> cameraIndexes = {
   CameraName.SUBSYSTEM1: 22,
   CameraName.SUBSYSTEM2: 23,
   CameraName.SUBSYSTEM3: 24,
-  // CameraName.BOTTOM_LEFT: 6,
-  // CameraName.BOTTOM_RIGHT: 7,
+  CameraName.BOTTOM_LEFT: 6,
+  CameraName.BOTTOM_RIGHT: 7,
 };

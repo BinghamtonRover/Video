@@ -53,7 +53,7 @@ class OpenCVCameraIsolate extends CameraIsolate {
     if (matrix == nullptr) return;
     /// ArUco detection and image annotation (highlights the aruco on dashboard)
     /// send ArUco data for autonomy to make decisions
-    final arucoResults = detectAndSendToAutonomy(matrix, details.resolutionWidth);
+    final arucoResults = detectAruco(matrix, details.resolutionWidth);
     // logger.info("Is ArUco detected: ${arucoResults.arucoDetected}");
     if (arucoResults.arucoDetected == BoolState.YES) {
       logger.info("ArUco Position: ${arucoResults.arucoPosition}");

@@ -65,7 +65,6 @@ class RealSenseIsolate extends CameraIsolate {
   @override
   Future<void> sendFrames() async {
     // Get frames from RealSense
-    //if (flag) return;
     final frames = camera.getFrames();
     if (frames == nullptr) return;
 
@@ -189,7 +188,7 @@ class RealSenseIsolate extends CameraIsolate {
       centerObstacle: center ? BoolState.YES : BoolState.NO,
       rightObstacle: right ? BoolState.YES : BoolState.NO,
     );
-    send(AutonomyPayload(data));
+    //send(AutonomyPayload(data));
     return matrix;
   }
 

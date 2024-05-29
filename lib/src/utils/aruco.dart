@@ -7,7 +7,7 @@ import "package:video/src/collection.dart";
 
 /// Detect ArUco tags in the cv::aruco::DICT_4X4_50 dictionary and annotate them
 /// Detect ArUco tags in the cv::aruco::DICT_4X4_50 dictionary and send relevant info to the parent isolate
-VideoData detectAndSendToAutonomy(Pointer<Mat> image, int resolutionWidth  ){
+VideoData detectAruco(Pointer<Mat> image, int resolutionWidth  ){
   final Pointer<ArucoMarkers> markers = detectArucoMarkers(image, dictionary: 0);
   /// Draws the markers on the image
   drawMarkers(image, markers);

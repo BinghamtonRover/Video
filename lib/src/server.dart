@@ -8,8 +8,6 @@ import "collection.dart";
 /// socket for testings
 final autonomySocket = SocketInfo(address: InternetAddress.loopbackIPv4, port: 8003);
 
-// final autonomySocket = SocketInfo(address: InternetAddress("192.168.1.30"), port: 8003);
-
 /// Class for the video program to interact with the dashboard
 class VideoServer extends RoverServer {
   /// Requires a port to communicate through
@@ -20,7 +18,7 @@ class VideoServer extends RoverServer {
     // ignore message if not a video message
     if (wrapper.name != VideoCommand().messageName) return;
     final command = VideoCommand.fromBuffer(wrapper.data);
-    sendMessage(command);  // Echo the request - why?
+    sendMessage(command);  // Echo the request
     if (command.details.name == CameraName.ROVER_FRONT) {
       // ROVER_FRONT is on the same camera as AUTONOMY_DEPTH
       command.details.name = CameraName.AUTONOMY_DEPTH;
