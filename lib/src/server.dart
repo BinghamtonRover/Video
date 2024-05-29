@@ -5,7 +5,10 @@ import "package:burt_network/burt_network.dart";
 import "collection.dart";
 
 /// The socket to send autonomy data to.
-final autonomySocket = SocketInfo(address: InternetAddress("192.168.1.30"), port: 8003);
+/// socket for testings
+final autonomySocket = SocketInfo(address: InternetAddress.loopbackIPv4, port: 8003);
+
+// final autonomySocket = SocketInfo(address: InternetAddress("192.168.1.30"), port: 8003);
 
 /// Class for the video program to interact with the dashboard
 class VideoServer extends RoverServer {

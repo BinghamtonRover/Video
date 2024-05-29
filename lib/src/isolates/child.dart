@@ -94,8 +94,8 @@ abstract class CameraIsolate extends IsolateChild<IsolatePayload, VideoCommand> 
       sendLog(LogLevel.warning, "Frame from camera $name are too large (${image.data.length})");
       updateDetails(CameraDetails(status: CameraStatus.FRAME_TOO_LARGE));
     }
-  }
 
+  }
   /// Starts the camera and timers.
   void start() {
     if (details.status != CameraStatus.CAMERA_ENABLED) return;

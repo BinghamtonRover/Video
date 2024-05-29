@@ -1,7 +1,7 @@
 import "dart:ffi";
 
 import "package:burt_network/burt_network.dart";
-import "package:opencv_ffi/opencv_ffi.dart" show OpenCVImage;
+import "package:opencv_ffi/opencv_ffi.dart" show OpenCVImage, ArucoMarkers, ArucoMarker, ArucoMarkersUtils;
 
 import "package:video/video.dart";
 
@@ -60,13 +60,9 @@ class LogPayload extends IsolatePayload {
 
 /// Update: no longer sending depth frames
 /// Processing will be done on the video program -> Detection of obstacles will be sent to autonomy
-/// A depth frame to be sent to the Autonomy program.
 class AutonomyPayload extends IsolatePayload {
-  /// The address of the data in memory, since pointers cannot be sent across isolates.
-  final int address;
-  /// Saves the address of the pointer to send across isolates.
-  AutonomyPayload(Pointer<NativeFrames> pointer) : 
-    address = pointer.address;
-
-  
+  /// VideoData without a frame sent to autonomy so it can make decisions
+  VideoData data;
+  /// Constructor 
+  AutonomyPayload(this.data); 
 }
