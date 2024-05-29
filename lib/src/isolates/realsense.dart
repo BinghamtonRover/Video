@@ -135,7 +135,7 @@ class RealSenseIsolate extends CameraIsolate {
     bool left = false;
     bool center = false;
     bool right = false;
-    bool bottom = false;
+    //bool bottom = false;
 
     /// 640 by 480 = 307200
     for(int row = 0; row < (boxHeight*newHeight); row += boxHeight){
@@ -184,6 +184,12 @@ class RealSenseIsolate extends CameraIsolate {
     // print("$left top left obstacle");
     // print("$center top center obstacle");
     // print("$right top right obstacle");
+    final data = VideoData(
+      leftObstacle: left ? BoolState.YES : BoolState.NO,
+      centerObstacle: center ? BoolState.YES : BoolState.NO,
+      rightObstacle: right ? BoolState.YES : BoolState.NO,
+    );
+    send(AutonomyPayload(data));
     return matrix;
   }
 
