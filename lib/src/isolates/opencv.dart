@@ -1,5 +1,4 @@
 import "dart:ffi";
-import "dart:math";
 
 import "package:opencv_ffi/opencv_ffi.dart";
 import "package:burt_network/burt_network.dart";

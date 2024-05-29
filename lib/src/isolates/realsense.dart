@@ -1,5 +1,5 @@
 import "dart:ffi";
-import "dart:collection";
+// import "dart:collection";
 import "dart:async";
 
 import "package:burt_network/generated.dart";
@@ -80,7 +80,8 @@ class RealSenseIsolate extends CameraIsolate {
 
     if(frames.ref.depth_data != nullptr && !frames.ref.depth_length.isOdd){
       //print("width: ${camera.depthResolution.width}, height: ${camera.depthResolution.height}");
-      final depthAvgs = compressDepthFrame(frames.ref.depth_data.cast<Uint16>(), 100, 100);
+      // final depthAvgs = 
+      compressDepthFrame(frames.ref.depth_data.cast<Uint16>(), 100, 100);
     }
     //findObstacles(depthAvgs);
     //printMatrix(depthAvgs);
@@ -188,7 +189,7 @@ class RealSenseIsolate extends CameraIsolate {
       centerObstacle: center ? BoolState.YES : BoolState.NO,
       rightObstacle: right ? BoolState.YES : BoolState.NO,
     );
-    //send(AutonomyPayload(data));
+    send(AutonomyPayload(data));
     return matrix;
   }
 

@@ -1,10 +1,10 @@
 import "dart:ffi";
-import "dart:io";
+//import "dart:io";
 
 import "package:video/video.dart";
 
 import "realsense_ffi.dart";
-import "realsense_stub.dart";
+//import "realsense_stub.dart";
 
 /// The resolution of an image.
 typedef Resolution = ({int width, int height});

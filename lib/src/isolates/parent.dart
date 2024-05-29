@@ -1,5 +1,4 @@
 import "dart:async";
-import "dart:ffi";
 
 import "package:opencv_ffi/opencv_ffi.dart" as opencv;
 import "package:typed_isolate/typed_isolate.dart";
