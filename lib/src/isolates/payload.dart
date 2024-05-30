@@ -1,9 +1,7 @@
 import "dart:ffi";
 
 import "package:burt_network/burt_network.dart";
-import "package:opencv_ffi/opencv_ffi.dart" show OpenCVImage, ArucoMarkers, ArucoMarker, ArucoMarkersUtils;
-
-import "package:video/video.dart";
+import "package:opencv_ffi/opencv_ffi.dart";
 
 /// A payload containing some data to report back to the parent isolate.
 /// 
@@ -58,7 +56,6 @@ class LogPayload extends IsolatePayload {
   const LogPayload({required this.level, required this.message});
 }
 
-/// Update: no longer sending depth frames
 /// Processing will be done on the video program -> Detection of obstacles will be sent to autonomy
 class AutonomyPayload extends IsolatePayload {
   /// VideoData without a frame sent to autonomy so it can make decisions

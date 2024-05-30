@@ -16,9 +16,9 @@ Map<CameraName, String> cameraNames = {
 
 /// Map for WINDOWS devices
 Map<CameraName, int> cameraIndexes = {
-  CameraName.ROVER_REAR: 0,
+  CameraName.ROVER_REAR: 4,
   CameraName.AUTONOMY_DEPTH: 5,
-  CameraName.ROVER_FRONT: 4,
+  CameraName.ROVER_FRONT: 0,
   CameraName.SUBSYSTEM1: 1,
   CameraName.SUBSYSTEM2: 2,
   CameraName.SUBSYSTEM3: 3,

@@ -1,5 +1,4 @@
 import "dart:async";
-import "dart:ffi";
 
 import "package:opencv_ffi/opencv_ffi.dart" as opencv;
 import "package:typed_isolate/typed_isolate.dart";
@@ -21,7 +20,10 @@ class VideoController extends IsolateParent<VideoCommand, IsolatePayload>{
     for (final name in CameraName.values) {
       switch (name) {
         case CameraName.CAMERA_NAME_UNDEFINED: continue;
-        case CameraName.ROVER_FRONT: continue;  // shares feed with AUTONOMY_DEPTH
+        case CameraName.ROVER_FRONT: 
+          final details = getDefaultDetails(name);
+          final isolate = OpenCVCameraIsolate(details: details, shouldDetectAruco: true);
+          await spawn(isolate);
         case CameraName.AUTONOMY_DEPTH: 
           final details = getRealsenseDetails(name);
           final isolate = RealSenseIsolate(details: details);

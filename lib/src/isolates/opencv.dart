@@ -1,6 +1,4 @@
 import "dart:ffi";
-import "dart:math";
-
 import "package:opencv_ffi/opencv_ffi.dart";
 import "package:burt_network/burt_network.dart";
 
@@ -12,10 +10,15 @@ import "package:video/video.dart";
 /// When a frame is read, instead of sending the [VideoData], this class sends only the pointer
 /// to the [OpenCVImage] via the [IsolatePayload] class, and the image is read by the parent isolate.
 class OpenCVCameraIsolate extends CameraIsolate {
+  /// Whether to detect ArUco tags. 
+  /// 
+  /// Only enable this for the camera being used in Autonomy, usually the front camera.
+  final bool shouldDetectAruco;
+  
   /// The native camera object from OpenCV.
   late final Camera camera;
   /// Creates a new manager for the given camera and default details.
-  OpenCVCameraIsolate({required super.details}); 
+  OpenCVCameraIsolate({required super.details, this.shouldDetectAruco = false}); 
 
   @override
   void initCamera() {
@@ -47,23 +50,17 @@ class OpenCVCameraIsolate extends CameraIsolate {
   /// - If the camera does not respond, alerts the dashboard
   /// - If the frame is too large, reduces the quality (increases JPG compression)
   /// - If the quality is already low, alerts the dashboard
+  /// 
+  /// If [shouldDetectAruco] is true, this will also scan the frame for ArUco tags
+  /// and send metadata to the Autoomy program.
   @override
   void sendFrames() {
     final matrix = camera.getFrame();
     if (matrix == nullptr) return;
-    /// ArUco detection and image annotation (highlights the aruco on dashboard)
-    /// send ArUco data for autonomy to make decisions
-    /// Comment out lines 57 - 63 if you want to view ArUco tags on the dashboard without ne
-    final arucoResults = detectAndSendToAutonomy(matrix, camera.getProperty(3));
-
-    // logger.debug("Is ArUco detected: ${arucoResults.arucoDetected}");
-    if (arucoResults.arucoDetected == BoolState.YES) {
-      logger.debug("ArUco Position: ${arucoResults.arucoPosition}");
-      logger.debug("ArUco Size: ${arucoResults.arucoSize}");
+    if (shouldDetectAruco) {
+      final arucoResults = detectAndSendToAutonomy(matrix, camera.getProperty(3));
+      send(AutonomyPayload(arucoResults));
     }
-    
-    /// Comment this out if you want to see ArUco tags on the dashboard without needing an autonomy server open
-    // send(AutonomyPayload(arucoResults));
 
     final frame = encodeJpg(matrix, quality: details.quality);
     matrix.dispose();
