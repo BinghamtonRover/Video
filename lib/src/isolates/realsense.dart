@@ -81,7 +81,7 @@ class RealSenseIsolate extends CameraIsolate {
     if(frames.ref.depth_data != nullptr && !frames.ref.depth_length.isOdd){
       //print("width: ${camera.depthResolution.width}, height: ${camera.depthResolution.height}");
       // final depthAvgs = 
-      compressDepthFrame(frames.ref.depth_data.cast<Uint16>(), 100, 100);
+      compressDepthFrame(frames.ref.depth_data.cast<Uint16>(), 80, 80);
     }
     //findObstacles(depthAvgs);
     //printMatrix(depthAvgs);
