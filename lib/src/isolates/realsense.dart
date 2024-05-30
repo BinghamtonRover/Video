@@ -1,5 +1,5 @@
 import "dart:ffi";
-// import "dart:collection";
+import "dart:collection";
 import "dart:async";
 
 import "package:burt_network/generated.dart";
@@ -80,8 +80,9 @@ class RealSenseIsolate extends CameraIsolate {
 
     if(frames.ref.depth_data != nullptr && !frames.ref.depth_length.isOdd){
       //print("width: ${camera.depthResolution.width}, height: ${camera.depthResolution.height}");
-      // final depthAvgs = 
-      compressDepthFrame(frames.ref.depth_data.cast<Uint16>(), 100, 100);
+      //final depthAvgs = 
+      compressDepthFrame(frames.ref.depth_data.cast<Uint16>(), 80, 80);
+      //findObstacles(depthAvgs);
     }
     //findObstacles(depthAvgs);
     //printMatrix(depthAvgs);
@@ -152,7 +153,7 @@ class RealSenseIsolate extends CameraIsolate {
           }
         }
         //print("after box");
-        if(count > (boxSize * 0.5)) {
+        if(count > (boxSize * 0.70)) {
           // foundBoxes++;
           mRow.add(sum / count);
           if((sum / count) < 2000){
@@ -161,7 +162,9 @@ class RealSenseIsolate extends CameraIsolate {
             //if(row > (camera.depthResolution.height ~/ 2)){
               //bottom = true;
             //} else 
-            if(column < (camera.depthResolution.width ~/ 3)){
+            if(row > (camera.depthResolution.height ~/ 2)){ // If in top third region
+              continue;
+            } else if(column < (camera.depthResolution.width ~/ 3)){
               left = true;
             } else if(column < (2 * camera.depthResolution.width ~/ 3)){
               center = true;
@@ -181,9 +184,9 @@ class RealSenseIsolate extends CameraIsolate {
     // print("$missingBoxes missing Boxes, $foundBoxes found boxes");
     // print("Found ${obstacles} obstacles");
     // print("$bottom bottom obstacle");
-    // print("$left top left obstacle");
-    // print("$center top center obstacle");
-    // print("$right top right obstacle");
+    print("$left top left obstacle");
+    print("$center top center obstacle");
+    print("$right top right obstacle");
     final data = VideoData(
       leftObstacle: left ? BoolState.YES : BoolState.NO,
       centerObstacle: center ? BoolState.YES : BoolState.NO,
@@ -193,91 +196,91 @@ class RealSenseIsolate extends CameraIsolate {
     return matrix;
   }
 
-  // void printMatrix(List<List<double>> depthAvgs){
-  //   final buffer = StringBuffer();
-  //   for(final row in depthAvgs){
-  //     for(final column in row){
-  //       buffer.write((column.toString() + "    ").substring(0, 5));
-  //       buffer.write(" ");
-  //     }
-  //     print(buffer);
-  //     buffer.clear();
-  //   }
-  // }
+  void printMatrix(List<List<Object>> matrix){
+    final buffer = StringBuffer();
+    for(final row in matrix){
+      for(final column in row){
+        buffer.write((column.toString() + "    ").substring(0, 5));
+        buffer.write(" ");
+      }
+      print(buffer);
+      buffer.clear();
+    }
+  }
 
-  // void findObstacles(List<List<double>> depths){
-  //   final height = depths.length;
-  //   final width = depths[0].length;
+  /// Detects obstacles based on the average depth data given in [depths]
+  void findObstacles(List<List<double>> depths){
+    final height = depths.length;
+    final width = depths[0].length;
 
-  //   final visited = <List<bool>>[];
-  //   for(final row in depths){
-  //     visited.add(List.filled(row.length, false));
-  //   }
+    final visited = <List<bool>>[];
+    for(final row in depths){
+      visited.add(List.filled(row.length, false));
+    }
 
-  //   final horizon = height ~/ 2;
-  //   //findHorizon(depths, width ~/ 2, height);
-  //   /// Find if depth changes more than !!!!! 0.5 Meters !!!!!
+    final horizon = height ~/ 2;
+    const depthChange = 500;
+    //findHorizon(depths, width ~/ 2, height);
+    /// Find if depth changes more than !!!!! 0.5 Meters !!!!!
 
-  //   /// Bottom section everything beneath horizon 
-  //   /// Start from (XMiddle, HorizonY)
+    /// Bottom section everything beneath horizon 
+    /// Start from (XMiddle, HorizonY)
     
-  //   var y = 25;
-  //   var x = 15;
-  //   //left
-  //   if(bfsUntilDepthChange(visited, depths, x, y, 2000, 0, 15, 0, 25)){
-  //     print("Problem on Left");
-  //   }
-  //   y = 25;
-  //   x = 25;
-  //   if(bfsUntilDepthChange(visited, depths, x, y, 2000, 35, 50, 0, 25)){
-  //     print("Problem on Middle");
-  //   }
-  //   y = 25;
-  //   x = 35;
-  //   if(bfsUntilDepthChange(visited, depths, x, y, 2000, 15, 35, 0, 25)){
-  //     print("Problem on Right");
-  //   }
-  //   y = 25;
-  //   x = 25;
-  //   if(bfsUntilDepthChange(visited, depths, x, y, 2000, 0, 50, 25, 50)){
-  //     print("Problem on Bottom");
-  //   }
-  // }
+    var y = horizon;
+    var x = width ~/ 3;
+    //left
+    if(bfsUntilDepthChange(visited, depths, x, y, depthChange, 0, x, 0, horizon)){
+      print("Problem on Top Left");
+    }
+    x = width ~/ 2;
+    if(bfsUntilDepthChange(visited, depths, x, y, depthChange, width ~/ 3, width - (width ~/ 3), 0, horizon)){
+      print("Problem on Top Middle");
+    }
+    x = width - (width ~/ 3);
+    if(bfsUntilDepthChange(visited, depths, x, y, depthChange, x, width, 0, horizon)){
+      print("Problem on Top Right");
+    }
+    y = horizon + (horizon ~/ 3);
+    x = width ~/ 2;
+    if(bfsUntilDepthChange(visited, depths, x, y, depthChange + (depthChange ~/ 2), width ~/ 4, width - width ~/ 4, y, horizon)){
+      print("Problem on Bottom");
+    }
+  }
 
-  // /// Function to perform BFS on given region
-  // bool bfsUntilDepthChange(List<List<bool>> visited, List<List<double>> matrix, int x, int y, int depthChange, int left, int right, int top, int bottom) {
-  //   final directions = [
-  //     [-1, -1], [-1, 0], [-1, 1],
-  //     [0, -1],         [0, 1],
-  //     [1, -1], [1, 0], [1, 1],
-  //   ];
+  /// Function to perform BFS on given region
+  bool bfsUntilDepthChange(List<List<bool>> visited, List<List<double>> matrix, int x, int y, int depthChange, int left, int right, int top, int bottom) {
+    final directions = [
+      [-1, -1], [-1, 0], [-1, 1],
+      [0, -1],         [0, 1],
+      [1, -1], [1, 0], [1, 1],
+    ];
 
-  //   int newX;
-  //   int newY;
+    int newX;
+    int newY;
 
-  //   final Q = Queue<List<int>>(); 
-  //   visited[y][x] = true;
-  //   Q.add([x,y]);
-  //   while(Q.isNotEmpty){   
-  //     final coordinates = Q.removeFirst();
-  //     for (final direction in directions) {
-  //       newX = coordinates[0] + direction[0];
-  //       newY = coordinates[1] + direction[1];
+    final Q = Queue<List<int>>(); 
+    visited[y][x] = true;
+    Q.add([x,y]);
+    while(Q.isNotEmpty){   
+      final coordinates = Q.removeFirst();
+      for (final direction in directions) {
+        newX = coordinates[0] + direction[0];
+        newY = coordinates[1] + direction[1];
 
-  //       if (newY >= top && newY < bottom && newX >= left && newX < right) {
-  //         if(visited[newY][newX] != true && matrix[newY][newX] != -1){
-  //           if((matrix[coordinates[1]][coordinates[0]] - matrix[newY][newX]).abs() > depthChange){
-  //             print("The coordinates are (${coordinates[0]}, ${coordinates[1]}");
-  //             return true;
-  //           }
-  //         }
-  //         matrix[newY][newX] = -1;
-  //         Q.add([newX,newY]);
-  //       }
-  //     }
-  //   }
-  //   return false;
-  // }
+        if (newY >= top && newY < bottom && newX >= left && newX < right) {
+          if(visited[newY][newX] != true && matrix[newY][newX] != -1){
+            if((matrix[coordinates[1]][coordinates[0]] - matrix[newY][newX]).abs() > depthChange && (matrix[newY][newX] < 2000 || matrix[coordinates[1]][coordinates[0]] < 2000)){
+              print("The coordinates are (${coordinates[0]}, ${coordinates[1]})");
+              return true;
+            }
+            visited[newY][newX] = true;
+            Q.add([newX,newY]);
+          }
+        }
+      }
+    }
+    return false;
+  }
 
 
   // int findHorizon(List<List<double>> depths, int middleX, int rows) => rows ~/ 2;
