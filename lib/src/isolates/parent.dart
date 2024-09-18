@@ -4,6 +4,7 @@ import "package:opencv_ffi/opencv_ffi.dart" as opencv;
 import "package:typed_isolate/typed_isolate.dart";
 import "package:burt_network/burt_network.dart";
 import "package:burt_network/logging.dart";
+import "package:video/src/isolates/lidar.dart";
 
 import "package:video/video.dart";
 
@@ -21,6 +22,7 @@ class VideoController extends IsolateParent<VideoCommand, IsolatePayload>{
       switch (name) {
         case CameraName.CAMERA_NAME_UNDEFINED: continue;
         case CameraName.ROVER_FRONT: continue;  // shares feed with AUTONOMY_DEPTH
+        case CameraName.SUBSYSTEM1: continue;
         case CameraName.AUTONOMY_DEPTH: 
           final details = getRealsenseDetails(name);
           final isolate = RealSenseIsolate(details: details);
@@ -32,6 +34,8 @@ class VideoController extends IsolateParent<VideoCommand, IsolatePayload>{
           await spawn(isolate);
       }
     }
+    final isolate = LidarIsolate(details: getDefaultDetails(CameraName.SUBSYSTEM1));
+    await spawn(isolate);
   }
 
   @override 

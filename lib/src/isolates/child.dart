@@ -85,6 +85,7 @@ abstract class CameraIsolate extends IsolateChild<IsolatePayload, VideoCommand> 
   void sendFrame(OpenCVImage image, {CameraDetails? detailsOverride}) {
     final details = detailsOverride ?? this.details;
     if (image.data.length < maxPacketLength) {  // Frame can be sent
+      logger.warning("Sending packet: ${details.status}");
       send(FramePayload(details: details, image: image));
     } else if (details.quality > 25) {  // Frame too large, lower quality
       sendLog(LogLevel.debug, "Lowering quality for $name from ${details.quality}");

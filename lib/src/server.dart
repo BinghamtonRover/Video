@@ -30,5 +30,11 @@ class VideoServer extends RoverServer {
     sendMessage(frame, destinationOverride: autonomySocket);
 
   @override
-  void restart() => collection.restart();
+  Future<void> restart() => collection.restart();
+  
+  @override
+  Future<void> onShutdown() {
+    // TODO: implement onShutdown
+    throw UnimplementedError();
+  }
 }

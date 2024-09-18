@@ -7,6 +7,8 @@ export "src/isolates/realsense.dart";
 export "src/realsense/ffi.dart";
 export "src/realsense/interface.dart";
 
+export "src/lidar/lidar.dart";
+
 export "src/utils/aruco.dart";
 export "src/utils/constants.dart";
 export "src/utils/periodic_timer.dart";
