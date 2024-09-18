@@ -47,7 +47,7 @@ class LidarFFI {
       bindings.SickScanApiWaitNextCartesianPointCloudMsg(_handle, struct, 3);
       
       // print(result);
-      final length = struct.ref.data.size;
+      //final length = struct.ref.data.size;
       // print(struct.ref.data.buffer.asTypedList(length));
       // print(struct.ref.fields.size); 
       final fieldBuffer = struct.ref.fields.buffer;
@@ -82,7 +82,7 @@ class LidarFFI {
 
       // uint8_t* pixels = (uint8_t*)calloc(3 * img_width * img_height, sizeof(uint8_t));
       final pixels = arena<Uint8>(3 * imgWidth * imgHeight);
-
+      addHiddenArea(imgHeight, imgWidth, pixels);
       for (var row_idx = 0; row_idx < struct.ref.height; row_idx++){
           for (var col_idx = 0; col_idx < struct.ref.width; col_idx++){
               // Get cartesian point coordinates
@@ -111,8 +111,8 @@ class LidarFFI {
           }
         }
       }
+      
       addCross(imgHeight, imgWidth, pixels);
-      addHiddenArea(imgHeight, imgWidth, pixels);
       print("GOT THIS FAR");
       final mat = getMatrix(imgHeight, imgWidth, pixels);
       final jpeg = encodeJpg(mat);
@@ -133,34 +133,34 @@ class LidarFFI {
     }); 
 
     /// Add a red cross to the center of an image
-    void addCross(int imgHeight, int imgWidth, Pointer<Uint8> pixels){
+    void addCross(int imgHeight, int imgWidth, Pointer<Uint8> pixels, {int thickness = 1}){
       final midx = imgWidth ~/ 2;
       final midy = imgHeight ~/ 2;
-      for(var i = midx - 5; i <= midx + 5; i++){ // draw horizontal
-        pixels[3 * midy * imgWidth + 3 * i + 0] = 255; // R
-        pixels[3 * midy * imgWidth + 3 * i + 1] = 0; // G
-        pixels[3 * midy * imgWidth + 3 * i + 2] = 0; // B
+      for(var x = midx - 7; x <= midx + 7; x++){ // draw horizontal
+        for(var y = midy - thickness; y < midy + thickness; y++){
+          pixels[3 * y * imgWidth + 3 * x + 0] = 0; // R
+          pixels[3 * y * imgWidth + 3 * x + 1] = 0; // G
+          pixels[3 * y * imgWidth + 3 * x + 2] = 255; // B
+        }
       }
-      for(var i = midy - 5; i <= midy + 5; i++){  // draw vertical
-        pixels[3 * i * imgWidth + 3 * midx + 0] = 255; // R
-        pixels[3 * i * imgWidth + 3 * midx + 1] = 0; // G
-        pixels[3 * i * imgWidth + 3 * midx + 2] = 0; // B
+      for(var y = midy - 7; y <= midy + 7; y++){  // draw vertical
+        for(var x = midx - thickness; x < midx + thickness; x++){ 
+          pixels[3 * y * imgWidth + 3 * x + 0] = 0; // B
+          pixels[3 * y * imgWidth + 3 * x + 1] = 0; // G
+          pixels[3 * y * imgWidth + 3 * x + 2] = 255; // R
+        }
       }
     }
 
     /// Draws a triangle in the area behind lidar that doesn't include data
     void addHiddenArea(int imgHeight, int imgWidth, Pointer<Uint8> pixels){
-      final increment = (imgHeight /~ 2) ~/ (imgWidth /~ 2);
-      var xoff = 1;
-      var y = imgHeight - 1;
-      while(y < (imgHeight /~ 2)){
-        for(var x = xoff; x < imgWidth - xoff; x++){
-          pixels[3 * y * imgWidth + 3 * x + 0] = 140; // R
-          pixels[3 * y * imgWidth + 3 * x + 1] = 140; // G
-          pixels[3 * y * imgWidth + 3 * x + 2] = 140; // B
+      /// NEED IMAGE TO BE SQUARE FOR THIS TO WORK
+      for(var y = imgHeight - 1; y > imgHeight ~/ 2; y--){
+        for(var x = imgWidth - y; x < y; x++){
+          pixels[3 * y * imgWidth + 3 * x + 0] = 130; // R
+          pixels[3 * y * imgWidth + 3 * x + 1] = 130; // G
+          pixels[3 * y * imgWidth + 3 * x + 2] = 130; // B
         }
-        y++;
-        xoff += increment;
       }
     }
 

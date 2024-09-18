@@ -48,7 +48,7 @@ class LidarIsolate extends CameraIsolate {
       sendFrame(frame);
       logger.info("Here2");
       // frame.dispose();
-      // await Future<void>.delayed(const Duration(seconds:5));
+      await Future<void>.delayed(const Duration(seconds:5));
     // }
   }
 }
