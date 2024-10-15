@@ -1,6 +1,6 @@
+import "dart:developer";
 import "dart:ffi";
-// import "dart:io";
-// import "dart:typed_data";
+
 import "../generated/lidar_ffi_bindings.dart";
 import "package:ffi/ffi.dart";
 import "package:opencv_ffi/opencv_ffi.dart";
@@ -15,7 +15,7 @@ class LidarFFI {
 
   LidarFFI() : bindings = LidarBindings(DynamicLibrary.open("lidar.dll"));
 
-  bool init() => using((arena) {
+  Future<bool> init() => using((arena) async {
     _handle = bindings.SickScanApiCreate(0, nullptr);
     // bindings.SickScanApiInitByLaunchfile(_handle, filename);
     // final array = arena<Char>();
@@ -23,13 +23,14 @@ class LidarFFI {
     argsPtr[0] = "lidar.dart".toNativeUtf8(allocator: arena).cast<Char>();
     argsPtr[1] = launchFile.toNativeUtf8(allocator: arena).cast<Char>();
     argsPtr[2] = cliArgs.toNativeUtf8(allocator: arena).cast<Char>();
-    for (int i = 0; i < 3; i++) {
-      final element = argsPtr[i].cast<Utf8>();
-      final str = element.toDartString();
-      // print("Arg $i is $str");
+
+    final result = bindings.SickScanApiInitByCli(_handle, 3, argsPtr);
+    await Future<void>.delayed(const Duration(seconds: 10));
+    if(result != 0){
+      print("Unable to initialize Sick Scan Lidar");
+      return false;
     }
-    bindings.SickScanApiInitByCli(_handle, 3, argsPtr);
-    // print("Done init");
+    print("finished init");
     return true;
   });
 
@@ -39,14 +40,16 @@ class LidarFFI {
   }
 
   /// Converts a [SickScanPointCloudMsg] into a single [OpenCVImage]
-  Future<OpenCVImage?> getOneImage() =>
+  Future<OpenCVImage?> getOneImage({double timeout = 5}) =>
     using((arena) async {
       final struct = arena<SickScanPointCloudMsgType>();
-      //bindings.SickScanApiRegisterCartesianPointCloudMsg(_handle, struct);
-      //final result = 
-      bindings.SickScanApiWaitNextCartesianPointCloudMsg(_handle, struct, 3);
+      final result = bindings.SickScanApiWaitNextCartesianPointCloudMsg(_handle, struct, timeout);
+      await Future<void>.delayed(Duration(seconds: timeout.toInt()));
       
-      // print(result);
+      if(result != 0){
+        print("There was a problem calling SickScanApiWaitNextCartesianPointCloudMsg()");
+        return null;
+      }
       //final length = struct.ref.data.size;
       // print(struct.ref.data.buffer.asTypedList(length));
       // print(struct.ref.fields.size); 
@@ -105,9 +108,9 @@ class LidarFFI {
           int img_y = (250.0 * (-point_x + 2.0)).toInt(); // img_y := -pointcloud.x
           if (img_x >= 0 && img_x < imgWidth && img_y >= 0 && img_y < imgHeight) // point within the image area
           {
-            pixels[3 * img_y * imgWidth + 3 * img_x + 0] = 255; // R
+            pixels[3 * img_y * imgWidth + 3 * img_x + 0] = 0; // B
             pixels[3 * img_y * imgWidth + 3 * img_x + 1] = 255; // G
-            pixels[3 * img_y * imgWidth + 3 * img_x + 2] = 255; // B
+            pixels[3 * img_y * imgWidth + 3 * img_x + 2] = 255; // R
           }
         }
       }
@@ -121,15 +124,8 @@ class LidarFFI {
         print("null image");
         return null;
       }
+      bindings.SickScanApiFreePointCloudMsg(_handle, struct);
       return jpeg;
-      //   await File("temp.jpg").writeAsBytes(jpeg.data);
-      //   //jpeg.dispose();
-      //   // const outputFileName = "test.jpg";
-      // print("SOMEHOW GOT NOTHING");
-      // return null;
-      
-      // print("${struct.ref.height} ${struct.ref.width}");
-
     }); 
 
     /// Add a red cross to the center of an image
@@ -138,9 +134,9 @@ class LidarFFI {
       final midy = imgHeight ~/ 2;
       for(var x = midx - 7; x <= midx + 7; x++){ // draw horizontal
         for(var y = midy - thickness; y < midy + thickness; y++){
-          pixels[3 * y * imgWidth + 3 * x + 0] = 0; // R
+          pixels[3 * y * imgWidth + 3 * x + 0] = 0; // B
           pixels[3 * y * imgWidth + 3 * x + 1] = 0; // G
-          pixels[3 * y * imgWidth + 3 * x + 2] = 255; // B
+          pixels[3 * y * imgWidth + 3 * x + 2] = 255; // R
         }
       }
       for(var y = midy - 7; y <= midy + 7; y++){  // draw vertical
@@ -181,19 +177,23 @@ extension ToDartString on Array<Char> {
   }
 }
 
-// void main() async {
-//   final sensor = LidarFFI();
-//   print("Start init");
-//   sensor.init();
-//   // await Future<void>.delayed(Duration(seconds: 3));
+void main() async {
+  final sensor = LidarFFI();
+  print("Start init");
+  sensor.init();
+  await Future<void>.delayed(const Duration(seconds: 10));
+  print("Finished init");
+  
+  for(var i = 0; i < 5; i++){
+    final image = await sensor.getOneImage();
+    print(image);
+    await Future<void>.delayed(const Duration(seconds: 5));
+  }
 
-//   print("Finished init");
-//   while(true){
-//     sensor.getOneImage();
-//     await Future<void>.delayed(const Duration(seconds: 5));
-//   }
-//   await Future<void>.delayed(Duration(seconds: 10));
-//   sensor.dispose();
-//   print("Finished Program Execution");
-//   // return;
-// }
+  sensor.dispose();
+  
+  await Future<void>.delayed(Duration(seconds: 10));
+  sensor.dispose();
+  print("Finished Program Execution");
+  return;
+}

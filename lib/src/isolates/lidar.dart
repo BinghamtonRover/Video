@@ -16,8 +16,8 @@ class LidarIsolate extends CameraIsolate {
   LidarIsolate({required super.details});
 
   @override
-  void initCamera() {
-    if (!camera.init()) {
+  Future<void> initCamera() async {
+    if (!await camera.init()) {
       final details = CameraDetails(status: CameraStatus.CAMERA_DISCONNECTED);
       updateDetails(details);
       return sendLog(LogLevel.warning, "Could not open Lidar");
@@ -34,21 +34,18 @@ class LidarIsolate extends CameraIsolate {
 
   @override
   void sendFrames() async{
-    // return;
-    // Get frames from RealSense
-    // while(true){
-      final frame = await camera.getOneImage();
-      if (frame == null) {
-        logger.warning("Null image");
-        return;
-      }
-      logger.info("Got frame");
+    // Get frames from Lidar
+    final frame = await camera.getOneImage(timeout: 1);
+    if (frame == null) {
+      logger.warning("Null image");
+      return;
+    }
+    logger.info("Got frame");
 
-      // Compress colorized frame
-      sendFrame(frame);
-      logger.info("Here2");
-      // frame.dispose();
-      await Future<void>.delayed(const Duration(seconds:5));
-    // }
+    // Compress colorized frame
+    sendFrame(frame);
+    logger.info("Here2");
+    // frame.dispose();
+    //await Future<void>.delayed(const Duration(seconds:8));
   }
 }

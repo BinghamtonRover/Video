@@ -23,6 +23,7 @@ class VideoController extends IsolateParent<VideoCommand, IsolatePayload>{
         case CameraName.CAMERA_NAME_UNDEFINED: continue;
         case CameraName.ROVER_FRONT: continue;  // shares feed with AUTONOMY_DEPTH
         case CameraName.SUBSYSTEM1: continue;
+        //case CameraName.ROVER_REAR: continue;
         case CameraName.AUTONOMY_DEPTH: 
           final details = getRealsenseDetails(name);
           final isolate = RealSenseIsolate(details: details);
@@ -45,6 +46,7 @@ class VideoController extends IsolateParent<VideoCommand, IsolatePayload>{
         collection.videoServer.sendMessage(VideoData(details: data.details));
       case FramePayload():
         final frame = data.frame;
+        if(data.details.name == CameraName.SUBSYSTEM1) print(data.details);
         collection.videoServer.sendMessage(VideoData(frame: frame.data, details: data.details));
         frame.dispose();
       case DepthFramePayload(): 
