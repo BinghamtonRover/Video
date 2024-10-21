@@ -29,6 +29,10 @@ class LidarFFI {
     final result = bindings.SickScanApiInitByCli(_handle, 3, argsPtr);
 
     late final NativeCallable<NativePointCloudMsgCallback> callback;
+    // This is the actual callback function
+    // TODO: need to make this do something
+    // TODO: put somewhere else in class
+    // TODO: Get rid of the yellow squigallys by fixing constraint problems
     void handler(SickScanApiHandle apiHandle, Pointer<SickScanPointCloudMsg> msg) {
 
       // Remember to close the NativeCallable once the native API is
