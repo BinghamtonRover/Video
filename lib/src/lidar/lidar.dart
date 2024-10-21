@@ -8,6 +8,8 @@ import "package:opencv_ffi/opencv_ffi.dart";
 const cliArgs = "hostname:=169.254.166.55";
 const launchFile = "lidar.launch";
 
+typedef NativePointCloudMsgCallback = Void Function(Pointer<Void>, Pointer<SickScanPointCloudMsgType>);
+
 /// An ffi implementation of SICK Lidar API
 class LidarFFI {
   final LidarBindings bindings;
@@ -25,6 +27,20 @@ class LidarFFI {
     argsPtr[2] = cliArgs.toNativeUtf8(allocator: arena).cast<Char>();
 
     final result = bindings.SickScanApiInitByCli(_handle, 3, argsPtr);
+
+    late final NativeCallable<NativePointCloudMsgCallback> callback;
+    void handler(SickScanApiHandle apiHandle, Pointer<SickScanPointCloudMsg> msg) {
+
+      // Remember to close the NativeCallable once the native API is
+      // finished with it, otherwise this isolate will stay alive
+      // indefinitely.
+      print("Recieved msg with size: ${msg.ref.height} x ${msg.ref.width}");
+      callback.close();
+    }
+    callback = NativeCallable<NativePointCloudMsgCallback>.listener(handler);
+
+    bindings.SickScanApiRegisterCartesianPointCloudMsg(_handle, callback.nativeFunction);
+    
     await Future<void>.delayed(const Duration(seconds: 10));
     if(result != 0){
       print("Unable to initialize Sick Scan Lidar");
@@ -54,6 +70,8 @@ class LidarFFI {
       // print(struct.ref.data.buffer.asTypedList(length));
       // print(struct.ref.fields.size); 
       final fieldBuffer = struct.ref.fields.buffer;
+      final data = struct.ref.data;
+      print("capacity: ${data.capacity}, size: ${data.size}");
       int field_offset_x = -1, field_offset_y = -1, field_offset_z = -1, field_offset_intensity = -1;
       for(int i = 0; i < struct.ref.fields.size; i++){
 
