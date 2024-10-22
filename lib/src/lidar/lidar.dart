@@ -18,6 +18,7 @@ class LidarFFI {
   final LidarBindings bindings;
   late Pointer<Void> _handle;
   OpenCVImage? lastestImage = null;
+  late final NativeCallable<NativePointCloudMsgCallback> callback;
   LidarFFI() : bindings = LidarBindings(DynamicLibrary.open("lidar.dll"));
 
   Future<bool> init() => using((arena) async {
@@ -31,21 +32,16 @@ class LidarFFI {
 
         final result = bindings.SickScanApiInitByCli(_handle, 3, argsPtr);
 
-        late final NativeCallable<NativePointCloudMsgCallback> callback;
-
         // This is the actual callback function
         // TODO: need to make this do something
         // TODO: put somewhere else in class
         // TODO: Get rid o
 
-        void handler(
-            SickScanApiHandle apiHandle, Pointer<SickScanPointCloudMsg> msg) {
+        void handler(SickScanApiHandle apiHandle, Pointer<SickScanPointCloudMsg> msg) {
           // Remember to close the NativeCallable once the native API is
           // finished with it, otherwise this isolate will stay alive
           // indefinitely.
           // struct ScikScanblajh p = ;'
-          // Sick
-
           
           if (msg.ref.height == 0 || msg.ref.width == 0) {
             // logger.warning("If zero"); 
@@ -201,6 +197,7 @@ class LidarFFI {
       });
 
   void dispose() {
+    callback.close();
     bindings.SickScanApiClose(_handle);
     bindings.SickScanApiRelease(_handle);
   }
