@@ -37,7 +37,7 @@ class LidarIsolate extends CameraIsolate {
     // Get frames from Lidar
     final frame = await camera.getOneImage(timeout: 1);
     if (frame == null) {
-      logger.warning("Null image");
+      //logger.warning("Null image");
       return;
     }
     logger.info("Got frame");
