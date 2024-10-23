@@ -13,12 +13,16 @@ const launchFile = "lidar.launch";
 typedef NativePointCloudMsgCallback = Void Function(
     Pointer<Void>, Pointer<SickScanPointCloudMsgType>);
 
+typedef SickScanDiagnosticMsgCallback = Void Function(
+  Pointer<Void>, Pointer<SickScanDiagnosticMsg>);
+
 /// An ffi implementation of SICK Lidar API
 class LidarFFI {
   final LidarBindings bindings;
   late Pointer<Void> _handle;
   OpenCVImage? lastestImage = null;
   late final NativeCallable<NativePointCloudMsgCallback> callback;
+  late final NativeCallable<SickScanDiagnosticMsgCallback> errorCallback;
   LidarFFI() : bindings = LidarBindings(DynamicLibrary.open("lidar.dll"));
 
   Future<bool> init() => using((arena) async {
@@ -180,12 +184,43 @@ class LidarFFI {
           );
           //callback.close();
         }
+        void DiagnosticMsg(SickScanApiHandle apiHandle, Pointer<SickScanDiagnosticMsg> msg){
+          if(msg.ref.status_code == 1){
+            print("${msg.ref.status_code} WARNING");
+          }
+          else if(msg.ref.status_code == 2){
+            print("${msg.ref.status_code} ERROR");
+          }
+          else{
+            print("${msg.ref.status_code} Other issue");
+          }
+          
+          return using((arena) async{
+            final Pointer<Char> pointerTomsgBuffer = arena<Char>(1024);
+            final statusCode = arena<Int32>();
+            statusCode.value = -1;
+            if(bindings.SickScanApiGetStatus(apiHandle, statusCode, pointerTomsgBuffer, 1024) == SickScanApiErrorCodes.SICK_SCAN_API_SUCCESS){
+              print("[Info]: SickScanApiGetStatus(apiHandle:$apiHandle): status_code = $statusCode, message = \"$pointerTomsgBuffer\"\n" );
+
+            }
+            else{
+              print("[ERROR]: SickScanApiGetStatus(apiHandle:$apiHandle) failed\n");
+            }
+
+          });
+          
+          
+        }
 
         callback =
             NativeCallable<NativePointCloudMsgCallback>.listener(handler);
+        
+        errorCallback = NativeCallable<SickScanDiagnosticMsgCallback>.listener(DiagnosticMsg);
 
         bindings.SickScanApiRegisterCartesianPointCloudMsg(
             _handle, callback.nativeFunction);
+
+        bindings.SickScanApiRegisterDiagnosticMsg(_handle, errorCallback.nativeFunction);
 
         await Future<void>.delayed(const Duration(seconds: 10));
         if (result != 0) {
@@ -197,10 +232,13 @@ class LidarFFI {
       });
 
   void dispose() {
+    errorCallback.close();
     callback.close();
     bindings.SickScanApiClose(_handle);
     bindings.SickScanApiRelease(_handle);
   }
+
+  
 
   /// Converts a [SickScanPointCloudMsg] into a single [OpenCVImage]
   Future<OpenCVImage?> getOneImage({double timeout = 5}) async => lastestImage;
