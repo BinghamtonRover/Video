@@ -4,6 +4,7 @@ import "dart:ffi";
 import "package:video/src/collection.dart";
 
 import "../generated/lidar_ffi_bindings.dart";
+import "../generated/lidar_bindings.dart";
 import "package:ffi/ffi.dart";
 import "package:opencv_ffi/opencv_ffi.dart";
 
@@ -46,25 +47,28 @@ class LidarFFI {
           // finished with it, otherwise this isolate will stay alive
           // indefinitely.
           // struct ScikScanblajh p = ;'
-          
+          // print("Message address: ${msg}");
           if (msg.ref.height == 0 || msg.ref.width == 0) {
-            // logger.warning("If zero"); 
-              return;
+            logger.warning("If zero"); 
+            return;
           }
+
           print("Message address: ${msg}");
 
           print("Recieved msg with size: ${msg.ref.height} x ${msg.ref.width}");
-          print("Buffer address: ${msg.ref.fields.buffer}");
+          print("Types ${msg.ref.height.runtimeType} x ${msg.ref.width.runtimeType}");
+          print("is big endian? ${msg.ref.is_bigendian}");
+          print("point step: ${msg.ref.point_step}");
+          print("row step: ${msg.ref.row_step}");
+          //print("Buffer address: ${msg.ref.fields.buffer}");
 
           return using(
             (arena) async {
               //final struct = arena<SickScanPointCloudMsgType>();
               //final fieldBuffer = msg.ref.fields.buffer;
-              print(
-                  "capacity: ${msg.ref.data.capacity}, size: ${msg.ref.data.size}");
-              print(
-                  "capacity: ${msg.ref.fields.capacity}, size: ${msg.ref.fields.size}");
-              print("Buffer address: ${msg.ref.fields.buffer}");
+              print("data capacity: ${msg.ref.data.capacity}, size: ${msg.ref.data.size}");
+              print("fields capacity: ${msg.ref.fields.capacity}, size: ${msg.ref.fields.size}");
+              //print("Buffer address: ${msg.ref.fields.buffer}");
               print("${msg.ref.fields.buffer.ref.count}");
               print("herllokfe");
               int field_offset_x = -1,
@@ -196,15 +200,14 @@ class LidarFFI {
           }
           
           return using((arena) async{
-            final Pointer<Char> pointerTomsgBuffer = arena<Char>(1024);
+            final Pointer<Char> pointerToMsgBuffer = arena<Char>(1024);
             final statusCode = arena<Int32>();
             statusCode.value = -1;
-            if(bindings.SickScanApiGetStatus(apiHandle, statusCode, pointerTomsgBuffer, 1024) == SickScanApiErrorCodes.SICK_SCAN_API_SUCCESS){
-              print("[Info]: SickScanApiGetStatus(apiHandle:$apiHandle): status_code = $statusCode, message = \"$pointerTomsgBuffer\"\n" );
-
+            if(bindings.SickScanApiGetStatus(apiHandle, statusCode, pointerToMsgBuffer, 1024) == 0){
+              logger.info("SickScanApiGetStatus(apiHandle:$apiHandle): status_code = $statusCode, message = $pointerToMsgBuffer");
             }
             else{
-              print("[ERROR]: SickScanApiGetStatus(apiHandle:$apiHandle) failed\n");
+              logger.error("SickScanApiGetStatus(apiHandle:$apiHandle) failed");
             }
 
           });
@@ -217,8 +220,10 @@ class LidarFFI {
         
         errorCallback = NativeCallable<SickScanDiagnosticMsgCallback>.listener(DiagnosticMsg);
 
+
+        final bindings2 = LidarBinding(DynamicLibrary.open("lidar_ffi.dll"));
         bindings.SickScanApiRegisterCartesianPointCloudMsg(
-            _handle, callback.nativeFunction);
+            _handle, bindings2.addresses.updateLatestImage.cast());
 
         bindings.SickScanApiRegisterDiagnosticMsg(_handle, errorCallback.nativeFunction);
 

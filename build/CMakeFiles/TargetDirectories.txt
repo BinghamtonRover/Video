@@ -1,0 +1,3 @@
+C:/Users/aidan/dev/MarsRover/SecondaryPi/video/build/CMakeFiles/lidar_ffi.dir
+C:/Users/aidan/dev/MarsRover/SecondaryPi/video/build/CMakeFiles/ALL_BUILD.dir
+C:/Users/aidan/dev/MarsRover/SecondaryPi/video/build/CMakeFiles/ZERO_CHECK.dir

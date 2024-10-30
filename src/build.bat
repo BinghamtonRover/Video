@@ -18,7 +18,28 @@ if errorlevel 1 (
 rem Build realsense_ffi
 if not exist build mkdir build
 cd build
-cmake -DCMAKE_BUILD_TYPE=Release ..
+cmake -DCMAKE_BUILD_TYPE=Release ../librealsense
+if errorlevel 1 ( 
+	cd ..
+	exit /b 1
+)
+cmake --build .
+if errorlevel 1 ( 
+	cd ..
+	exit /b 1
+)
+cd ..
+
+rem Copy DLLs to the dist directory
+if not exist ..\dist mkdir ..\dist
+@REM copy build\bin\Debug\*.dll ..\dist
+copy build\Debug\*.dll ..\dist
+
+rem Build realsense_ffi
+rmdir /s /q build
+if not exist build mkdir build
+cd build
+cmake -DCMAKE_BUILD_TYPE=Release ../lidar
 if errorlevel 1 ( 
 	cd ..
 	exit /b 1

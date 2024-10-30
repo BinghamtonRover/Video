@@ -1,0 +1,28 @@
+
+# Run with `dart run ffigen --config ffigen.yaml -v severe`.
+name: LidarBinding
+description: |
+  Bindings for the RealSense SDK.
+
+  Regenerate bindings with `dart run ffigen --config ffigen.yaml -v severe`.
+output: "lib/src/generated/lidar_bindings.dart"
+headers:
+  entry-points:
+    - "src/lidar/lidar.h"
+  include-directives:
+    - "src/lidar/lidar.h"
+comments:
+  style: any
+  length: full
+functions: 
+  symbol-address:
+    include:
+      - updateLatestImage
+type-map:
+  native-types:
+    'char':  # Converts `char` to `Utf8` instead of `Char`
+      'lib': 'pkg_ffi'
+      'c-type': 'Utf8'
+      'dart-type': 'Utf8'
+# compiler-opts:
+#   - '-Isrc/librealsense/include'

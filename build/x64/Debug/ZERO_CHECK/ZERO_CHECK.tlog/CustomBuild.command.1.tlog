@@ -1,0 +1,10 @@
+^C:\USERS\AIDAN\DEV\MARSROVER\SECONDARYPI\VIDEO\BUILD\CMAKEFILES\7E3F3AA4A733E7BEE28FF9F27DF2AA9C\GENERATE.STAMP.RULE
+setlocal
+"C:\Program Files\Microsoft Visual Studio\2022\Community\Common7\IDE\CommonExtensions\Microsoft\CMake\CMake\bin\cmake.exe" -SC:/Users/aidan/dev/MarsRover/SecondaryPi/video/src/lidar -BC:/Users/aidan/dev/MarsRover/SecondaryPi/video/build --check-stamp-list CMakeFiles/generate.stamp.list --vs-solution-file C:/Users/aidan/dev/MarsRover/SecondaryPi/video/build/SICK_SCAN_XD_ffi_library.sln
+if %errorlevel% neq 0 goto :cmEnd
+:cmEnd
+endlocal & call :cmErrorLevel %errorlevel% & goto :cmDone
+:cmErrorLevel
+exit /b %1
+:cmDone
+if %errorlevel% neq 0 goto :VCEnd
