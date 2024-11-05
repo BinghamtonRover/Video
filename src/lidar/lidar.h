@@ -10,10 +10,12 @@
 
 
 typedef struct Image{
-  uint64_t size;
+  uint64_t height;
+  uint64_t width;
+
   // uint64_t capacity;
   // SickScanUint8Array buffer;
-  void* data;
+  uint8_t* data;
 } Image;
 
 FFI_PLUGIN_EXPORT void updateLatestImage(void* apiHandle, void* pointCloudMsg);
