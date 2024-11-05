@@ -5,7 +5,7 @@
 #define FFI_PLUGIN_EXPORT
 #endif
 
-#include <sick_scan_api.h>
+#include "sick_scan_api.h"
 #include <stdint.h>
 
 
@@ -20,3 +20,6 @@ typedef struct Image{
 
 FFI_PLUGIN_EXPORT void updateLatestImage(void* apiHandle, void* pointCloudMsg);
 FFI_PLUGIN_EXPORT Image getLatestImage();
+FFI_PLUGIN_EXPORT void addHiddenArea();
+FFI_PLUGIN_EXPORT void addCross(SickScanPointCloudMsg& pixels);
+FFI_PLUGIN_EXPORT void make_matrix( SickScanPointCloudMsg& imageData);
