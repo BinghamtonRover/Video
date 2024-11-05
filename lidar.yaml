@@ -20,11 +20,11 @@ functions:
   symbol-address:
     include:
       - updateLatestImage
-type-map:
-  native-types:
-    'char':  # Converts `char` to `Utf8` instead of `Char`
-      'lib': 'pkg_ffi'
-      'c-type': 'Utf8'
-      'dart-type': 'Utf8'
+# type-map:
+#   native-types:
+#     'char':  # Converts `char` to `Utf8` instead of `Char`
+#       'lib': 'pkg_ffi'
+#       'c-type': 'Utf8'
+#       'dart-type': 'Utf8'
 # compiler-opts:
 #   - '-Isrc/librealsense/include'
