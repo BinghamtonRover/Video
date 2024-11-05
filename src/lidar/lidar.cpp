@@ -46,24 +46,24 @@
 
 Image image;
 
-FFI_PLUGIN_EXPORT void updateLatestImage(void* apiHandle, SickScanPointCloudMsg& pointCloudMsg) {
-assert(pointCloudMsg.height >= 0 && (int)pointCloudMsg.width >=0);
-if((int)pointCloudMsg.height == 0 && (int)pointCloudMsg.width ==0){
-  image.height = pointCloudMsg.height;
-  image.width = pointCloudMsg.width;
+FFI_PLUGIN_EXPORT void updateLatestImage(void* apiHandle, SickScanPointCloudMsg* pointCloudMsg) {
+assert(pointCloudMsg->height >= 0 && (int)pointCloudMsg->width >=0);
+if((int)pointCloudMsg->height == 0 && (int)pointCloudMsg->width ==0){
+  image.height = pointCloudMsg->height;
+  image.width = pointCloudMsg->width;
   return;
 }
-  image.height = pointCloudMsg.height;
-  image.width = pointCloudMsg.width;
+  image.height = pointCloudMsg->height;
+  image.width = pointCloudMsg->width;
   make_matrix(pointCloudMsg);
   addCross(pointCloudMsg);
   addHiddenArea();
 }
 
-FFI_PLUGIN_EXPORT void make_matrix( SickScanPointCloudMsg& imageData){
-  SickScanPointFieldMsg* imageData_fields_buffer = (SickScanPointFieldMsg*)imageData.fields.buffer;
+FFI_PLUGIN_EXPORT void make_matrix(SickScanPointCloudMsg* imageData){
+  SickScanPointFieldMsg* imageData_fields_buffer = (SickScanPointFieldMsg*)imageData->fields.buffer;
   int field_offset_x = -1, field_offset_y = -1;
-  for(int n = 0; n < imageData.fields.size; n++)
+  for(int n = 0; n < imageData->fields.size; n++)
     {
         if (strcmp(imageData_fields_buffer[n].name, "x") == 0 && imageData_fields_buffer[n].datatype == SICK_SCAN_POINTFIELD_DATATYPE_FLOAT32)
             field_offset_x = imageData_fields_buffer[n].offset;
@@ -73,11 +73,11 @@ FFI_PLUGIN_EXPORT void make_matrix( SickScanPointCloudMsg& imageData){
   assert(field_offset_x >= 0 && field_offset_y >= 0);
   int img_width = 250 * 4, img_height = 250 * 4;
 
-  for(int row = 0; row < (int)imageData.height; row++){
-    for(int col = 0; col < (int)imageData.width; col++){
-    int polar_point_offset = row * imageData.row_step + col * imageData.point_step;
-    float point_x = *((float*)(imageData.data.buffer + polar_point_offset + field_offset_x));
-    float point_y = *((float*)(imageData.data.buffer + polar_point_offset + field_offset_y));
+  for(int row = 0; row < (int)imageData->height; row++){
+    for(int col = 0; col < (int)imageData->width; col++){
+    int polar_point_offset = row * imageData->row_step + col * imageData->point_step;
+    float point_x = *((float*)(imageData->data.buffer + polar_point_offset + field_offset_x));
+    float point_y = *((float*)(imageData->data.buffer + polar_point_offset + field_offset_y));
 			// Convert point coordinates in meter to image coordinates in pixel
 			int img_x = (int)(250.0f * (-point_y + 2.0f)); // img_x := -pointcloud.y
 			int img_y = (int)(250.0f * (-point_x + 2.0f)); // img_y := -pointcloud.x
@@ -92,7 +92,7 @@ FFI_PLUGIN_EXPORT void make_matrix( SickScanPointCloudMsg& imageData){
  
 }
 
-FFI_PLUGIN_EXPORT void addCross(SickScanPointCloudMsg& pixels) {
+FFI_PLUGIN_EXPORT void addCross(SickScanPointCloudMsg* pixels) {
     int thickness = 1;
     int midx = image.width / 2;
     int midy = image.height / 2;
