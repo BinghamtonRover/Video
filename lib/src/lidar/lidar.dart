@@ -127,7 +127,7 @@ class LidarFFI {
               // const imgWidth = 250 * 4;
               // const imgHeight = 250 * 4;
 
-              // // uint8_t* pixels = (uint8_t*)calloc(3 * img_width * img_height, sizeof(uint8_t));
+              // C Code uint8_t* pixels = (uint8_t*)calloc(3 * img_width * img_height, sizeof(uint8_t));
               // final pixels = arena<Uint8>(3 * imgWidth * imgHeight);
               // addHiddenArea(imgHeight, imgWidth, pixels);
               // for (var row_idx = 0; row_idx < msg.ref.height; row_idx++) {
