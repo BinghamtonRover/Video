@@ -18,7 +18,7 @@ typedef struct Image{
   uint8_t* data;
 } Image;
 
-FFI_PLUGIN_EXPORT void updateLatestImage(void* apiHandle, void* pointCloudMsg);
+FFI_PLUGIN_EXPORT void updateLatestImage(void* apiHandle, SickScanPointCloudMsg& pointCloudMsg);
 FFI_PLUGIN_EXPORT Image getLatestImage();
 FFI_PLUGIN_EXPORT void addHiddenArea();
 FFI_PLUGIN_EXPORT void addCross(SickScanPointCloudMsg& pixels);

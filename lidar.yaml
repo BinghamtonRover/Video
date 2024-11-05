@@ -9,8 +9,10 @@ output: "lib/src/generated/lidar_bindings.dart"
 headers:
   entry-points:
     - "src/lidar/lidar.h"
+    - "src/lidar/sick_scan_api.h"
   include-directives:
     - "src/lidar/lidar.h"
+    - "src/lidar/sick_scan_api.h"
 comments:
   style: any
   length: full
