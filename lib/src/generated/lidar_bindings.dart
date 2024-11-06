@@ -8,17 +8,17 @@ import 'dart:ffi' as ffi;
 ///
 /// Regenerate bindings with `dart run ffigen --config ffigen.yaml -v severe`.
 ///
-class LidarBinding {
+class LidarBindings {
   /// Holds the symbol lookup function.
   final ffi.Pointer<T> Function<T extends ffi.NativeType>(String symbolName)
       _lookup;
 
   /// The symbols are looked up in [dynamicLibrary].
-  LidarBinding(ffi.DynamicLibrary dynamicLibrary)
+  LidarBindings(ffi.DynamicLibrary dynamicLibrary)
       : _lookup = dynamicLibrary.lookup;
 
   /// The symbols are looked up with [lookup].
-  LidarBinding.fromLookup(
+  LidarBindings.fromLookup(
       ffi.Pointer<T> Function<T extends ffi.NativeType>(String symbolName)
           lookup)
       : _lookup = lookup;
@@ -1040,7 +1040,7 @@ class LidarBinding {
               SickScanApiHandle, ffi.Pointer<SickScanOdomVelocityMsg>)>();
 
   void updateLatestImage(
-    ffi.Pointer<ffi.Void> apiHandle,
+    SickScanApiHandle apiHandle,
     ffi.Pointer<SickScanPointCloudMsg> pointCloudMsg,
   ) {
     return _updateLatestImage(
@@ -1051,11 +1051,10 @@ class LidarBinding {
 
   late final _updateLatestImagePtr = _lookup<
       ffi.NativeFunction<
-          ffi.Void Function(ffi.Pointer<ffi.Void>,
+          ffi.Void Function(SickScanApiHandle,
               ffi.Pointer<SickScanPointCloudMsg>)>>('updateLatestImage');
   late final _updateLatestImage = _updateLatestImagePtr.asFunction<
-      void Function(
-          ffi.Pointer<ffi.Void>, ffi.Pointer<SickScanPointCloudMsg>)>();
+      void Function(SickScanApiHandle, ffi.Pointer<SickScanPointCloudMsg>)>();
 
   Image getLatestImage() {
     return _getLatestImage();
@@ -1107,12 +1106,12 @@ class LidarBinding {
 }
 
 class _SymbolAddresses {
-  final LidarBinding _library;
+  final LidarBindings _library;
   _SymbolAddresses(this._library);
   ffi.Pointer<
           ffi.NativeFunction<
               ffi.Void Function(
-                  ffi.Pointer<ffi.Void>, ffi.Pointer<SickScanPointCloudMsg>)>>
+                  SickScanApiHandle, ffi.Pointer<SickScanPointCloudMsg>)>>
       get updateLatestImage => _library._updateLatestImagePtr;
 }
 

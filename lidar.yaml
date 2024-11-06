@@ -1,6 +1,6 @@
 
 # Run with `dart run ffigen --config ffigen.yaml -v severe`.
-name: LidarBinding
+name: LidarBindings
 description: |
   Bindings for the RealSense SDK.
 

@@ -20,19 +20,20 @@ class VideoController extends IsolateParent<VideoCommand, IsolatePayload>{
   Future<void> init() async {
     for (final name in CameraName.values) {
       switch (name) {
-        case CameraName.CAMERA_NAME_UNDEFINED: continue;
-        case CameraName.ROVER_FRONT: continue;  // shares feed with AUTONOMY_DEPTH
-        case CameraName.SUBSYSTEM1: continue;
-        case CameraName.ROVER_REAR: continue;
-        case CameraName.AUTONOMY_DEPTH: 
-          final details = getRealsenseDetails(name);
-          final isolate = RealSenseIsolate(details: details);
-          await spawn(isolate);
-        // All other cameras share the same logic, even future cameras
-        default:  // ignore: no_default_cases
-          final details = getDefaultDetails(name);
-          final isolate = OpenCVCameraIsolate(details: details);
-          await spawn(isolate);
+        
+        // case CameraName.CAMERA_NAME_UNDEFINED: continue;
+        // case CameraName.ROVER_FRONT: continue;  // shares feed with AUTONOMY_DEPTH
+        // // case CameraName.SUBSYSTEM1: continue;
+        // // case CameraName.ROVER_REAR: await spawn(CameraIsolate(details: ));
+        // case CameraName.AUTONOMY_DEPTH: 
+        //   final details = getRealsenseDetails(name);
+        //   final isolate = RealSenseIsolate(details: details);
+        //   await spawn(isolate);
+        // // All other cameras share the same logic, even future cameras
+        // default:  // ignore: no_default_cases
+        //   final details = getDefaultDetails(name);
+        //   final isolate = OpenCVCameraIsolate(details: details);
+        //   await spawn(isolate);
       }
     }
     final isolate = LidarIsolate(details: getDefaultDetails(CameraName.SUBSYSTEM1));

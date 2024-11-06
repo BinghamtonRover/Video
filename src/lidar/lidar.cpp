@@ -46,7 +46,9 @@
 
 Image image;
 
-FFI_PLUGIN_EXPORT void updateLatestImage(void* apiHandle, SickScanPointCloudMsg* pointCloudMsg) {
+FFI_PLUGIN_EXPORT void updateLatestImage(SickScanApiHandle apiHandle, SickScanPointCloudMsg* pointCloudMsg) {
+  std::cout << "Image height: " << (int) pointCloudMsg->height << ", Width: " << (int) pointCloudMsg->width << std::endl;
+  // return;
 assert(pointCloudMsg->height >= 0 && (int)pointCloudMsg->width >=0);
 if((int)pointCloudMsg->height == 0 && (int)pointCloudMsg->width ==0){
   image.height = pointCloudMsg->height;
@@ -55,6 +57,9 @@ if((int)pointCloudMsg->height == 0 && (int)pointCloudMsg->width ==0){
 }
   image.height = pointCloudMsg->height;
   image.width = pointCloudMsg->width;
+  if (image.data == nullptr) {
+    image.data = new uint8_t[image.height * image.width * 3];
+  }
   make_matrix(pointCloudMsg);
   addCross(pointCloudMsg);
   addHiddenArea();
@@ -83,7 +88,10 @@ FFI_PLUGIN_EXPORT void make_matrix(SickScanPointCloudMsg* imageData){
 			int img_y = (int)(250.0f * (-point_x + 2.0f)); // img_y := -pointcloud.x
 			if (img_x >= 0 && img_x < img_width && img_y >= 0 && img_y < img_height) // point within the image area
 			{
+        std::cout << "Before" << std::endl;
 				image.data[3 * img_y * img_width + 3 * img_x + 0] = 255; // R
+        std::cout << "After" << std::endl;
+
 				image.data[3 * img_y * img_width + 3 * img_x + 1] = 255; // G
 				image.data[3 * img_y * img_width + 3 * img_x + 2] = 255; // B
 			}
