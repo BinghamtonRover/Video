@@ -31,17 +31,18 @@ class LidarFFI {
     sick_bindings = LidarBindings(DynamicLibrary.open("dist/sick_scan_xd_shared_lib.dll"));
   
   Future<bool> init() => using((arena) async {
-        _handle = sick_bindings.SickScanApiCreate(0, nullptr);
-          sick_bindings.SickScanApiSetVerboseLevel(_handle, 5);
-          await Future<void>.delayed(Duration(milliseconds: 100));
-        // bindings.SickScanApiInitByLaunchfile(_handle, filename);
-        // final array = arena<Char>();
-        final argsPtr = arena<Pointer<Char>>(3);
-        argsPtr[0] = "lidar.dart".toNativeUtf8(allocator: arena).cast<Char>();
-        argsPtr[1] = launchFile.toNativeUtf8(allocator: arena).cast<Char>();
-        argsPtr[2] = cliArgs.toNativeUtf8(allocator: arena).cast<Char>();
+        bindings.init();
+        // _handle = sick_bindings.SickScanApiCreate(0, nullptr);
+        //   sick_bindings.SickScanApiSetVerboseLevel(_handle, 5);
+        //   await Future<void>.delayed(Duration(milliseconds: 100));
+        // // bindings.SickScanApiInitByLaunchfile(_handle, filename);
+        // // final array = arena<Char>();
+        // final argsPtr = arena<Pointer<Char>>(3);
+        // argsPtr[0] = "lidar.dart".toNativeUtf8(allocator: arena).cast<Char>();
+        // argsPtr[1] = launchFile.toNativeUtf8(allocator: arena).cast<Char>();
+        // argsPtr[2] = cliArgs.toNativeUtf8(allocator: arena).cast<Char>();
 
-        final result = sick_bindings.SickScanApiInitByCli(_handle, 3, argsPtr);
+        // final result = sick_bindings.SickScanApiInitByCli(_handle, 3, argsPtr);
 
         // This is the actual callback function
         // TODO: need to make this do something
@@ -232,8 +233,8 @@ class LidarFFI {
         //     _handle, bindings2.addresses.updateLatestImage.cast());
 
         try {
-          final callback = bindings.addresses.updateLatestImage;
-          sick_bindings.SickScanApiRegisterCartesianPointCloudMsg(_handle, callback);
+          //final callback = bindings.addresses.updateLatestImage;
+          //sick_bindings.SickScanApiRegisterCartesianPointCloudMsg(_handle, callback);
         } catch (error, stackTrace) {
           print("_----------------------------------------------");
           print(error);
@@ -244,10 +245,10 @@ class LidarFFI {
 
 
         await Future<void>.delayed(const Duration(seconds: 10));
-        if (result != 0) {
-          print("Unable to initialize Sick Scan Lidar");
-          return false;
-        }
+        // if (result != 0) {
+        //   print("Unable to initialize Sick Scan Lidar");
+        //   return false;
+        // }
         print("finished init");
         return true;
       });

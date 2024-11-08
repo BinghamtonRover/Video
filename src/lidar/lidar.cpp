@@ -48,6 +48,18 @@ Image image;
 
 SickScanApiHandle handle;
 
+FFI_PLUGIN_EXPORT void init() {
+  handle = SickScanApiCreate(0, nullptr);
+  SickScanApiRegisterCartesianPointCloudMsg(handle, updateLatestImage);
+  std::cout << "INITEDDDDD !!!" << std::endl;
+}
+
+FFI_PLUGIN_EXPORT void dispose() {
+  SickScanApiDeregisterCartesianPointCloudMsg(handle, updateLatestImage);
+  SickScanApiClose(handle);
+  SickScanApiRelease(handle);
+}
+
 FFI_PLUGIN_EXPORT void updateLatestImage(SickScanApiHandle apiHandle, const SickScanPointCloudMsg* pointCloudMsg) {
   std::cout << "Image height: " << (int) pointCloudMsg->height << ", Width: " << (int) pointCloudMsg->width << std::endl;
   // return;
@@ -140,15 +152,3 @@ FFI_PLUGIN_EXPORT void addHiddenArea() {
 FFI_PLUGIN_EXPORT Image getLatestImage() { 
   return image;
 }
-
-FFI_PLUGIN_EXPORT void init() {
-  handle = SickScanApiCreate(0, nullptr);
-  SickScanApiRegisterCartesianPointCloudMsg(handle, updateLatestImage);
-}
-
-FFI_PLUGIN_EXPORT void dispose() {
-  SickScanApiDeregisterCartesianPointCloudMsg(handle, updateLatestImage);
-  SickScanApiClose(handle);
-  SickScanApiRelease(handle);
-}
-/// to add init
