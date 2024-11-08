@@ -2,7 +2,7 @@ import "dart:async";
 import "dart:io";
 
 import "package:burt_network/burt_network.dart";
-import "package:opencv_ffi/opencv_ffi.dart";
+import "package:opencv_dart/opencv_dart.dart";
 
 import "package:video/video.dart";
 
@@ -33,9 +33,9 @@ CameraDetails getRealsenseDetails(CameraName name) => CameraDetails(
 /// Returns the camera depending on device program is running
 ///
 /// Uses [cameraNames] or [cameraIndexes]
-Camera getCamera(CameraName name) => Platform.isWindows
-  ? Camera.fromIndex(cameraIndexes[name]!)
-  : Camera.fromName(cameraNames[name]!);
+VideoCapture getCamera(CameraName name) => Platform.isWindows
+  ? VideoCapture.fromDevice(cameraIndexes[name]!)
+  : VideoCapture.fromFile(cameraNames[name]!);
 
 /// Class to contain all video devices
 class Collection {

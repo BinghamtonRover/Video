@@ -1,8 +1,9 @@
 import "dart:ffi";
+import "dart:typed_data";
 
 import "package:burt_network/burt_network.dart";
-import "package:opencv_ffi/opencv_ffi.dart" show OpenCVImage;
-
+//import "package:opencv_ffi/opencv_ffi.dart" show OpenCVImage;
+import "package:opencv_dart/opencv_dart.dart";
 import "package:video/video.dart";
 
 /// A payload containing some data to report back to the parent isolate.
@@ -29,23 +30,27 @@ class FramePayload extends IsolatePayload {
   /// The details of the camera this frame came from.
   final CameraDetails details;
   /// The address in FFI memory this frame starts at.
-  final int address;
+  //final int address;
   /// The length of this frame in bytes.
-  final int length;
-
+  //final int length;
+Uint8List image;
+int rows;
+int cols;
   /// A const constructor.
-  FramePayload({required this.details, required OpenCVImage image}) : 
-    address = image.pointer.address,
-    length = image.data.length;
+  FramePayload({required this.details, required this.image, required this.rows, required this.cols}) ; 
+    // address = image.pointer.address,
+    // length = image.data.length;
 
   /// The underlying data held at [address]. 
   /// 
   /// This cannot be a normal field as [Pointer]s cannot be sent across isolates, and this should
   /// not be a getter because the underlying memory needs to be freed and cannot be used again. 
-  OpenCVImage get frame => OpenCVImage(pointer: Pointer.fromAddress(address), length: length);
-
+    //OpenCVImage get frame => OpenCVImage(pointer: Pointer.fromAddress(address), length: length);
+    //Mat get frame => Mat.fromList(rows, cols, MatType(0), image);
   /// Frees the data in this frame.
-  void dispose() => frame.dispose();
+    //void dispose() => frame.dispose();
+    
+    
 }
 
 /// A class to send log messages across isolates. The parent isolate is responsible for logging.

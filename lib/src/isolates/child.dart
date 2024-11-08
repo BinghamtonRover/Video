@@ -1,9 +1,11 @@
 import "dart:async";
+import "dart:ffi";
+import "dart:typed_data";
 
 import "package:burt_network/burt_network.dart";
 import "package:typed_isolate/typed_isolate.dart";
-import "package:opencv_ffi/opencv_ffi.dart";
-
+// import "package:opencv_ffi/opencv_ffi.dart";
+import "package:opencv_dart/opencv_dart.dart";
 import "package:video/video.dart";
 
 /// The maximum size of a UDP packet, in bytes (minus a few to be safe).
@@ -83,15 +85,16 @@ abstract class CameraIsolate extends IsolateChild<IsolatePayload, VideoCommand> 
   /// This function also checks if the frame is too big to send, and if so, 
   /// lowers the JPG quality by 1%. If the quality reaches 25% (visually noticeable),
   /// an error is logged instead. 
-  void sendFrame(OpenCVImage image, {CameraDetails? detailsOverride}) {
+  void sendFrame(Uint8List image, int rows, int cols, {CameraDetails? detailsOverride}) {
+    
     final details = detailsOverride ?? this.details;
-    if (image.data.length < maxPacketLength) {  // Frame can be sent
-      send(FramePayload(details: details, image: image));
+    if (image.length < maxPacketLength) {  // Frame can be sent
+      send(FramePayload(details: details, image: image, rows: rows, cols: cols));
     } else if (details.quality > 25) {  // Frame too large, lower quality
       sendLog(LogLevel.debug, "Lowering quality for $name from ${details.quality}");
       details.quality -= 1;  // maybe next frame can send
     } else {  // Frame too large, quality cannot be lowered
-      sendLog(LogLevel.warning, "Frame from camera $name are too large (${image.data.length})");
+      sendLog(LogLevel.warning, "Frame from camera $name are too large (${image.length})");
       updateDetails(CameraDetails(status: CameraStatus.FRAME_TOO_LARGE));
     }
   }

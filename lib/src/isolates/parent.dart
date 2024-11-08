@@ -21,10 +21,10 @@ class VideoController extends IsolateParent<VideoCommand, IsolatePayload>{
       switch (name) {
         case CameraName.CAMERA_NAME_UNDEFINED: continue;
         case CameraName.ROVER_FRONT: continue;  // shares feed with AUTONOMY_DEPTH
-        case CameraName.AUTONOMY_DEPTH: 
-          final details = getRealsenseDetails(name);
-          final isolate = RealSenseIsolate(details: details);
-          await spawn(isolate);
+        // case CameraName.AUTONOMY_DEPTH: 
+        //   final details = getRealsenseDetails(name);
+        //   final isolate = RealSenseIsolate(details: details);
+        //   await spawn(isolate);
         // All other cameras share the same logic, even future cameras
         default:  // ignore: no_default_cases
           final details = getDefaultDetails(name);
@@ -40,9 +40,9 @@ class VideoController extends IsolateParent<VideoCommand, IsolatePayload>{
       case DetailsPayload(): 
         collection.videoServer.sendMessage(VideoData(details: data.details));
       case FramePayload():
-        final frame = data.frame;
-        collection.videoServer.sendMessage(VideoData(frame: frame.data, details: data.details));
-        frame.dispose();
+        final frame = data.image;
+        collection.videoServer.sendMessage(VideoData(frame: frame, details: data.details));
+        // frame.dispose();
       case DepthFramePayload(): 
         collection.videoServer.sendDepthFrame(VideoData(frame: data.frame.depthFrame));
         data.dispose();
