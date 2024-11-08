@@ -1,14 +1,14 @@
 
-#if _WIN32
-#define FFI_PLUGIN_EXPORT __declspec(dllexport)
+#if defined(_WIN32) && defined(__cplusplus)
+#define FFI_PLUGIN_EXPORT __declspec(dllexport) extern "C" 
 #else
 #define FFI_PLUGIN_EXPORT
 #endif
 
+
 #include "sick_scan_api.h"
 #include <stdint.h>
 
-extern "C" {
 typedef struct Image{
   uint64_t height;
   uint64_t width;
@@ -20,9 +20,8 @@ typedef struct Image{
 
 FFI_PLUGIN_EXPORT void init();
 FFI_PLUGIN_EXPORT void dispose();
-FFI_PLUGIN_EXPORT void updateLatestImage(SickScanApiHandle apiHandle, SickScanPointCloudMsg* pointCloudMsg);
+FFI_PLUGIN_EXPORT void updateLatestImage(SickScanApiHandle apiHandle, const SickScanPointCloudMsg* pointCloudMsg);
 FFI_PLUGIN_EXPORT Image getLatestImage();
 FFI_PLUGIN_EXPORT void addHiddenArea();
 FFI_PLUGIN_EXPORT void addCross(SickScanPointCloudMsg* pixels);
 FFI_PLUGIN_EXPORT void make_matrix(SickScanPointCloudMsg* imageData);
-}

@@ -4,9 +4,9 @@
 // ignore_for_file: type=lint
 import 'dart:ffi' as ffi;
 
-/// Bindings for the RealSense SDK.
+/// Bindings for the LiDAR SDK.
 ///
-/// Regenerate bindings with `dart run ffigen --config ffigen.yaml -v severe`.
+/// Regenerate bindings with `dart run ffigen --lidar ffigen.yaml -v severe`.
 ///
 class LidarBindings {
   /// Holds the symbol lookup function.
@@ -1038,6 +1038,22 @@ class LidarBindings {
       _SickScanApiOdomVelocityMsgPtr.asFunction<
           int Function(
               SickScanApiHandle, ffi.Pointer<SickScanOdomVelocityMsg>)>();
+
+  void init() {
+    return _init();
+  }
+
+  late final _initPtr =
+      _lookup<ffi.NativeFunction<ffi.Void Function()>>('init');
+  late final _init = _initPtr.asFunction<void Function()>();
+
+  void dispose() {
+    return _dispose();
+  }
+
+  late final _disposePtr =
+      _lookup<ffi.NativeFunction<ffi.Void Function()>>('dispose');
+  late final _dispose = _disposePtr.asFunction<void Function()>();
 
   void updateLatestImage(
     SickScanApiHandle apiHandle,
