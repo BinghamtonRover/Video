@@ -46,7 +46,9 @@
 
 Image image;
 
-FFI_PLUGIN_EXPORT void updateLatestImage(SickScanApiHandle apiHandle, SickScanPointCloudMsg* pointCloudMsg) {
+SickScanApiHandle handle;
+
+FFI_PLUGIN_EXPORT void updateLatestImage(SickScanApiHandle apiHandle, const SickScanPointCloudMsg* pointCloudMsg) {
   std::cout << "Image height: " << (int) pointCloudMsg->height << ", Width: " << (int) pointCloudMsg->width << std::endl;
   // return;
 assert(pointCloudMsg->height >= 0 && (int)pointCloudMsg->width >=0);
@@ -60,8 +62,8 @@ if((int)pointCloudMsg->height == 0 && (int)pointCloudMsg->width ==0){
   if (image.data == nullptr) {
     image.data = new uint8_t[image.height * image.width * 3];
   }
-  make_matrix(pointCloudMsg);
-  addCross(pointCloudMsg);
+  // make_matrix(pointCloudMsg);
+  // addCross(pointCloudMsg);
   addHiddenArea();
 }
 
@@ -139,5 +141,14 @@ FFI_PLUGIN_EXPORT Image getLatestImage() {
   return image;
 }
 
+FFI_PLUGIN_EXPORT void init() {
+  handle = SickScanApiCreate(0, nullptr);
+  SickScanApiRegisterCartesianPointCloudMsg(handle, updateLatestImage);
+}
 
+FFI_PLUGIN_EXPORT void dispose() {
+  SickScanApiDeregisterCartesianPointCloudMsg(handle, updateLatestImage);
+  SickScanApiClose(handle);
+  SickScanApiRelease(handle);
+}
 /// to add init
