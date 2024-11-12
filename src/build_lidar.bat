@@ -23,6 +23,8 @@ cd build
 cmake ../lidar
 if %ERRORLEVEL% == 1 exit /b
 cmake --build .
-cd ..
+cd ../..
+if not exist dist mkdir dist
+cd src
 copy build\Debug\lidar_ffi.dll ..\dist
 copy build\sick_scan_xd\Debug\sick_scan_xd_shared_lib.dll ..\dist
