@@ -18,8 +18,8 @@ CameraDetails getDefaultDetails(CameraName name) => CameraDetails(
   status: CameraStatus.CAMERA_ENABLED,
 );
 
-/// Default details for the RealSense camera. 
-/// 
+/// Default details for the RealSense camera.
+///
 /// These settings are balanced between autonomy depth and normal RGB.
 CameraDetails getRealsenseDetails(CameraName name) => CameraDetails(
   name: name,
@@ -38,25 +38,26 @@ Camera getCamera(CameraName name) => Platform.isWindows
   : Camera.fromName(cameraNames[name]!);
 
 /// Class to contain all video devices
-class Collection {
-  /// [VideoServer] to send messages through
-  ///
-  /// Default port is 8002 for video
-  final videoServer = VideoServer(port: 8002);
+class Collection extends Service {
+  /// The [RoverSocket] to send messages through
+  late final videoServer = RoverSocket(port: 8002, device: Device.VIDEO, collection: this);
 
   /// Main parent isolate
   final parent = VideoController();
-  
+
   /// Function to initialize cameras
-  Future<void> init() async {
+  @override
+  Future<bool> init() async {
     logger..trace("Running in trace mode")..debug("Running in debug mode");
     await parent.init();
     await videoServer.init();
     logger.info("Video program initialized");
+    return true;
   }
 
   /// Stops all cameras and disconnects from the hardware.
-  Future<void> dispose() async { 
+  @override
+  Future<void> dispose() async {
     parent.stopAll();
     await parent.dispose();
     await videoServer.dispose();
