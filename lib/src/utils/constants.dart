@@ -22,4 +22,6 @@ Map<CameraName, int> cameraIndexes = {
   CameraName.SUBSYSTEM1: 1,
   CameraName.SUBSYSTEM2: 2,
   CameraName.SUBSYSTEM3: 3,
+  CameraName.BOTTOM_LEFT: 6,
+  CameraName.BOTTOM_RIGHT: 7,
 };

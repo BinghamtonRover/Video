@@ -11,8 +11,8 @@ import "package:video/video.dart";
 /// Used when first creating the camera objects
 CameraDetails getDefaultDetails(CameraName name) => CameraDetails(
   name: name,
-  resolutionWidth: 300,
-  resolutionHeight: 300,
+  resolutionWidth: 600,
+  resolutionHeight: 600,
   quality: 75,
   fps: 24,
   status: CameraStatus.CAMERA_ENABLED,

@@ -25,6 +25,9 @@ abstract class CameraIsolate extends IsolateChild<IsolatePayload, VideoCommand> 
   /// Records how many FPS this camera is actually running at.
   int fpsCount = 0;
 
+  /// Whether the camera is currently reading a frame.
+  bool isReadingFrame = false;
+
   /// The name of this camera (where it is on the rover).
   CameraName get name => details.name;
 
@@ -32,7 +35,7 @@ abstract class CameraIsolate extends IsolateChild<IsolatePayload, VideoCommand> 
   void sendStatus([_]) => send(DetailsPayload(details));
 
   /// Logs a message by sending a [LogPayload] to the parent isolate.
-  /// 
+  ///
   /// Note: it is important to _not_ log this message directly in _this_ isolate, as it will
   /// not be configurable by the parent isolate and will not be sent to the Dashboard.
   void sendLog(LogLevel level, String message) => send(LogPayload(level: level, message: message));
@@ -40,49 +43,49 @@ abstract class CameraIsolate extends IsolateChild<IsolatePayload, VideoCommand> 
   @override
   Future<void> run() async {
     sendLog(LogLevel.debug, "Initializing camera: $name");
-    initCamera();
     statusTimer = Timer.periodic(const Duration(seconds: 5), sendStatus);
     start();
+  }
+
+  /// Disposes of this camera and all other resources.
+  ///
+  /// After running this, the camera should need to be opened again.
+  void dispose() {
+    stop();
+    statusTimer?.cancel();
   }
 
   @override
   void onData(VideoCommand data) => updateDetails(data.details);
 
   /// Updates the camera's [details], which will take effect on the next [sendFrame] call.
-  void updateDetails(CameraDetails newDetails, {bool restart = true}) {
+  void updateDetails(CameraDetails newDetails) {
+    final shouldRestart = (newDetails.hasFps() && newDetails.fps != details.fps)
+      || (newDetails.hasResolutionHeight() && newDetails.resolutionHeight != details.resolutionHeight)
+      || (newDetails.hasResolutionWidth() && newDetails.resolutionWidth != details.resolutionWidth);
     details.mergeFromMessage(newDetails);
-    if (restart) {
+    if (shouldRestart) {
       stop();
-      start();
+      if (details.status != CameraStatus.CAMERA_DISABLED) start();
     }
-  }
-
-  /// Disposes of this camera and all other resources.
-  /// 
-  /// After running this, the camera should need to be opened again.
-  void dispose() {
-    disposeCamera();
-    frameTimer?.cancel();
-    fpsTimer?.cancel();
-    statusTimer?.cancel();
   }
 
   /// Initializes the camera and starts streaming.
   void initCamera();
 
-  /// Closes and releases the camera. 
-  /// 
+  /// Closes and releases the camera.
+  ///
   /// This is separate from [dispose] so the isolate can keep reporting its status.
   void disposeCamera();
 
   /// Reads frame/s from the camera and sends it/them.
-  void sendFrames();
+  Future<void> sendFrames();
 
-  /// Sends an individual frame to the dashboard. 
-  /// 
-  /// This function also checks if the frame is too big to send, and if so, 
+  /// Sends an individual frame to the dashboard.
+  ///
+  /// This function also checks if the frame is too big to send, and if so,
   /// lowers the JPG quality by 1%. If the quality reaches 25% (visually noticeable),
-  /// an error is logged instead. 
+  /// an error is logged instead.
   void sendFrame(OpenCVImage image, {CameraDetails? detailsOverride}) {
     final details = detailsOverride ?? this.details;
     if (image.data.length < maxPacketLength) {  // Frame can be sent
@@ -98,19 +101,28 @@ abstract class CameraIsolate extends IsolateChild<IsolatePayload, VideoCommand> 
 
   /// Starts the camera and timers.
   void start() {
+    initCamera();
     if (details.status != CameraStatus.CAMERA_ENABLED) return;
     sendLog(LogLevel.debug, "Starting camera $name. Status=${details.status}");
     final interval = details.fps == 0 ? Duration.zero : Duration(milliseconds: 1000 ~/ details.fps);
-    frameTimer = Timer.periodic(interval, (_) => sendFrames());
+    frameTimer = Timer.periodic(interval, _frameCallback);
     fpsTimer = Timer.periodic(const Duration(seconds: 5), (_) {
       sendLog(LogLevel.trace, "Camera $name sent ${fpsCount ~/ 5} frames");
       fpsCount = 0;
     });
   }
-  
+
+  Future<void> _frameCallback(Timer timer) async {
+    if (isReadingFrame) return;
+    isReadingFrame = true;
+    await sendFrames();
+    isReadingFrame = false;
+  }
+
   /// Cancels all timers and stops reading the camera.
   void stop() {
     sendLog(LogLevel.debug, "Stopping camera $name");
+    disposeCamera();
     frameTimer?.cancel();
     fpsTimer?.cancel();
   }
