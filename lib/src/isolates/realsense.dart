@@ -14,11 +14,11 @@ extension on CameraDetails {
     || hasStatus();
 }
 
-/// An isolate to read RGB, depth, and colorized frames from the RealSense. 
-/// 
+/// An isolate to read RGB, depth, and colorized frames from the RealSense.
+///
 /// While using the RealSense SDK for depth streaming, OpenCV cannot access the standard RGB frames,
 /// so it is necessary for this isolate to grab the RGB frames as well.
-/// 
+///
 /// Since the RealSense is being used for autonomy, certain settings that could interfere with the
 /// autonomy program are not allowed to be changed, even for the RGB camera.
 class RealSenseIsolate extends CameraIsolate {
@@ -61,7 +61,7 @@ class RealSenseIsolate extends CameraIsolate {
   }
 
   @override
-  void sendFrames() {
+  Future<void> sendFrames() async {
     // Get frames from RealSense
     final frames = camera.getFrames();
     if (frames == nullptr) return;
@@ -71,7 +71,7 @@ class RealSenseIsolate extends CameraIsolate {
     final Pointer<Mat> colorizedMatrix = getMatrix(camera.depthResolution.height, camera.depthResolution.width, rawColorized);
     final OpenCVImage? colorizedJpg = encodeJpg(colorizedMatrix, quality: details.quality);
     if (colorizedJpg == null) {
-      sendLog(LogLevel.debug, "Could not encode colorized frame"); 
+      sendLog(LogLevel.debug, "Could not encode colorized frame");
     } else {
       sendFrame(colorizedJpg);
     }
@@ -94,7 +94,7 @@ class RealSenseIsolate extends CameraIsolate {
     if (rgbMatrix != nullptr) {
       final OpenCVImage? rgbJpg = encodeJpg(rgbMatrix, quality: details.quality);
       if (rgbJpg == null) {
-        sendLog(LogLevel.debug, "Could not encode RGB frame"); 
+        sendLog(LogLevel.debug, "Could not encode RGB frame");
       } else {
         final newDetails = details.deepCopy()..name = CameraName.ROVER_FRONT;
         sendFrame(rgbJpg, detailsOverride: newDetails);

@@ -6,15 +6,15 @@ import "package:burt_network/burt_network.dart";
 import "package:video/video.dart";
 
 /// An isolate that is spawned to manage one camera.
-/// 
+///
 /// This class accepts [VideoCommand]s and calls [updateDetails] with the newly-received details.
 /// When a frame is read, instead of sending the [VideoData], this class sends only the pointer
 /// to the [OpenCVImage] via the [IsolatePayload] class, and the image is read by the parent isolate.
 class OpenCVCameraIsolate extends CameraIsolate {
   /// The native camera object from OpenCV.
-  late final Camera camera;
+  late Camera camera;
   /// Creates a new manager for the given camera and default details.
-  OpenCVCameraIsolate({required super.details}); 
+  OpenCVCameraIsolate({required super.details});
 
   @override
   void initCamera() {
@@ -31,8 +31,8 @@ class OpenCVCameraIsolate extends CameraIsolate {
 
   @override
   void updateDetails(CameraDetails newDetails, {bool restart = false}) {
-    super.updateDetails(newDetails, restart: false);
     camera.setResolution(details.resolutionWidth, details.resolutionHeight);
+    super.updateDetails(newDetails);
     camera.zoom = details.zoom;
     camera.pan = details.pan;
     camera.tilt = details.tilt;
@@ -41,13 +41,13 @@ class OpenCVCameraIsolate extends CameraIsolate {
   }
 
   /// Reads a frame from the camera and sends it to the dashboard.
-  /// 
-  /// Checks for multiple errors along the way: 
+  ///
+  /// Checks for multiple errors along the way:
   /// - If the camera does not respond, alerts the dashboard
   /// - If the frame is too large, reduces the quality (increases JPG compression)
   /// - If the quality is already low, alerts the dashboard
   @override
-  void sendFrames() {
+  Future<void> sendFrames() async {
     final matrix = camera.getFrame();
     if (matrix == nullptr) return;
     // detectAndAnnotateFrames(matrix);
@@ -57,7 +57,7 @@ class OpenCVCameraIsolate extends CameraIsolate {
       sendLog(LogLevel.warning, "Camera $name didn't respond");
       updateDetails(CameraDetails(status: CameraStatus.CAMERA_NOT_RESPONDING));
       return;
-    } 
+    }
     sendFrame(frame);
     fpsCount++;
   }
