@@ -25,6 +25,11 @@ class VideoController extends IsolateParent<VideoCommand, IsolatePayload>{
       constructor: VideoCommand.fromBuffer,
       callback: _handleCommand,
     );
+    collection.videoServer.messages.onMessage<VideoData>(
+      name: VideoData().messageName,
+      constructor: VideoData.fromBuffer,
+      callback: _handleVideoFrame,
+    );
 
     super.init();
     for (final name in CameraName.values) {
@@ -81,6 +86,11 @@ class VideoController extends IsolateParent<VideoCommand, IsolatePayload>{
   void _handleCommand(VideoCommand command) {
     collection.videoServer.sendMessage(command);  // echo the request
     send(data: command, id: command.details.name);
+  }
+
+  void _handleVideoFrame(VideoData data) {
+    // Lidar frame: Forward directly to the Dashboard
+    collection.videoServer.sendMessage(data);
   }
 
   /// Stops all the cameras managed by this class.
