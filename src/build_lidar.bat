@@ -22,7 +22,7 @@ if not exist build mkdir build
 cd build
 cmake ../lidar
 if %ERRORLEVEL% == 1 exit /b
-cmake --build . --clean-first
+cmake --build .
 cd ../..
 if not exist dist mkdir dist
 cd src
