@@ -48,9 +48,15 @@ Image image;
 
 SickScanApiHandle handle;
 
+int mutex;
+
 FFI_PLUGIN_EXPORT void init() {
   handle = SickScanApiCreate(0, nullptr);
   SickScanApiRegisterCartesianPointCloudMsg(handle, updateLatestImage);
+  SickScanApiSetVerboseLevel(handle, 0); // 0 = DEBUG
+  char* args[] = {"lidar.dart", "lidar.launch", "hostname:=169.254.166.55"};
+  SickScanApiInitByCli(handle, 3, args);
+  // ALLOCATE MEMORY FOR image.data 
   std::cout << "INITEDDDDD !!!" << std::endl;
 }
 
@@ -63,12 +69,14 @@ FFI_PLUGIN_EXPORT void dispose() {
 FFI_PLUGIN_EXPORT void updateLatestImage(SickScanApiHandle apiHandle, const SickScanPointCloudMsg* pointCloudMsg) {
   std::cout << "Image height: " << (int) pointCloudMsg->height << ", Width: " << (int) pointCloudMsg->width << std::endl;
   // return;
-assert(pointCloudMsg->height >= 0 && (int)pointCloudMsg->width >=0);
-if((int)pointCloudMsg->height == 0 && (int)pointCloudMsg->width ==0){
-  image.height = pointCloudMsg->height;
-  image.width = pointCloudMsg->width;
-  return;
-}
+  if(mutex == 0) return;
+  mutex = 0;
+  // Change to if: assert(pointCloudMsg->height >= 0 && (int)pointCloudMsg->width >=0);
+  if((int)pointCloudMsg->height == 0 && (int)pointCloudMsg->width ==0){
+    image.height = pointCloudMsg->height;
+    image.width = pointCloudMsg->width;
+    return;
+  }
   image.height = pointCloudMsg->height;
   image.width = pointCloudMsg->width;
   if (image.data == nullptr) {
@@ -77,6 +85,7 @@ if((int)pointCloudMsg->height == 0 && (int)pointCloudMsg->width ==0){
   // make_matrix(pointCloudMsg);
   // addCross(pointCloudMsg);
   addHiddenArea();
+  mutex = 1;
 }
 
 FFI_PLUGIN_EXPORT void make_matrix(SickScanPointCloudMsg* imageData){

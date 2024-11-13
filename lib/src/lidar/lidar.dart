@@ -20,16 +20,13 @@ const launchFile = "lidar.launch";
 /// An ffi implementation of SICK Lidar API
 class LidarFFI {
   final LidarBindings bindings;
-  final LidarBindings sick_bindings;
   late Pointer<Void> _handle;
   OpenCVImage? lastestImage = null;
   // late final NativeCallable<NativePointCloudMsgCallback> callback;
   // late final NativeCallable<SickScanDiagnosticMsgCallback> errorCallback;
   // SickScanApiHandle
   LidarFFI() 
-    : bindings = LidarBindings(DynamicLibrary.open("dist/lidar_ffi.dll")),
-    sick_bindings = LidarBindings(DynamicLibrary.open("dist/sick_scan_xd_shared_lib.dll"));
-  
+    : bindings = LidarBindings(DynamicLibrary.open("dist/lidar_ffi.dll"));
   Future<bool> init() => using((arena) async {
         bindings.init();
         // _handle = sick_bindings.SickScanApiCreate(0, nullptr);
@@ -256,8 +253,8 @@ class LidarFFI {
   void dispose() {
     // errorCallback.close();
     // callback.close();
-    sick_bindings.SickScanApiClose(_handle);
-    sick_bindings.SickScanApiRelease(_handle);
+    bindings.SickScanApiClose(_handle);
+    bindings.SickScanApiRelease(_handle);
   }
 
   
