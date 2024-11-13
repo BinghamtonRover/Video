@@ -13,7 +13,7 @@ class VideoServer extends RoverServer {
   VideoServer({required super.port}) : super(device: Device.VIDEO);
 
   @override
-  void (WrappedMessage wrapper) {
+  void onMessage(WrappedMessage wrapper) {
     // ignore message if not a video message
     if (wrapper.name != VideoCommand().messageName) return;
     final command = VideoCommand.fromBuffer(wrapper.data);
