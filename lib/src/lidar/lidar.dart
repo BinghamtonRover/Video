@@ -1,5 +1,6 @@
 import "dart:developer";
 import "dart:ffi";
+import 'package:path/path.dart' as p;
 
 import "package:video/src/collection.dart";
 
