@@ -49,6 +49,7 @@ Image image;
 SickScanApiHandle handle;
 
 FFI_PLUGIN_EXPORT void init() {
+  image.data = (uint8_t*)malloc(image.width*image.height*3*sizeof(uint8_t));
   handle = SickScanApiCreate(0, nullptr);
   SickScanApiRegisterCartesianPointCloudMsg(handle, updateLatestImage);
   std::cout << "INITEDDDDD !!!" << std::endl;
