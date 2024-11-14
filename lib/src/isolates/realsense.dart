@@ -77,8 +77,8 @@ class RealSenseIsolate extends CameraIsolate {
     }
 
     sendRgbFrame(frames.ref.rgb_data);
+    recordFrame();
 
-    fpsCount++;
     // send(DepthFramePayload(frames.address));  // For autonomy
     nativeLib.Mat_destroy(colorizedMatrix);
     frames.dispose();
