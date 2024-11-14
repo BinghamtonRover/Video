@@ -1,7 +1,6 @@
 import "dart:ffi";
 
 import "package:burt_network/burt_network.dart";
-import "package:opencv_dart/opencv_dart.dart";
 import "package:protobuf/protobuf.dart";
 
 import "package:video/utils.dart";
@@ -69,10 +68,7 @@ class RealSenseIsolate extends CameraIsolate {
 
     // Compress colorized frame
     final Pointer<Uint8> rawColorized = frames.ref.colorized_data;
-    final width = camera.depthResolution.width;
-    final height = camera.depthResolution.height;
-    final length = width * height;
-    final colorizedMatrix = Mat.fromList(height, width, MatType.CV_8UC3, rawColorized.asTypedList(length));
+    final colorizedMatrix = rawColorized.toOpenCVMat(camera.depthResolution);
     final colorizedJpg = colorizedMatrix.encodeJpg(quality: details.quality);
 
     if (colorizedJpg == null) {
@@ -92,11 +88,7 @@ class RealSenseIsolate extends CameraIsolate {
   /// Sends the RealSense's RGB frame and optionally detects ArUco tags.
   void sendRgbFrame(Pointer<Uint8> rawRGB) {
     if (rawRGB == nullptr) return;
-    final width = camera.depthResolution.width;
-    final height = camera.depthResolution.height;
-    final length = width * height;
-    final rgbMatrix = Mat.fromList(height, width, MatType.CV_8UC3, rawRGB.asTypedList(length));
-
+    final rgbMatrix = rawRGB.toOpenCVMat(camera.rgbResolution);
     //detectAndAnnotateFrames(rgbMatrix);  // detect ArUco tags
 
     // Compress the RGB frame into a JPG

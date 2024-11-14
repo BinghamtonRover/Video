@@ -1,20 +1,19 @@
+import "dart:ffi";
 import "dart:typed_data";
 
 import "package:opencv_dart/opencv_dart.dart";
+import "package:video/realsense.dart";
 
-///Extension on `VideoCapture` to set camera properties as double values for `opencv_dart` compatibility.
-///
-///Provides easy access to adjust camera settings like resolution, FPS, zoom, focus, and orientation.
+/// Useful methods to adjust settings of an OpenCV video device.
 extension VideoCaptureUtils on VideoCapture {
-  // ignore: public_member_api_docs
+  /// Sets the resolution of the device.
   void setResolution({required int width, required int height}) {
     set(3, width.toDouble());
     set(4, height.toDouble());
   }
 
-  // ignore: public_member_api_docs
+  /// The frames per second the device will record, independent of calls to [read].
   int get fps => get(5).toInt();
-  // ignore: public_member_api_docs
   set fps(int value) => set(5, value.toDouble());
 
   /// The zoom level of the camera.
@@ -42,16 +41,21 @@ extension VideoCaptureUtils on VideoCapture {
   set autofocus(int value) => set(39, value.toDouble());
 }
 
-///An enxtension on 'Mat' to encode the matrix as a JPEG with a specified quality
-///
-///This method replaces the old encodeJPG from 'opencv_ffi' and instead uses imencode from 'opencv_dart'.
-///Imencode returns the frame as a Uint8List and it also disposes the previous frame given so there
-///is no need for disposing it after.
+/// Useful methods on OpenCV images.
 extension MatrixUtils on Mat {
-  // ignore: public_member_api_docs
+  /// Encodes this image as a JPG with the given quality.
   Uint8List? encodeJpg({required int quality}) {
     final params = VecI32.fromList([IMWRITE_JPEG_QUALITY, quality]);
     final (success, frame) = imencode(".jpg", this, params: params);
     return success ? frame : null;
+  }
+}
+
+/// Converts raw data in native memory to an OpenCV image.
+extension Uint8ToMat on Pointer<Uint8> {
+  /// Reads this 1-dimensional list as an OpenCV image.
+  Mat toOpenCVMat(Resolution resolution) {
+    final length = resolution.width * resolution.height;
+    return Mat.fromList(resolution.height, resolution.width, MatType.CV_8UC3, asTypedList(length));
   }
 }
