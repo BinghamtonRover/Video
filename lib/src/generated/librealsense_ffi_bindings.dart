@@ -49,17 +49,18 @@ class LibRealSenseBindings {
   late final _RealSense_free = _RealSense_freePtr.asFunction<
       void Function(ffi.Pointer<NativeRealSense>)>();
 
-  int RealSense_init(
+  BurtRsStatus RealSense_init(
     ffi.Pointer<NativeRealSense> ptr,
   ) {
-    return _RealSense_init(
+    return BurtRsStatus.fromValue(_RealSense_init(
       ptr,
-    );
+    ));
   }
 
   late final _RealSense_initPtr = _lookup<
-          ffi.NativeFunction<ffi.Int32 Function(ffi.Pointer<NativeRealSense>)>>(
-      'RealSense_init');
+      ffi.NativeFunction<
+          ffi.UnsignedInt Function(
+              ffi.Pointer<NativeRealSense>)>>('RealSense_init');
   late final _RealSense_init = _RealSense_initPtr.asFunction<
       int Function(ffi.Pointer<NativeRealSense>)>();
 
@@ -94,17 +95,18 @@ class LibRealSenseBindings {
       .asFunction<BurtRsConfig Function(ffi.Pointer<NativeRealSense>)>();
 
   /// Streams
-  int RealSense_startStream(
+  BurtRsStatus RealSense_startStream(
     ffi.Pointer<NativeRealSense> ptr,
   ) {
-    return _RealSense_startStream(
+    return BurtRsStatus.fromValue(_RealSense_startStream(
       ptr,
-    );
+    ));
   }
 
   late final _RealSense_startStreamPtr = _lookup<
-          ffi.NativeFunction<ffi.Int32 Function(ffi.Pointer<NativeRealSense>)>>(
-      'RealSense_startStream');
+      ffi.NativeFunction<
+          ffi.UnsignedInt Function(
+              ffi.Pointer<NativeRealSense>)>>('RealSense_startStream');
   late final _RealSense_startStream = _RealSense_startStreamPtr.asFunction<
       int Function(ffi.Pointer<NativeRealSense>)>();
 
@@ -153,12 +155,24 @@ class LibRealSenseBindings {
       void Function(ffi.Pointer<NativeFrames>)>();
 }
 
-abstract class BurtRsStatus {
-  static const int BurtRsStatus_ok = 0;
-  static const int BurtRsStatus_no_device = 1;
-  static const int BurtRsStatus_too_many_devices = 2;
-  static const int BurtRsStatus_resolution_unknown = 3;
-  static const int BurtRsStatus_scale_unknown = 4;
+enum BurtRsStatus {
+  BurtRsStatus_ok(0),
+  BurtRsStatus_no_device(1),
+  BurtRsStatus_too_many_devices(2),
+  BurtRsStatus_resolution_unknown(3),
+  BurtRsStatus_scale_unknown(4);
+
+  final int value;
+  const BurtRsStatus(this.value);
+
+  static BurtRsStatus fromValue(int value) => switch (value) {
+        0 => BurtRsStatus_ok,
+        1 => BurtRsStatus_no_device,
+        2 => BurtRsStatus_too_many_devices,
+        3 => BurtRsStatus_resolution_unknown,
+        4 => BurtRsStatus_scale_unknown,
+        _ => throw ArgumentError("Unknown value for BurtRsStatus: $value"),
+      };
 }
 
 final class BurtRsConfig extends ffi.Struct {
