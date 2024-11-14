@@ -25,7 +25,6 @@ class Collection extends Service {
   /// Stops all cameras and disconnects from the hardware.
   @override
   Future<void> dispose() async {
-    cameras.stopAll();
     await cameras.dispose();
     await videoServer.dispose();
   }

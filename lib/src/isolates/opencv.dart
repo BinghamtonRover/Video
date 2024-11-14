@@ -28,6 +28,7 @@ class OpenCVCameraIsolate extends CameraIsolate {
   @override
   void updateDetails(CameraDetails newDetails) {
     super.updateDetails(newDetails);
+    if (details.status != CameraStatus.CAMERA_ENABLED) return;
     camera.setResolution(width: details.resolutionWidth, height: details.resolutionHeight);
     camera.zoom = details.zoom;
     camera.pan = details.pan;

@@ -53,6 +53,7 @@ class CameraManager extends Service {
 
   @override
   Future<void> dispose() async {
+    stopAll();
     await _commands?.cancel();
     await _data?.cancel();
     await parent.dispose();
