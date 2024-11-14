@@ -99,7 +99,7 @@ class CameraManager extends Service {
   /// Forwards the command to the appropriate camera.
   void _handleCommand(VideoCommand command) {
     collection.videoServer.sendMessage(command);  // echo the request
-    parent.send(data: command, id: command.details.name);
+    parent.sendToChild(data: command, id: command.details.name);
   }
 
   /// Stops all the cameras managed by this class.
@@ -108,7 +108,7 @@ class CameraManager extends Service {
     for (final name in CameraName.values) {
       if (name == CameraName.CAMERA_NAME_UNDEFINED) continue;
       if (name == CameraName.ROVER_FRONT) continue;
-      parent.send(data: command, id: name);
+      parent.sendToChild(data: command, id: name);
     }
   }
 }

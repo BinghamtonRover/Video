@@ -12,9 +12,9 @@ dependencies:
     # This is published to Pub, but using Git allows us to iterate faster
     # Not using a dependency override here so that our CI can use the Git version as well
     git: https://github.com/Levi-Lesches/opencv_ffi
-  burt_network: 
+  burt_network:
     git: https://github.com/BinghamtonRover/Networking
-  typed_isolate: ^4.0.0
+  typed_isolate: ^5.0.0
   ffi: ^2.1.0
   protobuf: ^3.1.0
 

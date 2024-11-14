@@ -32,16 +32,16 @@ abstract class CameraIsolate extends IsolateChild<IsolatePayload, VideoCommand> 
   CameraName get name => details.name;
 
   /// Sends the current status to the dashboard.
-  void sendStatus([_]) => send(DetailsPayload(details));
+  void sendStatus([_]) => sendToParent(DetailsPayload(details));
 
   /// Logs a message by sending a [LogPayload] to the parent isolate.
   ///
   /// Note: it is important to _not_ log this message directly in _this_ isolate, as it will
   /// not be configurable by the parent isolate and will not be sent to the Dashboard.
-  void sendLog(LogLevel level, String message) => send(LogPayload(level: level, message: message));
+  void sendLog(LogLevel level, String message) => sendToParent(LogPayload(level: level, message: message));
 
   @override
-  Future<void> run() async {
+  Future<void> onSpawn() async {
     sendLog(LogLevel.debug, "Initializing camera: $name");
     statusTimer = Timer.periodic(const Duration(seconds: 5), sendStatus);
     start();
@@ -89,7 +89,7 @@ abstract class CameraIsolate extends IsolateChild<IsolatePayload, VideoCommand> 
   void sendFrame(OpenCVImage image, {CameraDetails? detailsOverride}) {
     final details = detailsOverride ?? this.details;
     if (image.data.length < maxPacketLength) {  // Frame can be sent
-      send(FramePayload(details: details, image: image));
+      sendToParent(FramePayload(details: details, image: image));
     } else if (details.quality > 25) {  // Frame too large, lower quality
       sendLog(LogLevel.debug, "Lowering quality for $name from ${details.quality}");
       details.quality -= 1;  // maybe next frame can send
