@@ -11,14 +11,6 @@ import "package:video/video.dart";
 /// accidentally send a frame without a [CameraDetails].
 sealed class IsolatePayload { const IsolatePayload(); }
 
-/// A payload representing the status of the given camera.
-class DetailsPayload extends IsolatePayload {
-  /// The details being sent.
-  final CameraDetails details;
-  /// A const constructor.
-  const DetailsPayload(this.details);
-}
-
 /// A container for a pointer to a native buffer that can be sent across isolates.
 ///
 /// Sending a buffer across isolates would mean that data is copied, which is not ideal for
@@ -29,10 +21,10 @@ class FramePayload extends IsolatePayload {
   final CameraDetails details;
 
   /// The image to send.
-  Uint8List image;
+  Uint8List? image;
 
   /// A const constructor.
-  FramePayload({required this.details, required this.image});
+  FramePayload({required this.details, this.image});
 }
 
 /// A class to send log messages across isolates. The parent isolate is responsible for logging.

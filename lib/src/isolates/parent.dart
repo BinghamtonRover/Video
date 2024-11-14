@@ -60,14 +60,11 @@ class CameraManager extends Service {
 
   /// Handles data coming from the child isolates.
   ///
-  /// - If a [DetailsPayload] comes, sends the details to the Dashboard
   /// - If a [FramePayload] comes, sends the frame and details to the Dashboard
   /// - If a [DepthFramePayload] comes, sends the depth data to autonomy
   /// - If a [LogPayload] comes, logs the message using [logger].
   void onData(IsolatePayload data) {
     switch (data) {
-      case DetailsPayload(:final details):
-        collection.videoServer.sendMessage(VideoData(details: details));
       case FramePayload(:final image, :final details):
         collection.videoServer.sendMessage(VideoData(frame: image, details: details));
       case DepthFramePayload():

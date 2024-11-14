@@ -7,7 +7,7 @@ import "child.dart";
 /// A [CameraIsolate] that reads cameras using `package:opencv_dart`.
 class OpenCVCameraIsolate extends CameraIsolate {
   /// The native camera object from OpenCV.
-  late final VideoCapture camera;
+  late VideoCapture camera;
   /// Creates a new manager for the given camera and default details.
   OpenCVCameraIsolate({required super.details});
 
@@ -18,6 +18,7 @@ class OpenCVCameraIsolate extends CameraIsolate {
     if (!camera.isOpened) {
       sendLog(LogLevel.warning, "Camera $name is not connected");
       updateDetails(CameraDetails(status: CameraStatus.CAMERA_DISCONNECTED));
+      stop();
     }
   }
 

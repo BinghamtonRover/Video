@@ -46,7 +46,7 @@ abstract class CameraIsolate extends IsolateChild<IsolatePayload, VideoCommand> 
   CameraName get name => details.name;
 
   /// Sends the current status to the dashboard.
-  void sendStatus([_]) => sendToParent(DetailsPayload(details));
+  void sendStatus([_]) => sendToParent(FramePayload(details: details));
 
   /// Logs a message by sending a [LogPayload] to the parent isolate.
   ///
@@ -80,7 +80,7 @@ abstract class CameraIsolate extends IsolateChild<IsolatePayload, VideoCommand> 
     details.mergeFromMessage(newDetails);
     if (shouldRestart) {
       stop();
-      if (details.status != CameraStatus.CAMERA_DISABLED) start();
+      if (details.status == CameraStatus.CAMERA_ENABLED) start();
     }
   }
 
@@ -120,7 +120,6 @@ abstract class CameraIsolate extends IsolateChild<IsolatePayload, VideoCommand> 
 
   /// Starts the camera and timers.
   void start() {
-    initCamera();
     if (details.status != CameraStatus.CAMERA_ENABLED) return;
     sendLog(LogLevel.debug, "Starting camera $name. Status=${details.status}");
     final interval = details.fps == 0 ? Duration.zero : Duration(milliseconds: 1000 ~/ details.fps);
@@ -129,6 +128,7 @@ abstract class CameraIsolate extends IsolateChild<IsolatePayload, VideoCommand> 
       sendLog(LogLevel.trace, "Camera $name sent ${fpsCount ~/ 5} frames");
       fpsCount = 0;
     });
+    initCamera();
   }
 
   Future<void> _frameCallback(Timer timer) async {
@@ -141,8 +141,8 @@ abstract class CameraIsolate extends IsolateChild<IsolatePayload, VideoCommand> 
   /// Cancels all timers and stops reading the camera.
   void stop() {
     sendLog(LogLevel.debug, "Stopping camera $name");
-    disposeCamera();
     frameTimer?.cancel();
     fpsTimer?.cancel();
+    disposeCamera();
   }
 }
