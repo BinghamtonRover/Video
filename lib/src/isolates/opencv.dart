@@ -1,4 +1,4 @@
-import "dart:ffi";
+//import "dart:ffi";
 import "dart:typed_data";
 
 //import "package:opencv_ffi/opencv_ffi.dart";
@@ -6,14 +6,19 @@ import "package:opencv_dart/opencv_dart.dart";
 import "package:burt_network/burt_network.dart";
 
 import "package:video/video.dart";
-
+///Extension on `VideoCapture` to set camera properties as double values for `opencv_dart` compatibility.
+///
+///Provides easy access to adjust camera settings like resolution, FPS, zoom, focus, and orientation.
 extension VideoCaptureUtils on VideoCapture {
+  // ignore: public_member_api_docs
   void setResolution({required int width, required int height}) {
     set(3, width.toDouble());
     set(4, height.toDouble());
   }
 
+  // ignore: public_member_api_docs
   int get fps => get(5).toInt();
+  // ignore: public_member_api_docs
   set fps(int value) => set(5, value.toDouble());
 
   /// The zoom level of the camera.
@@ -40,8 +45,13 @@ extension VideoCaptureUtils on VideoCapture {
   int get autofocus => get(39).toInt();
   set autofocus(int value) => set(39, value.toDouble());
 }
-
+///An enxtension on 'Mat' to encode the matrix as a JPEG with a specified quality
+///
+///This method replaces the old encodeJPG from 'opencv_ffi' and instead uses imencode from 'opencv_dart'.
+///Imencode returns the frame as a Uint8List and it also disposes the previous frame given so there 
+///is no need for disposing it after.
 extension MatrixUtils on Mat {
+  // ignore: public_member_api_docs
   Uint8List? encodeJpg({required int quality}) {
     final params = VecI32.fromList([IMWRITE_JPEG_QUALITY, quality]);
     final (success, frame) = imencode(".jpg", this, params: params);
@@ -53,6 +63,7 @@ extension MatrixUtils on Mat {
 /// 
 /// This class accepts [VideoCommand]s and calls [updateDetails] with the newly-received details.
 /// When a frame is read, instead of sending the [VideoData], this class sends only the pointer
+// ignore: comment_references
 /// to the [OpenCVImage] via the [IsolatePayload] class, and the image is read by the parent isolate.
 class OpenCVCameraIsolate extends CameraIsolate {
   /// The native camera object from OpenCV.

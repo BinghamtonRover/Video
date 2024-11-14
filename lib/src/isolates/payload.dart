@@ -3,7 +3,7 @@ import "dart:typed_data";
 
 import "package:burt_network/burt_network.dart";
 //import "package:opencv_ffi/opencv_ffi.dart" show OpenCVImage;
-import "package:opencv_dart/opencv_dart.dart";
+//import "package:opencv_dart/opencv_dart.dart";
 import "package:video/video.dart";
 
 /// A payload containing some data to report back to the parent isolate.
@@ -34,7 +34,9 @@ class FramePayload extends IsolatePayload {
   /// The length of this frame in bytes.
   //final int length;
 Uint8List image;
+///The amount of rows in the Uint8List that is needed to reconstruct the image
 int rows;
+///The amount of rows in the Uint8List that is needed to reconstruct the image
 int cols;
   /// A const constructor.
   FramePayload({required this.details, required this.image, required this.rows, required this.cols}) ; 

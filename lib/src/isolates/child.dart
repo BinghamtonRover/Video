@@ -1,11 +1,11 @@
 import "dart:async";
-import "dart:ffi";
+//import "dart:ffi";
 import "dart:typed_data";
 
 import "package:burt_network/burt_network.dart";
 import "package:typed_isolate/typed_isolate.dart";
 // import "package:opencv_ffi/opencv_ffi.dart";
-import "package:opencv_dart/opencv_dart.dart";
+//import "package:opencv_dart/opencv_dart.dart";
 import "package:video/video.dart";
 
 /// The maximum size of a UDP packet, in bytes (minus a few to be safe).
