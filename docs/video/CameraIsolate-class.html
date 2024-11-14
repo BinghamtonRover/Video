@@ -1,0 +1,553 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, height=device-height, initial-scale=1, user-scalable=no">
+  <meta name="description" content="API docs for the CameraIsolate class from the video library, for the Dart programming language.">
+  <title>CameraIsolate class - video library - Dart API</title>
+
+
+  
+  <link rel="preconnect" href="https://fonts.gstatic.com">
+  <link href="https://fonts.googleapis.com/css2?family=Roboto+Mono:ital,wght@0,300;0,400;0,500;0,700;1,400&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@24,400,0,0" rel="stylesheet">
+  
+  <link rel="stylesheet" href="../static-assets/github.css?v1">
+  <link rel="stylesheet" href="../static-assets/styles.css?v1">
+  <link rel="icon" href="../static-assets/favicon.png?v1">
+
+  
+</head>
+
+
+<body data-base-href="../" data-using-base-href="false" class="light-theme">
+
+<div id="overlay-under-drawer"></div>
+
+<header id="title">
+  <span id="sidenav-left-toggle" class="material-symbols-outlined" role="button" tabindex="0">menu</span>
+  <ol class="breadcrumbs gt-separated dark hidden-xs">
+    <li><a href="../index.html">video</a></li>
+    <li><a href="../video/video-library.html">video.dart</a></li>
+    <li class="self-crumb">CameraIsolate class</li>
+  </ol>
+  <div class="self-name">CameraIsolate</div>
+  <form class="search navbar-right" role="search">
+    <input type="text" id="search-box" autocomplete="off" disabled class="form-control typeahead" placeholder="Loading search...">
+  </form>
+  <div class="toggle" id="theme-button" title="Toggle brightness">
+    <label for="theme">
+      <input type="checkbox" id="theme" value="light-theme">
+      <span id="dark-theme-button" class="material-symbols-outlined">
+        dark_mode
+      </span>
+      <span id="light-theme-button" class="material-symbols-outlined">
+        light_mode
+      </span>
+    </label>
+  </div>
+</header>
+<main>
+
+<div
+    id="dartdoc-main-content"
+    class="main-content"
+    data-above-sidebar="video&#47;video-library-sidebar.html"
+    data-below-sidebar="video&#47;CameraIsolate-class-sidebar.html">
+    <div>
+  <div id="external-links" class="btn-group"><a title="View source code" class="source-link" href="https://github.com/BinghamtonRover/Video/blob/main/lib/src/isolates/child.dart#L27"><span class="material-symbols-outlined">description</span></a></div>
+<h1><span class="kind-class">CameraIsolate</span> class 
+    <a href="https://dart.dev/language/class-modifiers#abstract" class="feature feature-abstract" title="This type can not be directly constructed.">abstract</a>
+ 
+</h1></div>
+
+    
+<section class="desc markdown">
+  <p>A child isolate that manages a single camera and streams frames from it.</p>
+<p>This class can represent any combination of hardware and software, such as regular USB cameras
+driven by OpenCV or a depth camera read with the RealSense SDK. To use, override <a href="../video/CameraIsolate/initCamera.html">initCamera</a>
+and <a href="../video/CameraIsolate/disposeCamera.html">disposeCamera</a>, then override <a href="../video/CameraIsolate/sendFrames.html">sendFrames</a> to retreive and send images. Override
+<a href="../video/CameraIsolate/updateDetails.html">updateDetails</a> to be notified when the current <code>CameraDetails</code> have changed, but the common
+cases such as stopping and starting the camera will be handled for you.</p>
+<p>You may use <a href="../video/CameraIsolate/sendStatus.html">sendStatus</a>, <a href="../video/CameraIsolate/sendLog.html">sendLog</a>, or <a href="../video/CameraIsolate/sendFrame.html">sendFrame</a> to send data to the Dashboard. Do not try
+to communicate directly as only the parent isolate can access the network.</p>
+<p>This class manages a few camera-independent details, such as:</p>
+<ul>
+<li>periodically sending the camera's current status to the Dashboard</li>
+<li>periodically logging how many frames were successfully read</li>
+<li>periodically calling <a href="../video/CameraIsolate/sendFrames.html">sendFrames</a> to read the camera</li>
+<li>calling <a href="../video/CameraIsolate/updateDetails.html">updateDetails</a> when a new <code>VideoCommand</code> arrives.</li>
+</ul>
+</section>
+
+
+    <section>
+      <dl class="dl-horizontal">
+        
+  <dt>Inheritance</dt>
+  <dd>
+    <ul class="gt-separated dark clazz-relationships">
+      <li><a href="https://api.dart.dev/stable/3.5.4/dart-core/Object-class.html">Object</a></li>
+        <li><a href="https://pub.dev/documentation/typed_isolate/6.0.0/typed_isolate/IsolateChild-class.html">IsolateChild</a><span class="signature">&lt;<wbr><span class="type-parameter"><a href="../video/IsolatePayload-class.html">IsolatePayload</a></span>, <span class="type-parameter">VideoCommand</span>&gt;</span></li>
+      <li>CameraIsolate</li>
+    </ul>
+  </dd>
+
+        
+        
+
+          <dt>Implementers</dt>
+          <dd><ul class="comma-separated clazz-relationships">
+              <li><a href="../video/OpenCVCameraIsolate-class.html">OpenCVCameraIsolate</a></li>
+              <li><a href="../video/RealSenseIsolate-class.html">RealSenseIsolate</a></li>
+          </ul></dd>
+
+
+        
+
+
+      </dl>
+    </section>
+
+    
+  <section class="summary offset-anchor" id="constructors">
+    <h2>Constructors</h2>
+
+    <dl class="constructor-summary-list">
+        <dt id="CameraIsolate" class="callable">
+          <span class="name"><a href="../video/CameraIsolate/CameraIsolate.html">CameraIsolate</a></span><span class="signature">({<span class="parameter" id="-param-details"><span>required</span> <span class="type-annotation">CameraDetails</span> <span class="parameter-name">details</span></span>})</span>
+        </dt>
+        <dd>
+          A constructor with initial details.
+        </dd>
+    </dl>
+  </section>
+    
+  <section
+      class="summary offset-anchor"
+      id="instance-properties">
+    <h2>Properties</h2>
+    <dl class="properties">
+        <dt id="details" class="property">
+  <span class="name"><a href="../video/CameraIsolate/details.html">details</a></span>
+  <span class="signature">&#8594; CameraDetails</span>
+  
+
+</dt>
+<dd>
+  Holds the current details of the camera.
+  <div class="features"><span class="feature">final</span></div>
+
+</dd>
+
+        <dt id="fpsCount" class="property">
+  <span class="name"><a href="../video/CameraIsolate/fpsCount.html">fpsCount</a></span>
+  <span class="signature">&#8596; <a href="https://api.dart.dev/stable/3.5.4/dart-core/int-class.html">int</a></span>
+  
+
+</dt>
+<dd>
+  Records how many FPS this camera is actually running at.
+  <div class="features"><span class="feature">getter/setter pair</span></div>
+
+</dd>
+
+        <dt id="fpsTimer" class="property">
+  <span class="name"><a href="../video/CameraIsolate/fpsTimer.html">fpsTimer</a></span>
+  <span class="signature">&#8596; <a href="https://api.dart.dev/stable/3.5.4/dart-async/Timer-class.html">Timer</a>?</span>
+  
+
+</dt>
+<dd>
+  A timer to log out the <a href="../video/CameraIsolate/fpsCount.html">fpsCount</a> every 5 seconds using <a href="../video/CameraIsolate/sendLog.html">sendLog</a>.
+  <div class="features"><span class="feature">getter/setter pair</span></div>
+
+</dd>
+
+        <dt id="frameTimer" class="property">
+  <span class="name"><a href="../video/CameraIsolate/frameTimer.html">frameTimer</a></span>
+  <span class="signature">&#8596; <a href="https://api.dart.dev/stable/3.5.4/dart-async/Timer-class.html">Timer</a>?</span>
+  
+
+</dt>
+<dd>
+  A timer to read from the camera at an FPS given by <a href="../video/CameraIsolate/details.html">details</a>.
+  <div class="features"><span class="feature">getter/setter pair</span></div>
+
+</dd>
+
+        <dt id="hashCode" class="property inherited">
+  <span class="name"><a href="https://api.dart.dev/stable/3.5.4/dart-core/Object/hashCode.html">hashCode</a></span>
+  <span class="signature">&#8594; <a href="https://api.dart.dev/stable/3.5.4/dart-core/int-class.html">int</a></span>
+  
+
+</dt>
+<dd class="inherited">
+  The hash code for this object.
+  <div class="features"><span class="feature">no setter</span><span class="feature">inherited</span></div>
+
+</dd>
+
+        <dt id="id" class="property inherited">
+  <span class="name"><a href="https://pub.dev/documentation/typed_isolate/6.0.0/typed_isolate/IsolateChild/id.html">id</a></span>
+  <span class="signature">&#8594; <a href="https://api.dart.dev/stable/3.5.4/dart-core/Object-class.html">Object</a></span>
+  
+
+</dt>
+<dd class="inherited">
+  A unique identifier for this child to identify itself to the parent.
+  <div class="features"><span class="feature">final</span><span class="feature">inherited</span></div>
+
+</dd>
+
+        <dt id="isReadingFrame" class="property">
+  <span class="name"><a href="../video/CameraIsolate/isReadingFrame.html">isReadingFrame</a></span>
+  <span class="signature">&#8596; <a href="https://api.dart.dev/stable/3.5.4/dart-core/bool-class.html">bool</a></span>
+  
+
+</dt>
+<dd>
+  Whether the camera is currently reading a frame.
+  <div class="features"><span class="feature">getter/setter pair</span></div>
+
+</dd>
+
+        <dt id="name" class="property">
+  <span class="name"><a href="../video/CameraIsolate/name.html">name</a></span>
+  <span class="signature">&#8594; CameraName</span>
+  
+
+</dt>
+<dd>
+  The name of this camera (where it is on the rover).
+  <div class="features"><span class="feature">no setter</span></div>
+
+</dd>
+
+        <dt id="runtimeType" class="property inherited">
+  <span class="name"><a href="https://api.dart.dev/stable/3.5.4/dart-core/Object/runtimeType.html">runtimeType</a></span>
+  <span class="signature">&#8594; <a href="https://api.dart.dev/stable/3.5.4/dart-core/Type-class.html">Type</a></span>
+  
+
+</dt>
+<dd class="inherited">
+  A representation of the runtime type of the object.
+  <div class="features"><span class="feature">no setter</span><span class="feature">inherited</span></div>
+
+</dd>
+
+        <dt id="statusTimer" class="property">
+  <span class="name"><a href="../video/CameraIsolate/statusTimer.html">statusTimer</a></span>
+  <span class="signature">&#8596; <a href="https://api.dart.dev/stable/3.5.4/dart-async/Timer-class.html">Timer</a>?</span>
+  
+
+</dt>
+<dd>
+  A timer to periodically send the camera status to the dashboard.
+  <div class="features"><span class="feature">getter/setter pair</span></div>
+
+</dd>
+
+        <dt id="stream" class="property inherited">
+  <span class="name"><a href="https://pub.dev/documentation/typed_isolate/6.0.0/typed_isolate/IsolateChild/stream.html">stream</a></span>
+  <span class="signature">&#8594; <a href="https://api.dart.dev/stable/3.5.4/dart-async/Stream-class.html">Stream</a><span class="signature">&lt;<wbr><span class="type-parameter">VideoCommand</span>&gt;</span></span>
+  
+
+</dt>
+<dd class="inherited">
+  A broadcast stream of all messages from the parent.
+  <div class="features"><span class="feature">no setter</span><span class="feature">inherited</span></div>
+
+</dd>
+
+    </dl>
+  </section>
+    
+  <section
+      class="summary offset-anchor"
+      id="instance-methods">
+    <h2>Methods</h2>
+    <dl class="callables">
+        <dt id="dispose" class="callable">
+  <span class="name"><a href="../video/CameraIsolate/dispose.html">dispose</a></span><span class="signature">(<wbr>)
+    <span class="returntype parameter">&#8594; void</span>
+  </span>
+  
+
+</dt>
+<dd>
+  Disposes of this camera and all other resources.
+  
+
+</dd>
+
+        <dt id="disposeCamera" class="callable">
+  <span class="name"><a href="../video/CameraIsolate/disposeCamera.html">disposeCamera</a></span><span class="signature">(<wbr>)
+    <span class="returntype parameter">&#8594; void</span>
+  </span>
+  
+
+</dt>
+<dd>
+  Closes and releases the camera.
+  
+
+</dd>
+
+        <dt id="initCamera" class="callable">
+  <span class="name"><a href="../video/CameraIsolate/initCamera.html">initCamera</a></span><span class="signature">(<wbr>)
+    <span class="returntype parameter">&#8594; void</span>
+  </span>
+  
+
+</dt>
+<dd>
+  Initializes the camera and starts streaming.
+  
+
+</dd>
+
+        <dt id="noSuchMethod" class="callable inherited">
+  <span class="name"><a href="https://api.dart.dev/stable/3.5.4/dart-core/Object/noSuchMethod.html">noSuchMethod</a></span><span class="signature">(<wbr><span class="parameter" id="noSuchMethod-param-invocation"><span class="type-annotation"><a href="https://api.dart.dev/stable/3.5.4/dart-core/Invocation-class.html">Invocation</a></span> <span class="parameter-name">invocation</span></span>)
+    <span class="returntype parameter">&#8594; dynamic</span>
+  </span>
+  
+
+</dt>
+<dd class="inherited">
+  Invoked when a nonexistent method or property is accessed.
+  <div class="features"><span class="feature">inherited</span></div>
+
+</dd>
+
+        <dt id="onData" class="callable">
+  <span class="name"><a href="../video/CameraIsolate/onData.html">onData</a></span><span class="signature">(<wbr><span class="parameter" id="onData-param-data"><span class="type-annotation">VideoCommand</span> <span class="parameter-name">data</span></span>)
+    <span class="returntype parameter">&#8594; void</span>
+  </span>
+  
+
+</dt>
+<dd>
+  A callback to run when new data is received from the parent.
+  <div class="features"><span class="feature">override</span></div>
+
+</dd>
+
+        <dt id="onSpawn" class="callable">
+  <span class="name"><a href="../video/CameraIsolate/onSpawn.html">onSpawn</a></span><span class="signature">(<wbr>)
+    <span class="returntype parameter">&#8594; <a href="https://api.dart.dev/stable/3.5.4/dart-async/Future-class.html">Future</a><span class="signature">&lt;<wbr><span class="type-parameter">void</span>&gt;</span></span>
+  </span>
+  
+
+</dt>
+<dd>
+  Runs when the child isolate is spawned, after <a href="https://pub.dev/documentation/typed_isolate/6.0.0/typed_isolate/IsolateChild/registerWithParent.html">registerWithParent</a> is called.
+  <div class="features"><span class="feature">override</span></div>
+
+</dd>
+
+        <dt id="registerWithParent" class="callable inherited">
+  <span class="name"><a href="https://pub.dev/documentation/typed_isolate/6.0.0/typed_isolate/IsolateChild/registerWithParent.html">registerWithParent</a></span><span class="signature">(<wbr><span class="parameter" id="registerWithParent-param-port"><span class="type-annotation">TypedSendPort<span class="signature">&lt;<wbr><span class="type-parameter">ChildIsolatePayload<span class="signature">&lt;<wbr><span class="type-parameter"><a href="../video/IsolatePayload-class.html">IsolatePayload</a></span>, <span class="type-parameter">VideoCommand</span>&gt;</span></span>&gt;</span></span> <span class="parameter-name">port</span></span>)
+    <span class="returntype parameter">&#8594; <a href="https://api.dart.dev/stable/3.5.4/dart-async/Future-class.html">Future</a><span class="signature">&lt;<wbr><span class="type-parameter">void</span>&gt;</span></span>
+  </span>
+  
+
+</dt>
+<dd class="inherited">
+  Registers this child with its parent.
+  <div class="features"><span class="feature">inherited</span></div>
+
+</dd>
+
+        <dt id="sendFrame" class="callable">
+  <span class="name"><a href="../video/CameraIsolate/sendFrame.html">sendFrame</a></span><span class="signature">(<wbr><span class="parameter" id="sendFrame-param-image"><span class="type-annotation"><a href="https://api.dart.dev/stable/3.5.4/dart-typed_data/Uint8List-class.html">Uint8List</a></span> <span class="parameter-name">image</span>, {</span><span class="parameter" id="sendFrame-param-detailsOverride"><span class="type-annotation">CameraDetails?</span> <span class="parameter-name">detailsOverride</span></span>})
+    <span class="returntype parameter">&#8594; void</span>
+  </span>
+  
+
+</dt>
+<dd>
+  Sends an individual frame to the dashboard.
+  
+
+</dd>
+
+        <dt id="sendFrames" class="callable">
+  <span class="name"><a href="../video/CameraIsolate/sendFrames.html">sendFrames</a></span><span class="signature">(<wbr>)
+    <span class="returntype parameter">&#8594; <a href="https://api.dart.dev/stable/3.5.4/dart-async/Future-class.html">Future</a><span class="signature">&lt;<wbr><span class="type-parameter">void</span>&gt;</span></span>
+  </span>
+  
+
+</dt>
+<dd>
+  Reads a frame from the camera and sends it to the dashboard.
+  
+
+</dd>
+
+        <dt id="sendLog" class="callable">
+  <span class="name"><a href="../video/CameraIsolate/sendLog.html">sendLog</a></span><span class="signature">(<wbr><span class="parameter" id="sendLog-param-level"><span class="type-annotation">LogLevel</span> <span class="parameter-name">level</span>, </span><span class="parameter" id="sendLog-param-message"><span class="type-annotation"><a href="https://api.dart.dev/stable/3.5.4/dart-core/String-class.html">String</a></span> <span class="parameter-name">message</span></span>)
+    <span class="returntype parameter">&#8594; void</span>
+  </span>
+  
+
+</dt>
+<dd>
+  Logs a message by sending a <a href="../video/LogPayload-class.html">LogPayload</a> to the parent isolate.
+  
+
+</dd>
+
+        <dt id="sendStatus" class="callable">
+  <span class="name"><a href="../video/CameraIsolate/sendStatus.html">sendStatus</a></span><span class="signature">(<wbr>[<span class="parameter" id="sendStatus-param-_"><span class="type-annotation">dynamic</span> <span class="parameter-name">_</span></span>])
+    <span class="returntype parameter">&#8594; void</span>
+  </span>
+  
+
+</dt>
+<dd>
+  Sends the current status to the dashboard.
+  
+
+</dd>
+
+        <dt id="sendToParent" class="callable inherited">
+  <span class="name"><a href="https://pub.dev/documentation/typed_isolate/6.0.0/typed_isolate/IsolateChild/sendToParent.html">sendToParent</a></span><span class="signature">(<wbr><span class="parameter" id="sendToParent-param-obj"><span class="type-annotation"><a href="../video/IsolatePayload-class.html">IsolatePayload</a></span> <span class="parameter-name">obj</span></span>)
+    <span class="returntype parameter">&#8594; void</span>
+  </span>
+  
+
+</dt>
+<dd class="inherited">
+  Sends data to the parent isolate.
+  <div class="features"><span class="feature">inherited</span></div>
+
+</dd>
+
+        <dt id="start" class="callable">
+  <span class="name"><a href="../video/CameraIsolate/start.html">start</a></span><span class="signature">(<wbr>)
+    <span class="returntype parameter">&#8594; void</span>
+  </span>
+  
+
+</dt>
+<dd>
+  Starts the camera and timers.
+  
+
+</dd>
+
+        <dt id="stop" class="callable">
+  <span class="name"><a href="../video/CameraIsolate/stop.html">stop</a></span><span class="signature">(<wbr>)
+    <span class="returntype parameter">&#8594; void</span>
+  </span>
+  
+
+</dt>
+<dd>
+  Cancels all timers and stops reading the camera.
+  
+
+</dd>
+
+        <dt id="toString" class="callable inherited">
+  <span class="name"><a href="https://api.dart.dev/stable/3.5.4/dart-core/Object/toString.html">toString</a></span><span class="signature">(<wbr>)
+    <span class="returntype parameter">&#8594; <a href="https://api.dart.dev/stable/3.5.4/dart-core/String-class.html">String</a></span>
+  </span>
+  
+
+</dt>
+<dd class="inherited">
+  A string representation of this object.
+  <div class="features"><span class="feature">inherited</span></div>
+
+</dd>
+
+        <dt id="updateDetails" class="callable">
+  <span class="name"><a href="../video/CameraIsolate/updateDetails.html">updateDetails</a></span><span class="signature">(<wbr><span class="parameter" id="updateDetails-param-newDetails"><span class="type-annotation">CameraDetails</span> <span class="parameter-name">newDetails</span></span>)
+    <span class="returntype parameter">&#8594; void</span>
+  </span>
+  
+
+</dt>
+<dd>
+  Updates the camera's <a href="../video/CameraIsolate/details.html">details</a>, which will take effect on the next <a href="../video/CameraIsolate/sendFrame.html">sendFrame</a> call.
+  
+
+</dd>
+
+    </dl>
+  </section>
+    
+  <section
+      class="summary offset-anchor inherited"
+      id="operators">
+    <h2>Operators</h2>
+    <dl class="callables">
+        <dt id="operator ==" class="callable inherited">
+  <span class="name"><a href="https://api.dart.dev/stable/3.5.4/dart-core/Object/operator_equals.html">operator ==</a></span><span class="signature">(<wbr><span class="parameter" id="==-param-other"><span class="type-annotation"><a href="https://api.dart.dev/stable/3.5.4/dart-core/Object-class.html">Object</a></span> <span class="parameter-name">other</span></span>)
+    <span class="returntype parameter">&#8594; <a href="https://api.dart.dev/stable/3.5.4/dart-core/bool-class.html">bool</a></span>
+  </span>
+  
+
+</dt>
+<dd class="inherited">
+  The equality operator.
+  <div class="features"><span class="feature">inherited</span></div>
+
+</dd>
+
+    </dl>
+  </section>
+    
+    
+    
+
+
+  </div> <!-- /.main-content -->
+
+  <div id="dartdoc-sidebar-left" class="sidebar sidebar-offcanvas-left">
+    <!-- The search input and breadcrumbs below are only responsively visible at low resolutions. -->
+<header id="header-search-sidebar" class="hidden-l">
+  <form class="search-sidebar" role="search">
+    <input type="text" id="search-sidebar" autocomplete="off" disabled class="form-control typeahead" placeholder="Loading search...">
+  </form>
+</header>
+
+<ol class="breadcrumbs gt-separated dark hidden-l" id="sidebar-nav">
+    <li><a href="../index.html">video</a></li>
+    <li><a href="../video/video-library.html">video</a></li>
+    <li class="self-crumb">CameraIsolate class</li>
+</ol>
+
+
+    <h5>video library</h5>
+    <div id="dartdoc-sidebar-left-content"></div>
+  </div>
+
+  <div id="dartdoc-sidebar-right" class="sidebar sidebar-offcanvas-right">
+  </div><!--/.sidebar-offcanvas-->
+
+</main>
+
+<footer>
+  <span class="no-break">
+    video
+      1.0.0
+  </span>
+
+  
+</footer>
+
+
+
+<script src="../static-assets/highlight.pack.js?v1"></script>
+<script src="../static-assets/docs.dart.js"></script>
+
+
+
+</body>
+
+</html>
+
