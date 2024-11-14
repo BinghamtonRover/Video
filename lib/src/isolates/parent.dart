@@ -17,16 +17,23 @@ final autonomySocket = SocketInfo(address: InternetAddress("192.168.1.30"), port
 /// to read an [opencv.OpenCVImage] from native memory and send to the dashboard. By not sending the frame
 /// from child isolate to the parent (just the pointer), we save a whole JPG image's worth of bytes
 /// from every camera, every frame, every second. That could be up to 5 MB per second of savings.
-class VideoController extends IsolateParent<VideoCommand, IsolatePayload>{
+class CameraManager extends Service {
+  /// The parent isolate that spawns the camera isolates.
+  final parent = IsolateParent<VideoCommand, IsolatePayload>();
+
+  StreamSubscription<VideoCommand>? _commands;
+  StreamSubscription<IsolatePayload>? _data;
+
   @override
-  Future<void> init() async {
-    collection.videoServer.messages.onMessage<VideoCommand>(
+  Future<bool> init() async {
+    _commands = collection.videoServer.messages.onMessage<VideoCommand>(
       name: VideoCommand().messageName,
       constructor: VideoCommand.fromBuffer,
       callback: _handleCommand,
     );
+    parent.init();
+    _data = parent.stream.listen(onData);
 
-    super.init();
     for (final name in CameraName.values) {
       switch (name) {
         case CameraName.CAMERA_NAME_UNDEFINED: continue;
@@ -34,23 +41,35 @@ class VideoController extends IsolateParent<VideoCommand, IsolatePayload>{
         case CameraName.AUTONOMY_DEPTH:
           final details = getRealsenseDetails(name);
           final isolate = RealSenseIsolate(details: details);
-          await spawn(isolate);
+          await parent.spawn(isolate);
         // All other cameras share the same logic, even future cameras
         default:  // ignore: no_default_cases
           final details = getDefaultDetails(name);
           final isolate = OpenCVCameraIsolate(details: details);
-          await spawn(isolate);
+          await parent.spawn(isolate);
       }
     }
+    return true;
   }
 
   @override
-  void onData(IsolatePayload data, Object id) {
+  Future<void> dispose() async {
+    await _commands?.cancel();
+    await _data?.cancel();
+    await parent.dispose();
+  }
+
+  /// Handles data coming from the child isolates.
+  ///
+  /// - If a [DetailsPayload] comes, sends the details to the Dashboard
+  /// - If a [FramePayload] comes, sends the frame and details to the Dashboard
+  /// - If a [DepthFramePayload] comes, sends the depth data to autonomy
+  /// - If a [LogPayload] comes, logs the message using [logger].
+  void onData(IsolatePayload data) {
     switch (data) {
       case DetailsPayload():
         collection.videoServer.sendMessage(VideoData(details: data.details));
-      case FramePayload():
-        final frame = data.frame;
+      case FramePayload(:final frame):
         collection.videoServer.sendMessage(VideoData(frame: frame.data, details: data.details));
         frame.dispose();
       case DepthFramePayload():
@@ -80,7 +99,7 @@ class VideoController extends IsolateParent<VideoCommand, IsolatePayload>{
   /// Forwards the command to the appropriate camera.
   void _handleCommand(VideoCommand command) {
     collection.videoServer.sendMessage(command);  // echo the request
-    send(data: command, id: command.details.name);
+    parent.send(data: command, id: command.details.name);
   }
 
   /// Stops all the cameras managed by this class.
@@ -89,7 +108,7 @@ class VideoController extends IsolateParent<VideoCommand, IsolatePayload>{
     for (final name in CameraName.values) {
       if (name == CameraName.CAMERA_NAME_UNDEFINED) continue;
       if (name == CameraName.ROVER_FRONT) continue;
-      send(data: command, id: name);
+      parent.send(data: command, id: name);
     }
   }
 }

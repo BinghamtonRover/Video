@@ -43,7 +43,7 @@ class Collection extends Service {
   late final videoServer = RoverSocket(port: 8002, device: Device.VIDEO, collection: this);
 
   /// Main parent isolate
-  final parent = VideoController();
+  final parent = CameraManager();
 
   /// Function to initialize cameras
   @override
