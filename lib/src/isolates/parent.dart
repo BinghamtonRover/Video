@@ -1,7 +1,6 @@
 import "dart:async";
 import "dart:io";
 
-import "package:opencv_ffi/opencv_ffi.dart" as opencv;
 import "package:typed_isolate/typed_isolate.dart";
 import "package:burt_network/burt_network.dart";
 
@@ -14,7 +13,7 @@ final autonomySocket = SocketInfo(address: InternetAddress("192.168.1.30"), port
 ///
 /// With one isolate per camera, each camera can read in parallel. This class sends [VideoCommand]s
 /// from the dashboard to the appropriate [CameraIsolate], and receives [IsolatePayload]s which it uses
-/// to read an [opencv.OpenCVImage] from native memory and send to the dashboard. By not sending the frame
+/// to read an image from native memory and send to the dashboard. By not sending the frame
 /// from child isolate to the parent (just the pointer), we save a whole JPG image's worth of bytes
 /// from every camera, every frame, every second. That could be up to 5 MB per second of savings.
 class CameraManager extends Service {
@@ -67,11 +66,10 @@ class CameraManager extends Service {
   /// - If a [LogPayload] comes, logs the message using [logger].
   void onData(IsolatePayload data) {
     switch (data) {
-      case DetailsPayload():
-        collection.videoServer.sendMessage(VideoData(details: data.details));
-      case FramePayload(:final frame):
-        collection.videoServer.sendMessage(VideoData(frame: frame.data, details: data.details));
-        frame.dispose();
+      case DetailsPayload(:final details):
+        collection.videoServer.sendMessage(VideoData(details: details));
+      case FramePayload(:final image, :final details):
+        collection.videoServer.sendMessage(VideoData(frame: image, details: details));
       case DepthFramePayload():
         collection.videoServer.sendMessage(VideoData(frame: data.frame.depthFrame), destination: autonomySocket);
         data.dispose();
