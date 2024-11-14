@@ -54,8 +54,8 @@ extension MatrixUtils on Mat {
 /// Converts raw data in native memory to an OpenCV image.
 extension Uint8ToMat on Pointer<Uint8> {
   /// Reads this 1-dimensional list as an OpenCV image.
-  Mat toOpenCVMat(Resolution resolution) {
-    final length = resolution.width * resolution.height;
+  Mat toOpenCVMat(Resolution resolution, {int? length}) {
+    length ??= resolution.width * resolution.height;
     return Mat.fromList(resolution.height, resolution.width, MatType.CV_8UC3, asTypedList(length));
   }
 }

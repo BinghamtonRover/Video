@@ -10,13 +10,13 @@ class Collection extends Service {
   late final videoServer = RoverSocket(port: 8002, device: Device.VIDEO, collection: this);
 
   /// Main parent isolate
-  final parent = VideoController();
+  final cameras = CameraManager();
 
   /// Function to initialize cameras
   @override
   Future<bool> init() async {
     logger..trace("Running in trace mode")..debug("Running in debug mode");
-    await parent.init();
+    await cameras.init();
     await videoServer.init();
     logger.info("Video program initialized");
     return true;
@@ -25,15 +25,8 @@ class Collection extends Service {
   /// Stops all cameras and disconnects from the hardware.
   @override
   Future<void> dispose() async {
-    parent.stopAll();
-    await parent.dispose();
+    await cameras.dispose();
     await videoServer.dispose();
-  }
-
-  /// Restarts the video program.
-  Future<void> restart() async {
-    await dispose();
-    await init();
   }
 }
 

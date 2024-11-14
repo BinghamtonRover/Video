@@ -46,16 +46,16 @@ abstract class CameraIsolate extends IsolateChild<IsolatePayload, VideoCommand> 
   CameraName get name => details.name;
 
   /// Sends the current status to the dashboard.
-  void sendStatus([_]) => send(DetailsPayload(details));
+  void sendStatus([_]) => sendToParent(FramePayload(details: details));
 
   /// Logs a message by sending a [LogPayload] to the parent isolate.
   ///
   /// Note: it is important to _not_ log this message directly in _this_ isolate, as it will
   /// not be configurable by the parent isolate and will not be sent to the Dashboard.
-  void sendLog(LogLevel level, String message) => send(LogPayload(level: level, message: message));
+  void sendLog(LogLevel level, String message) => sendToParent(LogPayload(level: level, message: message));
 
   @override
-  Future<void> run() async {
+  Future<void> onSpawn() async {
     sendLog(LogLevel.debug, "Initializing camera: $name");
     statusTimer = Timer.periodic(const Duration(seconds: 5), sendStatus);
     start();
@@ -80,7 +80,7 @@ abstract class CameraIsolate extends IsolateChild<IsolatePayload, VideoCommand> 
     details.mergeFromMessage(newDetails);
     if (shouldRestart) {
       stop();
-      if (details.status != CameraStatus.CAMERA_DISABLED) start();
+      if (details.status == CameraStatus.CAMERA_ENABLED) start();
     }
   }
 
@@ -108,7 +108,7 @@ abstract class CameraIsolate extends IsolateChild<IsolatePayload, VideoCommand> 
   void sendFrame(Uint8List image, {CameraDetails? detailsOverride}) {
     final details = detailsOverride ?? this.details;
     if (image.length < maxPacketLength) {  // Frame can be sent
-      send(FramePayload(details: details, image: image));
+      sendToParent(FramePayload(details: details, image: image));
     } else if (details.quality > 25) {  // Frame too large, lower quality
       sendLog(LogLevel.debug, "Lowering quality for $name from ${details.quality}");
       details.quality -= 1;  // maybe next frame can send
@@ -120,7 +120,6 @@ abstract class CameraIsolate extends IsolateChild<IsolatePayload, VideoCommand> 
 
   /// Starts the camera and timers.
   void start() {
-    initCamera();
     if (details.status != CameraStatus.CAMERA_ENABLED) return;
     sendLog(LogLevel.debug, "Starting camera $name. Status=${details.status}");
     final interval = details.fps == 0 ? Duration.zero : Duration(milliseconds: 1000 ~/ details.fps);
@@ -129,6 +128,7 @@ abstract class CameraIsolate extends IsolateChild<IsolatePayload, VideoCommand> 
       sendLog(LogLevel.trace, "Camera $name sent ${fpsCount ~/ 5} frames");
       fpsCount = 0;
     });
+    initCamera();
   }
 
   Future<void> _frameCallback(Timer timer) async {
@@ -141,8 +141,8 @@ abstract class CameraIsolate extends IsolateChild<IsolatePayload, VideoCommand> 
   /// Cancels all timers and stops reading the camera.
   void stop() {
     sendLog(LogLevel.debug, "Stopping camera $name");
-    disposeCamera();
     frameTimer?.cancel();
     fpsTimer?.cancel();
+    disposeCamera();
   }
 }

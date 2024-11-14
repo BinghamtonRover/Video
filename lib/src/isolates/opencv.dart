@@ -7,37 +7,43 @@ import "child.dart";
 /// A [CameraIsolate] that reads cameras using `package:opencv_dart`.
 class OpenCVCameraIsolate extends CameraIsolate {
   /// The native camera object from OpenCV.
-  late final VideoCapture camera;
+  VideoCapture? camera;
   /// Creates a new manager for the given camera and default details.
   OpenCVCameraIsolate({required super.details});
 
   @override
   void initCamera() {
     camera = getCamera(name);
-    camera.setResolution(width: details.resolutionWidth, height: details.resolutionHeight);
-    if (!camera.isOpened) {
+    camera?.setResolution(width: details.resolutionWidth, height: details.resolutionHeight);
+    if (!camera!.isOpened) {
       sendLog(LogLevel.warning, "Camera $name is not connected");
       updateDetails(CameraDetails(status: CameraStatus.CAMERA_DISCONNECTED));
+      stop();
     }
   }
 
   @override
-  void disposeCamera() => camera.dispose();
+  void disposeCamera() {
+    camera?.dispose();
+    camera = null;
+  }
 
   @override
   void updateDetails(CameraDetails newDetails) {
     super.updateDetails(newDetails);
-    camera.setResolution(width: details.resolutionWidth, height: details.resolutionHeight);
-    camera.zoom = details.zoom;
-    camera.pan = details.pan;
-    camera.tilt = details.tilt;
-    camera.focus = details.focus;
-    camera.autofocus = details.focus;
+    if (details.status != CameraStatus.CAMERA_ENABLED || camera == null) return;
+    camera?.setResolution(width: details.resolutionWidth, height: details.resolutionHeight);
+    camera?.zoom = details.zoom;
+    camera?.pan = details.pan;
+    camera?.tilt = details.tilt;
+    camera?.focus = details.focus;
+    camera?.autofocus = details.focus;
   }
 
   @override
   Future<void> sendFrames() async {
-    final (success, matrix) = camera.read();
+    if (camera == null) return;
+    final (success, matrix) = camera!.read();
     if (!success) return;
     // detectAndAnnotateFrames(matrix);
     final frame = matrix.encodeJpg(quality: details.quality);

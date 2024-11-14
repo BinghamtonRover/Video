@@ -12,3 +12,4 @@ src/bin
 src/build
 src/*.so
 dist/
+*.dll

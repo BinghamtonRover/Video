@@ -68,7 +68,8 @@ class RealSenseIsolate extends CameraIsolate {
 
     // Compress colorized frame
     final Pointer<Uint8> rawColorized = frames.ref.colorized_data;
-    final colorizedMatrix = rawColorized.toOpenCVMat(camera.depthResolution);
+    if (rawColorized == nullptr) return;
+    final colorizedMatrix = rawColorized.toOpenCVMat(camera.depthResolution, length: frames.ref.colorized_length);
     final colorizedJpg = colorizedMatrix.encodeJpg(quality: details.quality);
 
     if (colorizedJpg == null) {

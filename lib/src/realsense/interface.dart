@@ -15,7 +15,7 @@ abstract class RealSenseInterface {
   const RealSenseInterface();
   /// Decides which implementation to use depending on platform.
   factory RealSenseInterface.forPlatform() => Platform.isLinux ? RealSenseFFI() : RealSenseStub();
-  
+
   /// Initializes the RealSense. Returns whether the initialization was successful.
   bool init();
   /// Releases the RealSense. Calling [init] again should re-open the device.
