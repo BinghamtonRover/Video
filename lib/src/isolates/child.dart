@@ -5,12 +5,13 @@ import "package:typed_isolate/typed_isolate.dart";
 import "package:opencv_ffi/opencv_ffi.dart";
 
 import "package:video/video.dart";
+import "fps_reporter.dart";
 
 /// The maximum size of a UDP packet, in bytes (minus a few to be safe).
 const maxPacketLength = 60000;
 
 /// A child isolate that manages a single camera and streams frames from it.
-abstract class CameraIsolate extends IsolateChild<IsolatePayload, VideoCommand> {
+abstract class CameraIsolate extends IsolateChild<IsolatePayload, VideoCommand> with FpsReporter {
   /// Holds the current details of the camera.
   final CameraDetails details;
   /// A constructor with initial details.
@@ -20,10 +21,6 @@ abstract class CameraIsolate extends IsolateChild<IsolatePayload, VideoCommand> 
   Timer? statusTimer;
   /// A timer to read from the camera at an FPS given by [details].
   Timer? frameTimer;
-  /// A timer to log out the [fpsCount] every 5 seconds using [sendLog].
-  Timer? fpsTimer;
-  /// Records how many FPS this camera is actually running at.
-  int fpsCount = 0;
 
   /// Whether the camera is currently reading a frame.
   bool isReadingFrame = false;
@@ -38,6 +35,7 @@ abstract class CameraIsolate extends IsolateChild<IsolatePayload, VideoCommand> 
   ///
   /// Note: it is important to _not_ log this message directly in _this_ isolate, as it will
   /// not be configurable by the parent isolate and will not be sent to the Dashboard.
+  @override
   void sendLog(LogLevel level, String message) => send(LogPayload(level: level, message: message));
 
   @override
@@ -106,10 +104,7 @@ abstract class CameraIsolate extends IsolateChild<IsolatePayload, VideoCommand> 
     sendLog(LogLevel.debug, "Starting camera $name. Status=${details.status}");
     final interval = details.fps == 0 ? Duration.zero : Duration(milliseconds: 1000 ~/ details.fps);
     frameTimer = Timer.periodic(interval, _frameCallback);
-    fpsTimer = Timer.periodic(const Duration(seconds: 5), (_) {
-      sendLog(LogLevel.trace, "Camera $name sent ${fpsCount ~/ 5} frames");
-      fpsCount = 0;
-    });
+    startFps();
   }
 
   Future<void> _frameCallback(Timer timer) async {
@@ -124,6 +119,6 @@ abstract class CameraIsolate extends IsolateChild<IsolatePayload, VideoCommand> 
     sendLog(LogLevel.debug, "Stopping camera $name");
     disposeCamera();
     frameTimer?.cancel();
-    fpsTimer?.cancel();
+    stopFps();
   }
 }

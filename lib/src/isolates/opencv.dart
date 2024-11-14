@@ -59,6 +59,6 @@ class OpenCVCameraIsolate extends CameraIsolate {
       return;
     }
     sendFrame(frame);
-    fpsCount++;
+    recordFrame();
   }
 }
