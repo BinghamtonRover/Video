@@ -1,17 +1,29 @@
 import "dart:async";
-//import "dart:ffi";
 import "dart:typed_data";
 
 import "package:burt_network/burt_network.dart";
 import "package:typed_isolate/typed_isolate.dart";
-// import "package:opencv_ffi/opencv_ffi.dart";
-//import "package:opencv_dart/opencv_dart.dart";
 import "package:video/video.dart";
 
 /// The maximum size of a UDP packet, in bytes (minus a few to be safe).
 const maxPacketLength = 60000;
 
 /// A child isolate that manages a single camera and streams frames from it.
+///
+/// This class can represent any combination of hardware and software, such as regular USB cameras
+/// driven by OpenCV or a depth camera read with the RealSense SDK. To use, override [initCamera]
+/// and [disposeCamera], then override [sendFrames] to retreive and send images. Override
+/// [updateDetails] to be notified when the current [CameraDetails] have changed, but the common
+/// cases such as stopping and starting the camera will be handled for you.
+///
+/// You may use [sendStatus], [sendLog], or [sendFrame] to send data to the Dashboard. Do not try
+/// to communicate directly as only the parent isolate can access the network.
+///
+/// This class manages a few camera-independent details, such as:
+/// - periodically sending the camera's current status to the Dashboard
+/// - periodically logging how many frames were successfully read
+/// - periodically calling [sendFrames] to read the camera
+/// - calling [updateDetails] when a new [VideoCommand] arrives.
 abstract class CameraIsolate extends IsolateChild<IsolatePayload, VideoCommand> {
   /// Holds the current details of the camera.
   final CameraDetails details;
@@ -80,7 +92,12 @@ abstract class CameraIsolate extends IsolateChild<IsolatePayload, VideoCommand> 
   /// This is separate from [dispose] so the isolate can keep reporting its status.
   void disposeCamera();
 
-  /// Reads frame/s from the camera and sends it/them.
+  /// Reads a frame from the camera and sends it to the dashboard.
+  ///
+  /// When overriding this function, be sure to check for errors, such as:
+  /// - If the camera does not respond, alert the dashboard
+  /// - If the frame is too large, reduces the quality (increases JPG compression)
+  /// - If the quality is already low, alert the dashboard
   Future<void> sendFrames();
 
   /// Sends an individual frame to the dashboard.
