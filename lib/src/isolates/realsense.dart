@@ -1,11 +1,11 @@
 import "dart:ffi";
 
-import "package:burt_network/generated.dart";
-import "package:burt_network/logging.dart";
+import "package:burt_network/burt_network.dart";
 import "package:protobuf/protobuf.dart";
-import "package:opencv_ffi/opencv_ffi.dart";
 
-import "package:video/video.dart";
+import "package:video/utils.dart";
+import "package:video/realsense.dart";
+import "child.dart";
 
 extension on CameraDetails {
   bool get interferesWithAutonomy => hasResolutionHeight()
@@ -68,8 +68,9 @@ class RealSenseIsolate extends CameraIsolate {
 
     // Compress colorized frame
     final Pointer<Uint8> rawColorized = frames.ref.colorized_data;
-    final Pointer<Mat> colorizedMatrix = getMatrix(camera.depthResolution.height, camera.depthResolution.width, rawColorized);
-    final OpenCVImage? colorizedJpg = encodeJpg(colorizedMatrix, quality: details.quality);
+    final colorizedMatrix = rawColorized.toOpenCVMat(camera.depthResolution);
+    final colorizedJpg = colorizedMatrix.encodeJpg(quality: details.quality);
+
     if (colorizedJpg == null) {
       sendLog(LogLevel.debug, "Could not encode colorized frame");
     } else {
@@ -80,26 +81,25 @@ class RealSenseIsolate extends CameraIsolate {
 
     fpsCount++;
     // send(DepthFramePayload(frames.address));  // For autonomy
-    nativeLib.Mat_destroy(colorizedMatrix);
+    colorizedMatrix.dispose();
     frames.dispose();
   }
 
   /// Sends the RealSense's RGB frame and optionally detects ArUco tags.
   void sendRgbFrame(Pointer<Uint8> rawRGB) {
     if (rawRGB == nullptr) return;
-    final Pointer<Mat> rgbMatrix = getMatrix(camera.rgbResolution.height, camera.rgbResolution.width, rawRGB);
+    final rgbMatrix = rawRGB.toOpenCVMat(camera.rgbResolution);
     //detectAndAnnotateFrames(rgbMatrix);  // detect ArUco tags
 
     // Compress the RGB frame into a JPG
-    if (rgbMatrix != nullptr) {
-      final OpenCVImage? rgbJpg = encodeJpg(rgbMatrix, quality: details.quality);
-      if (rgbJpg == null) {
-        sendLog(LogLevel.debug, "Could not encode RGB frame");
-      } else {
-        final newDetails = details.deepCopy()..name = CameraName.ROVER_FRONT;
-        sendFrame(rgbJpg, detailsOverride: newDetails);
-      }
-      nativeLib.Mat_destroy(rgbMatrix);
+    final rgbJpg = rgbMatrix.encodeJpg(quality: details.quality);
+    if (rgbJpg == null) {
+      sendLog(LogLevel.debug, "Could not encode RGB frame");
+    } else {
+      final newDetails = details.deepCopy()..name = CameraName.ROVER_FRONT;
+      sendFrame(rgbJpg, detailsOverride: newDetails);
     }
+
+    rgbMatrix.dispose();
   }
 }
