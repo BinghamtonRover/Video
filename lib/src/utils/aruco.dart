@@ -1,10 +1,15 @@
-import "dart:ffi";
+import "package:opencv_dart/opencv_dart.dart";
 
-import "package:opencv_ffi/opencv_ffi.dart";
+final _arucoDictionary = ArucoDictionary.predefined(PredefinedDictionaryType.DICT_4X4_50);
+final _arucoParams = ArucoDetectorParameters.empty();
+final _arucoDetector = ArucoDetector.create(_arucoDictionary, _arucoParams);
+final _arucoColor = Scalar.fromRgb(0, 255, 0);
 
 /// Detect ArUco tags in the cv::aruco::DICT_4X4_50 dictionary and annotate them
-void detectAndAnnotateFrames(Pointer<Mat> image) {
-  final Pointer<ArucoMarkers> markers = detectArucoMarkers(image, dictionary: 0);
-  drawMarkers(image, markers);
-  markers.dispose();
+Future<void> detectAndAnnotateFrames(Mat image) async {
+  final (corners, ids, rejected) = await _arucoDetector.detectMarkersAsync(image);
+  await arucoDrawDetectedMarkersAsync(image, corners, ids, _arucoColor);
+  corners.dispose();
+  ids.dispose();
+  rejected.dispose();
 }

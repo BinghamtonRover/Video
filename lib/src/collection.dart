@@ -1,62 +1,30 @@
 import "dart:async";
-import "dart:io";
 
 import "package:burt_network/burt_network.dart";
-import "package:opencv_dart/opencv_dart.dart";
 
 import "package:video/video.dart";
 
-/// Default details for a camera
-///
-/// Used when first creating the camera objects
-CameraDetails getDefaultDetails(CameraName name) => CameraDetails(
-  name: name,
-  resolutionWidth: 300,
-  resolutionHeight: 300,
-  quality: 75,
-  fps: 24,
-  status: CameraStatus.CAMERA_ENABLED,
-);
-
-/// Default details for the RealSense camera. 
-/// 
-/// These settings are balanced between autonomy depth and normal RGB.
-CameraDetails getRealsenseDetails(CameraName name) => CameraDetails(
-  name: name,
-  resolutionWidth: 300,
-  resolutionHeight: 300,
-  quality: 50,
-  fps: 0,
-  status: CameraStatus.CAMERA_ENABLED,
-);
-
-/// Returns the camera depending on device program is running
-///
-/// Uses [cameraNames] or [cameraIndexes]
-VideoCapture getCamera(CameraName name) => Platform.isWindows
-  ? VideoCapture.fromDevice(cameraIndexes[name]!)
-  : VideoCapture.fromFile(cameraNames[name]!);
-
 /// Class to contain all video devices
-class Collection {
-  /// [VideoServer] to send messages through
-  ///
-  /// Default port is 8002 for video
-  final videoServer = VideoServer(port: 8002);
+class Collection extends Service {
+  /// The [RoverSocket] to send messages through
+  late final videoServer = RoverSocket(port: 8002, device: Device.VIDEO, collection: this);
 
   /// Main parent isolate
   final parent = VideoController();
-  
+
   /// Function to initialize cameras
-  Future<void> init() async {
+  @override
+  Future<bool> init() async {
     logger..trace("Running in trace mode")..debug("Running in debug mode");
     await parent.init();
     await videoServer.init();
     logger.info("Video program initialized");
+    return true;
   }
 
   /// Stops all cameras and disconnects from the hardware.
-  Future<void> dispose() async { 
+  @override
+  Future<void> dispose() async {
     parent.stopAll();
     await parent.dispose();
     await videoServer.dispose();

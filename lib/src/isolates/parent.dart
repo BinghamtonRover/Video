@@ -1,30 +1,39 @@
 import "dart:async";
+import "dart:io";
 
-import "package:opencv_ffi/opencv_ffi.dart" as opencv;
 import "package:typed_isolate/typed_isolate.dart";
 import "package:burt_network/burt_network.dart";
 
 import "package:video/video.dart";
 
+/// The socket to send autonomy data to.
+final autonomySocket = SocketInfo(address: InternetAddress("192.168.1.30"), port: 8003);
+
 /// A parent isolate that spawns [CameraIsolate]s to manage the cameras.
-/// 
+///
 /// With one isolate per camera, each camera can read in parallel. This class sends [VideoCommand]s
 /// from the dashboard to the appropriate [CameraIsolate], and receives [IsolatePayload]s which it uses
-/// to read an [opencv.OpenCVImage] from native memory and send to the dashboard. By not sending the frame
+/// to read an image from native memory and send to the dashboard. By not sending the frame
 /// from child isolate to the parent (just the pointer), we save a whole JPG image's worth of bytes
 /// from every camera, every frame, every second. That could be up to 5 MB per second of savings.
 class VideoController extends IsolateParent<VideoCommand, IsolatePayload>{
   @override
   Future<void> init() async {
+    collection.videoServer.messages.onMessage<VideoCommand>(
+      name: VideoCommand().messageName,
+      constructor: VideoCommand.fromBuffer,
+      callback: _handleCommand,
+    );
+
     super.init();
     for (final name in CameraName.values) {
       switch (name) {
         case CameraName.CAMERA_NAME_UNDEFINED: continue;
         case CameraName.ROVER_FRONT: continue;  // shares feed with AUTONOMY_DEPTH
-        // case CameraName.AUTONOMY_DEPTH: 
-        //   final details = getRealsenseDetails(name);
-        //   final isolate = RealSenseIsolate(details: details);
-        //   await spawn(isolate);
+        case CameraName.AUTONOMY_DEPTH:
+          final details = getRealsenseDetails(name);
+          final isolate = RealSenseIsolate(details: details);
+          await spawn(isolate);
         // All other cameras share the same logic, even future cameras
         default:  // ignore: no_default_cases
           final details = getDefaultDetails(name);
@@ -34,20 +43,18 @@ class VideoController extends IsolateParent<VideoCommand, IsolatePayload>{
     }
   }
 
-  @override 
+  @override
   void onData(IsolatePayload data, Object id) {
     switch (data) {
-      case DetailsPayload(): 
+      case DetailsPayload():
         collection.videoServer.sendMessage(VideoData(details: data.details));
       case FramePayload():
-        final frame = data.image;
-        collection.videoServer.sendMessage(VideoData(frame: frame, details: data.details));
-        // frame.dispose();
-      case DepthFramePayload(): 
-        collection.videoServer.sendDepthFrame(VideoData(frame: data.frame.depthFrame));
+        collection.videoServer.sendMessage(VideoData(frame: data.image, details: data.details));
+      case DepthFramePayload():
+        collection.videoServer.sendMessage(VideoData(frame: data.frame.depthFrame), destination: autonomySocket);
         data.dispose();
       case LogPayload(): switch (data.level) {
-        // Turns out using deprecated members when you *have* to still results in a lint. 
+        // Turns out using deprecated members when you *have* to still results in a lint.
         // See https://github.com/dart-lang/linter/issues/4852 for why we ignore it.
         case LogLevel.all: logger.info(data.message);
         // ignore: deprecated_member_use
@@ -63,8 +70,14 @@ class VideoController extends IsolateParent<VideoCommand, IsolatePayload>{
         // ignore: deprecated_member_use
         case LogLevel.nothing: logger.info(data.message);
         case LogLevel.off: logger.info(data.message);
-      } 
+      }
     }
+  }
+
+  /// Forwards the command to the appropriate camera.
+  void _handleCommand(VideoCommand command) {
+    collection.videoServer.sendMessage(command);  // echo the request
+    send(data: command, id: command.details.name);
   }
 
   /// Stops all the cameras managed by this class.

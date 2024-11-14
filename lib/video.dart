@@ -12,4 +12,3 @@ export "src/utils/constants.dart";
 export "src/utils/periodic_timer.dart";
 
 export "src/collection.dart";
-export "src/server.dart";
