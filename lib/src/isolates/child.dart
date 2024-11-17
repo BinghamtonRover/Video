@@ -4,6 +4,7 @@ import "dart:io";
 import "dart:typed_data";
 
 import "package:burt_network/burt_network.dart";
+import "package:protobuf/protobuf.dart";
 import "package:typed_isolate/typed_isolate.dart";
 import "package:video/src/targeting/frame_properties.dart";
 import "package:video/video.dart";
@@ -93,7 +94,43 @@ abstract class CameraIsolate extends IsolateChild<IsolatePayload, VideoCommand> 
   }
 
   @override
-  void onData(VideoCommand data) => updateDetails(data.details);
+  void onData(VideoCommand data) => handleCommand(data);
+
+  /// Handles the incoming [VideoCommand]
+  Future<void> handleCommand(VideoCommand command) async {
+    if (command.takeSnapshot) {
+      final originalDetails = details.deepCopy();
+      final highResolution = CameraDetails(
+        status: CameraStatus.CAMERA_ENABLED,
+        resolutionWidth: 10000,
+        resolutionHeight: 10000,
+        quality: 100,
+        fps: 0,
+      );
+      updateDetails(highResolution);
+      isReadingFrame = true;
+      final jpegData = getJpegData();
+      isReadingFrame = false;
+      updateDetails(originalDetails);
+      if (jpegData != null) {
+        Directory directory;
+        if (!Platform.isLinux) {
+          directory = Directory("screenshots/${name.name}");
+        } else {
+          directory = Directory("/home/pi/shared/screenshots/${name.name}");
+        }
+        directory.createSync(recursive: true);
+        final files = directory.listSync();
+        final number = files.length + 1;
+        File("${directory.path}/screenshot_$number.jpg").writeAsBytesSync(jpegData);
+        sendLog(Level.info, "Saved Screenshot");
+      } else {
+        sendLog(Level.error, "Failed to take screenshot");
+      }
+    } else {
+      updateDetails(command.details);
+    }
+  }
 
   /// Updates the camera's [details], which will take effect on the next [sendFrame] call.
   void updateDetails(CameraDetails newDetails, {bool save = true}) {
@@ -141,6 +178,9 @@ abstract class CameraIsolate extends IsolateChild<IsolatePayload, VideoCommand> 
   /// - If the frame is too large, reduces the quality (increases JPG compression)
   /// - If the quality is already low, alert the dashboard
   Future<void> sendFrames();
+
+  /// Reads a frame and returns the data in jpeg format
+  Uint8List? getJpegData();
 
   /// Sends an individual frame to the dashboard.
   ///

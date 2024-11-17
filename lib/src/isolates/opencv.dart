@@ -150,4 +150,19 @@ class OpenCVCameraIsolate extends CameraIsolate {
     sendFrame(frame);
     fpsCount++;
   }
+
+  @override
+  Uint8List? getJpegData() {
+    if (camera == null) {
+      return null;
+    }
+    camera!.grab();
+    final (success, matrix) = camera!.read();
+    if (!success) return null;
+
+    final frame = matrix.encodeJpg(quality: details.quality);
+    matrix.dispose();
+
+    return frame;
+  }
 }
