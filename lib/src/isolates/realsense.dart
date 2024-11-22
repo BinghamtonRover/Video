@@ -1,4 +1,5 @@
 import "dart:ffi";
+import "dart:typed_data";
 
 import "package:burt_network/burt_network.dart";
 import "package:protobuf/protobuf.dart";
@@ -84,6 +85,24 @@ class RealSenseIsolate extends CameraIsolate {
     // send(DepthFramePayload(frames.address));  // For autonomy
     colorizedMatrix.dispose();
     frames.dispose();
+  }
+
+  @override
+  Uint8List? getJpegData() {
+    // Get frames from RealSense
+    final frames = camera.getFrames();
+    if (frames == nullptr) return null;
+
+    // Compress colorized frame
+    final Pointer<Uint8> rawColorized = frames.ref.colorized_data;
+    if (rawColorized == nullptr) return null;
+    final colorizedMatrix = rawColorized.toOpenCVMat(camera.depthResolution, length: frames.ref.colorized_length);
+    final colorizedJpg = colorizedMatrix.encodeJpg(quality: details.quality);
+
+    colorizedMatrix.dispose();
+    frames.dispose();
+
+    return colorizedJpg;
   }
 
   /// Sends the RealSense's RGB frame and optionally detects ArUco tags.

@@ -1,3 +1,5 @@
+import "dart:typed_data";
+
 import "package:opencv_dart/opencv_dart.dart";
 import "package:burt_network/burt_network.dart";
 
@@ -57,5 +59,20 @@ class OpenCVCameraIsolate extends CameraIsolate {
 
     sendFrame(frame);
     fpsCount++;
+  }
+
+  @override
+  Uint8List? getJpegData() {
+    if (camera == null) {
+      return null;
+    }
+    camera!.grab();
+    final (success, matrix) = camera!.read();
+    if (!success) return null;
+
+    final frame = matrix.encodeJpg(quality: details.quality);
+    matrix.dispose();
+
+    return frame;
   }
 }
