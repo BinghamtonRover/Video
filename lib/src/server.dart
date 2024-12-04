@@ -16,9 +16,7 @@ class VideoServer extends RoverServer {
   void onMessage(WrappedMessage wrapper) {
     // ignore message if not a video message
     if(wrapper.name == VideoData().messageName){
-      final data = VideoData.fromBuffer(wrapper.data);
-      print("data is $data");
-      sendMessage(data);
+      sendWrapper(wrapper);
     }
     if (wrapper.name != VideoCommand().messageName) return;
     final command = VideoCommand.fromBuffer(wrapper.data);
