@@ -1,22 +1,22 @@
 name: video
 description: A sample command-line application.
-version: 1.0.0
+version: 1.1.0
 publish_to: none
 
+resolution: workspace
 environment:
-  sdk: ^3.0.0
+  sdk: ^3.6.0
 
 # Add regular dependencies here.
 dependencies:
-  burt_network:
-    git: https://github.com/BinghamtonRover/Networking
+  burt_network: ^2.3.1
   typed_isolate: ^6.0.0
   ffi: ^2.1.0
   protobuf: ^3.1.0
-  opencv_dart: ^2.1.0-dev.0
+  dartcv4: ^1.0.1
 
 dev_dependencies:
-  ffigen: ^15.0.0
+  ffigen: ^16.0.0
   test: ^1.21.0
   very_good_analysis: ^6.0.0
 
