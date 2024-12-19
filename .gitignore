@@ -3,7 +3,7 @@
 .dart_tool/
 
 # Needed to allow the rover to build offline but allow us to build online
-pubspec_overrides.yaml
+./pubspec_overrides.yaml
 pubspec.lock
 
 # RealSense SDK build artifacts
