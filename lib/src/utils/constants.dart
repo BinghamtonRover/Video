@@ -45,6 +45,7 @@ CameraDetails getDefaultDetails(CameraName name) => CameraDetails(
   resolutionHeight: 600,
   quality: 75,
   fps: 24,
+  fov: 64.9826,
   status: CameraStatus.CAMERA_ENABLED,
 );
 

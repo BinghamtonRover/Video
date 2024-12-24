@@ -6,11 +6,26 @@ import "package:video/realsense.dart";
 
 /// Useful methods to adjust settings of an OpenCV video device.
 extension VideoCaptureUtils on VideoCapture {
-  /// Sets the resolution of the device.
+  /// Sets the capture resolution of the device.
   void setResolution({required int width, required int height}) {
     set(3, width.toDouble());
     set(4, height.toDouble());
   }
+
+  /// The capture width of the device, this is
+  /// the width of the image taken, which may
+  /// not always be the width the user set the
+  /// resolution to
+  int get width => get(3).toInt();
+
+  /// The capture height of the device, this is
+  /// the height of the image taken, which may
+  /// not always be the height the user set the
+  /// resolution to
+  int get height => get(4).toInt();
+
+  /// Gets the capture resolution of the device
+  ({int width, int height}) get resolution => (width: width, height: height);
 
   /// The frames per second the device will record, independent of calls to [read].
   int get fps => get(5).toInt();

@@ -88,6 +88,15 @@ class CameraManager extends Service {
         case LogLevel.nothing: logger.info(data.message);
         case LogLevel.off: logger.info(data.message);
       }
+      case ArucoDetectionPayload(:final camera, :final tags):
+        final detectionMessage = DetectionResult(
+          version: Version(major: 1, minor: 0),
+          camera: camera,
+          hasAruco: (tags.isNotEmpty) ? BoolState.YES : BoolState.NO,
+          arucoDetections: tags,
+        );
+        collection.videoServer.sendMessage(detectionMessage);
+        collection.videoServer.sendMessage(detectionMessage, destination: autonomySocket);
     }
   }
 

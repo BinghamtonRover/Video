@@ -51,3 +51,16 @@ class DepthFramePayload extends IsolatePayload {
   /// Frees the memory associated with the frame.
   void dispose() => frame.dispose();
 }
+
+/// A container for data for the detected aruco tags
+class ArucoDetectionPayload extends IsolatePayload {
+  /// The camera that the detection is from
+  final CameraName camera;
+
+  /// The list of all the tags that were detected in the frame
+  final List<TrackedTarget> tags;
+
+  /// Const constructor for detection payload, initializes
+  /// the list of detected tags
+  ArucoDetectionPayload({required this.camera, required this.tags});
+}
