@@ -22,5 +22,5 @@ then
 fi
 
 # Build our FFI wrappers
-make clean
-make shared
+make -C src clean
+make -C src shared
