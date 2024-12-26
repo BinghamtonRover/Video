@@ -3,6 +3,7 @@ import "dart:typed_data";
 
 import "package:burt_network/burt_network.dart";
 import "package:typed_isolate/typed_isolate.dart";
+import "package:video/src/targeting/frame_properties.dart";
 import "package:video/video.dart";
 
 /// The maximum size of a UDP packet, in bytes (minus a few to be safe).
@@ -27,6 +28,8 @@ const maxPacketLength = 60000;
 abstract class CameraIsolate extends IsolateChild<IsolatePayload, VideoCommand> {
   /// Holds the current details of the camera.
   final CameraDetails details;
+  /// Frame properties used for target tracking calculations
+  FrameProperties? frameProperties;
   /// A constructor with initial details.
   CameraIsolate({required this.details}) : super(id: details.name);
 

@@ -45,7 +45,9 @@ CameraDetails getDefaultDetails(CameraName name) => CameraDetails(
   resolutionHeight: 600,
   quality: 75,
   fps: 24,
-  fov: 64.9826,
+  diagonalFov: 64.9826,
+  horizontalFov: 51.4074485655,
+  verticalFov: 39.749374449,
   status: CameraStatus.CAMERA_ENABLED,
 );
 
@@ -58,5 +60,7 @@ CameraDetails getRealsenseDetails(CameraName name) => CameraDetails(
   resolutionHeight: 300,
   quality: 50,
   fps: 0,
+  horizontalFov: 69,
+  verticalFov: 42,
   status: CameraStatus.CAMERA_ENABLED,
 );

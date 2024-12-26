@@ -37,4 +37,18 @@ abstract class RealSenseInterface {
   String getName();
   /// Gets the currently available frames. May return [nullptr].
   Pointer<NativeFrames> getFrames();
+
+  /// Gets the distance (in meters) at the RGB image coordinates (x, y) in the depth frame
+  double getDistance(Pointer<NativeFrames> frame, int x, int y) {
+    if (frame.ref.aligned_depth_data == nullptr) {
+      return 0;
+    }
+
+    final index = y * rgbResolution.width + x;
+    if (index >= frame.ref.aligned_depth_length) {
+      return 0;
+    }
+
+    return frame.ref.aligned_depth_data[index] * scale;
+  }
 }

@@ -1,11 +1,12 @@
 import "dart:ffi";
 
 import "package:burt_network/burt_network.dart";
+import "package:dartcv4/dartcv.dart";
 import "package:protobuf/protobuf.dart";
+import "package:video/src/targeting/frame_properties.dart";
 
 import "package:video/utils.dart";
-import "package:video/realsense.dart";
-import "child.dart";
+import "package:video/video.dart";
 
 extension on CameraDetails {
   bool get interferesWithAutonomy => hasResolutionHeight()
@@ -24,6 +25,8 @@ extension on CameraDetails {
 class RealSenseIsolate extends CameraIsolate {
   /// The native RealSense object. MUST be `late` so it isn't initialized on the parent isolate.
   late final RealSenseInterface camera = RealSenseInterface.forPlatform();
+  /// Frame properties used for target tracking calculations
+  FrameProperties? frameProperties;
   /// Creates an isolate to read from the RealSense camera.
   RealSenseIsolate({required super.details});
 
@@ -51,6 +54,11 @@ class RealSenseIsolate extends CameraIsolate {
       updateDetails(details);
       return sendLog(LogLevel.warning, "Could not start RealSense");
     }
+    frameProperties = FrameProperties.fromFrameDetails(
+      captureWidth: camera.rgbResolution.width,
+      captureHeight: camera.rgbResolution.height,
+      details: details,
+    );
     sendLog(LogLevel.debug, "Started streaming from RealSense");
   }
 
@@ -78,7 +86,7 @@ class RealSenseIsolate extends CameraIsolate {
       sendFrame(colorizedJpg);
     }
 
-    sendRgbFrame(frames.ref.rgb_data);
+    await sendRgbFrame(frames.ref.rgb_data);
 
     fpsCount++;
     // send(DepthFramePayload(frames.address));  // For autonomy
@@ -87,10 +95,22 @@ class RealSenseIsolate extends CameraIsolate {
   }
 
   /// Sends the RealSense's RGB frame and optionally detects ArUco tags.
-  void sendRgbFrame(Pointer<Uint8> rawRGB) {
+  Future<void> sendRgbFrame(Pointer<Uint8> rawRGB) async {
     if (rawRGB == nullptr) return;
     final rgbMatrix = rawRGB.toOpenCVMat(camera.rgbResolution);
-    //detectAndAnnotateFrames(rgbMatrix);  // detect ArUco tags
+    final detectedMarkers = await detectAndProcessMarkers(rgbMatrix, frameProperties!);
+    sendToParent(ArucoDetectionPayload(camera: name, tags: detectedMarkers));
+
+    var streamWidth = rgbMatrix.width;
+    var streamHeight = rgbMatrix.height;
+    if (details.hasStreamWidth()) {
+      streamWidth = details.streamWidth;
+    }
+
+    if (details.hasStreamHeight()) {
+      streamHeight = details.streamHeight;
+    }
+    await resizeAsync(rgbMatrix, (streamWidth, streamHeight), dst: rgbMatrix);
 
     // Compress the RGB frame into a JPG
     final rgbJpg = rgbMatrix.encodeJpg(quality: details.quality);
