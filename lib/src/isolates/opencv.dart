@@ -65,13 +65,22 @@ class OpenCVCameraIsolate extends CameraIsolate {
     final detectedMarkers = await detectAndProcessMarkers(matrix, frameProperties!);
     sendToParent(ArucoDetectionPayload(camera: name, tags: detectedMarkers));
 
-    var streamWidth = matrix.width;
-    var streamHeight = matrix.height;
-    if (details.hasStreamWidth()) {
-      streamWidth = details.streamWidth;
+    if (details.resolutionWidth != matrix.width ||
+        details.resolutionHeight != matrix.height) {
+      details.mergeFromMessage(
+        CameraDetails(
+          resolutionWidth: matrix.width,
+          resolutionHeight: matrix.height,
+        ),
+      );
     }
 
-    if (details.hasStreamHeight()) {
+    var streamWidth = matrix.width;
+    var streamHeight = matrix.height;
+    if (details.hasStreamWidth() && details.streamWidth > 0) {
+      streamWidth = details.streamWidth;
+    }
+    if (details.hasStreamHeight() && details.streamHeight > 0) {
       streamHeight = details.streamHeight;
     }
     await resizeAsync(matrix, (streamWidth, streamHeight), dst: matrix);

@@ -101,13 +101,23 @@ class RealSenseIsolate extends CameraIsolate {
     final detectedMarkers = await detectAndProcessMarkers(rgbMatrix, frameProperties!);
     sendToParent(ArucoDetectionPayload(camera: name, tags: detectedMarkers));
 
+    if (details.resolutionWidth != rgbMatrix.width ||
+        details.resolutionHeight != rgbMatrix.height) {
+      details.mergeFromMessage(
+        CameraDetails(
+          resolutionWidth: rgbMatrix.width,
+          resolutionHeight: rgbMatrix.height,
+        ),
+      );
+    }
+
     var streamWidth = rgbMatrix.width;
     var streamHeight = rgbMatrix.height;
-    if (details.hasStreamWidth()) {
+    if (details.hasStreamWidth() && details.streamWidth > 0) {
       streamWidth = details.streamWidth;
     }
 
-    if (details.hasStreamHeight()) {
+    if (details.hasStreamHeight() && details.streamHeight > 0) {
       streamHeight = details.streamHeight;
     }
     await resizeAsync(rgbMatrix, (streamWidth, streamHeight), dst: rgbMatrix);
