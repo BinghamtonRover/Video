@@ -1,4 +1,4 @@
-import "package:opencv_dart/opencv_dart.dart";
+import "package:dartcv4/dartcv.dart";
 
 final _arucoDictionary = ArucoDictionary.predefined(PredefinedDictionaryType.DICT_4X4_50);
 final _arucoParams = ArucoDetectorParameters.empty();

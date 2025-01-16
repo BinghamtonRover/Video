@@ -1,7 +1,7 @@
 import "dart:io";
 
-import "package:burt_network/generated.dart";
-import "package:opencv_dart/opencv_dart.dart";
+import "package:burt_network/protobuf.dart";
+import "package:dartcv4/dartcv.dart";
 
 /// These list maps OpenCV IDs (index) to [CameraName]s.
 ///

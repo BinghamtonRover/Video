@@ -1,6 +1,6 @@
 import "dart:typed_data";
 
-import "package:opencv_dart/opencv_dart.dart";
+import "package:dartcv4/dartcv.dart";
 import "package:burt_network/burt_network.dart";
 
 import "package:video/utils.dart";

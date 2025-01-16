@@ -1,7 +1,7 @@
 import "dart:ffi";
 import "dart:typed_data";
 
-import "package:opencv_dart/opencv_dart.dart";
+import "package:dartcv4/dartcv.dart";
 import "package:video/realsense.dart";
 
 /// Useful methods to adjust settings of an OpenCV video device.
