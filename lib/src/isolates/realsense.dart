@@ -43,7 +43,7 @@ class RealSenseIsolate extends CameraIsolate {
   void initCamera() {
     if (!camera.init()) {
       final details = CameraDetails(status: CameraStatus.CAMERA_DISCONNECTED);
-      updateDetails(details);
+      updateDetails(details, save: false);
       return sendLog(LogLevel.warning, "Could not open RealSense");
     }
     sendLog(LogLevel.debug, "RealSense connected");
@@ -51,7 +51,7 @@ class RealSenseIsolate extends CameraIsolate {
     sendLog(LogLevel.trace, "RealSense model: $name");
     if (!camera.startStream()) {
       final details = CameraDetails(status: CameraStatus.CAMERA_NOT_RESPONDING);
-      updateDetails(details);
+      updateDetails(details, save: false);
       return sendLog(LogLevel.warning, "Could not start RealSense");
     }
     frameProperties = FrameProperties.fromFrameDetails(
@@ -109,6 +109,7 @@ class RealSenseIsolate extends CameraIsolate {
           resolutionHeight: rgbMatrix.height,
         ),
       );
+      saveDetails();
     }
 
     var streamWidth = rgbMatrix.width;
@@ -120,6 +121,11 @@ class RealSenseIsolate extends CameraIsolate {
     if (details.hasStreamHeight() && details.streamHeight > 0) {
       streamHeight = details.streamHeight;
     }
+    if (details.streamWidth != streamWidth ||
+        details.streamHeight != streamHeight) {
+      updateDetails(CameraDetails(streamWidth: streamWidth, streamHeight: streamHeight));
+    }
+
     await resizeAsync(rgbMatrix, (streamWidth, streamHeight), dst: rgbMatrix);
 
     // Compress the RGB frame into a JPG

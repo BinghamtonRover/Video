@@ -24,7 +24,7 @@ class OpenCVCameraIsolate extends CameraIsolate {
     );
     if (!camera!.isOpened) {
       sendLog(LogLevel.warning, "Camera $name is not connected");
-      updateDetails(CameraDetails(status: CameraStatus.CAMERA_DISCONNECTED));
+      updateDetails(CameraDetails(status: CameraStatus.CAMERA_DISCONNECTED), save: false);
       stop();
     }
   }
@@ -36,8 +36,8 @@ class OpenCVCameraIsolate extends CameraIsolate {
   }
 
   @override
-  void updateDetails(CameraDetails newDetails) {
-    super.updateDetails(newDetails);
+  void updateDetails(CameraDetails newDetails, {bool save = true}) {
+    super.updateDetails(newDetails, save: save);
     if (details.status != CameraStatus.CAMERA_ENABLED || camera == null) return;
     camera?.setResolution(width: details.resolutionWidth, height: details.resolutionHeight);
     camera?.zoom = details.zoom;
@@ -73,6 +73,7 @@ class OpenCVCameraIsolate extends CameraIsolate {
           resolutionHeight: matrix.height,
         ),
       );
+      saveDetails();
     }
 
     var streamWidth = matrix.width;
@@ -83,6 +84,11 @@ class OpenCVCameraIsolate extends CameraIsolate {
     if (details.hasStreamHeight() && details.streamHeight > 0) {
       streamHeight = details.streamHeight;
     }
+    if (details.streamWidth != streamWidth ||
+        details.streamHeight != streamHeight) {
+      updateDetails(CameraDetails(streamWidth: streamWidth, streamHeight: streamHeight));
+    }
+
     await resizeAsync(matrix, (streamWidth, streamHeight), dst: matrix);
     final frame = matrix.encodeJpg(quality: details.quality);
 
@@ -90,7 +96,7 @@ class OpenCVCameraIsolate extends CameraIsolate {
 
     if (frame == null) {  // Error getting the frame
       sendLog(LogLevel.warning, "Camera $name didn't respond");
-      updateDetails(CameraDetails(status: CameraStatus.CAMERA_NOT_RESPONDING));
+      updateDetails(CameraDetails(status: CameraStatus.CAMERA_NOT_RESPONDING), save: false);
       return;
     }
 

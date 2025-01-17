@@ -37,12 +37,12 @@ class CameraManager extends Service {
       switch (name) {
         case CameraName.CAMERA_NAME_UNDEFINED: continue;
         case CameraName.AUTONOMY_DEPTH:
-          final details = getRealsenseDetails(name);
+          final details = loadCameraDetails(getRealsenseDetails(name), name);
           final isolate = RealSenseIsolate(details: details);
           await parent.spawn(isolate);
         // All other cameras share the same logic, even future cameras
         default:  // ignore: no_default_cases
-          final details = getDefaultDetails(name);
+          final details = loadCameraDetails(getDefaultDetails(name), name);
           final isolate = OpenCVCameraIsolate(details: details);
           await parent.spawn(isolate);
       }

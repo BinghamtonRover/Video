@@ -13,3 +13,6 @@ src/build
 src/*.so
 dist/
 *.dll
+
+# Camera details files created from running the program locally
+camera_details/

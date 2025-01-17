@@ -1,4 +1,6 @@
 import "dart:async";
+import "dart:convert";
+import "dart:io";
 import "dart:typed_data";
 
 import "package:burt_network/burt_network.dart";
@@ -26,6 +28,9 @@ const maxPacketLength = 60000;
 /// - periodically calling [sendFrames] to read the camera
 /// - calling [updateDetails] when a new [VideoCommand] arrives.
 abstract class CameraIsolate extends IsolateChild<IsolatePayload, VideoCommand> {
+  /// The root directory of the shared network folder
+  static final String baseDirectory = Platform.isLinux ? "/home/pi/shared" : Directory.current.path;
+
   /// Holds the current details of the camera.
   final CameraDetails details;
   /// Frame properties used for target tracking calculations
@@ -76,7 +81,7 @@ abstract class CameraIsolate extends IsolateChild<IsolatePayload, VideoCommand> 
   void onData(VideoCommand data) => updateDetails(data.details);
 
   /// Updates the camera's [details], which will take effect on the next [sendFrame] call.
-  void updateDetails(CameraDetails newDetails) {
+  void updateDetails(CameraDetails newDetails, {bool save = true}) {
     final shouldRestart = (newDetails.hasFps() && newDetails.fps != details.fps)
       || (newDetails.hasResolutionHeight() && newDetails.resolutionHeight != details.resolutionHeight)
       || (newDetails.hasResolutionWidth() && newDetails.resolutionWidth != details.resolutionWidth);
@@ -84,6 +89,24 @@ abstract class CameraIsolate extends IsolateChild<IsolatePayload, VideoCommand> 
     if (shouldRestart) {
       stop();
       if (details.status == CameraStatus.CAMERA_ENABLED) start();
+    }
+    if (save) {
+      saveDetails();
+    }
+  }
+
+  /// Saves the camera details to a json file in the shared network folder
+  void saveDetails() {
+    logger.debug("Saving camera details for ${name.name}");
+    final directory = Directory("$baseDirectory/camera_details");
+    final configFile = File("${directory.path}/${name.name}.json");
+    try {
+      if (!configFile.existsSync()) {
+        configFile.createSync(recursive: true);
+      }
+      configFile.writeAsStringSync(jsonEncode(details.toProto3Json()));
+    } catch (e) {
+      logger.error("Failed to save details to ${configFile.path}", body: e.toString());
     }
   }
 
@@ -117,7 +140,7 @@ abstract class CameraIsolate extends IsolateChild<IsolatePayload, VideoCommand> 
       details.quality -= 1;  // maybe next frame can send
     } else {  // Frame too large, quality cannot be lowered
       sendLog(LogLevel.warning, "Frame from camera $name are too large (${image.length})");
-      updateDetails(CameraDetails(status: CameraStatus.FRAME_TOO_LARGE));
+      updateDetails(CameraDetails(status: CameraStatus.FRAME_TOO_LARGE), save: false);
     }
   }
 

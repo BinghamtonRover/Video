@@ -1,7 +1,9 @@
+import "dart:convert";
 import "dart:io";
 
 import "package:burt_network/protobuf.dart";
 import "package:dartcv4/dartcv.dart";
+import "package:video/video.dart";
 
 /// These list maps OpenCV IDs (index) to [CameraName]s.
 ///
@@ -35,6 +37,28 @@ Map<CameraName, int> cameraIndexes = {
 VideoCapture getCamera(CameraName name) => Platform.isWindows
   ? VideoCapture.fromDevice(cameraIndexes[name]!)
   : VideoCapture.fromFile(cameraNames[name]!);
+
+/// Loads camera details for a specific camera
+/// 
+/// If there is no camera config file found or there were
+/// missing fields in the config json, it will return the value of [baseDetails]
+CameraDetails loadCameraDetails(CameraDetails baseDetails, CameraName name) {
+  final cameraDetails = baseDetails;
+  final configFile = File("${CameraIsolate.baseDirectory}/camera_details/${name.name}.json");
+  if (!configFile.existsSync()) {
+    return cameraDetails;
+  }
+  try {
+    cameraDetails.mergeFromProto3Json(jsonDecode(configFile.readAsStringSync()));
+  } catch (e) {
+    collection.videoServer.logger.error("Error while loading config for camera $name", body: e.toString());
+  }
+
+  // Ignore the status specified in the json
+  cameraDetails.status = CameraStatus.CAMERA_ENABLED;
+
+  return cameraDetails;
+}
 
 /// Default details for a camera
 ///
