@@ -16,3 +16,5 @@ dist/
 
 # Camera details files created from running the program locally
 camera_details/
+# Camera calibrations
+calibrations/

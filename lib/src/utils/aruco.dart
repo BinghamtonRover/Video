@@ -81,7 +81,8 @@ Future<void> detectAndAnnotateFrames(Mat image) async {
   rejected.dispose();
 }
 
-/// Calculates the yaw and pitch of a coordinate in pixels using the horizontal and vertical FoV
+/// Calculates the yaw and pitch of a coordinate in pixels using the undistorted center
+/// and camera focal length
 /// 
 /// Math taken from FRC Team 254: https://www.team254.com/documents/vision-control/
 ({double yaw, double pitch}) calculateYawPitch(
@@ -89,8 +90,35 @@ Future<void> detectAndAnnotateFrames(Mat image) async {
   double tagCenterX,
   double tagCenterY,
 ) {
-  final yaw = atan((tagCenterX - properties.centerX) / properties.focalLength);
-  final pitch = atan((properties.centerY - tagCenterY) / properties.focalLength);
+  double centerX = tagCenterX;
+  double centerY = tagCenterY;
+
+  if (properties.calibrationData != null) {
+    final centerVec = VecPoint2f.fromList([Point2f(tagCenterX, tagCenterY)]);
+    final temp = Mat.fromVec(centerVec);
+    final result = undistortPoints(
+      temp,
+      properties.calibrationData!.intrinsics!,
+      properties.calibrationData!.distCoefficients!,
+      criteria: (TERM_COUNT + TERM_EPS, 30, 1e-6),
+    );
+    final undistortedVec = result.at<Vec2f>(0, 0);
+
+    // The output coordinates are normalized, see: https://stackoverflow.com/a/65861232
+    if (undistortedVec.val1.isFinite) {
+      centerX = undistortedVec.val1 * properties.focalLength + properties.centerX;
+    }
+    if (undistortedVec.val2.isFinite) {
+      centerY = undistortedVec.val2 * properties.focalLength + properties.centerY;
+    }
+
+    centerVec.dispose();
+    temp.dispose();
+    result.dispose();
+  }
+
+  final yaw = atan((centerX - properties.centerX) / properties.focalLength);
+  final pitch = atan((properties.centerY - centerY) / properties.focalLength);
   // final yaw = atan((tagCenterX - properties.centerX) / properties.horizontalFoV);
   // final pitch = atan((properties.centerY - tagCenterY) / (properties.horizontalFoV / cos(yaw)));
 
