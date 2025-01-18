@@ -41,10 +41,4 @@ class CalibrationCoefficients {
   void _initDistCoefficients(List<num> distMatrix) {
     distCoefficients = Mat.fromList(1, distMatrix.length, MatType.CV_64FC1, distMatrix.map((e) => e.toDouble()).toList());
   }
-
-  /// Releases native objects from memory
-  void dispose() {
-    intrinsics?.dispose();
-    distCoefficients?.dispose();
-  }
 }

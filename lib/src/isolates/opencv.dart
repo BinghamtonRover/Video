@@ -17,7 +17,6 @@ class OpenCVCameraIsolate extends CameraIsolate {
   void initCamera() {
     camera = getCamera(name);
     camera?.setResolution(width: details.resolutionWidth, height: details.resolutionHeight);
-    frameProperties?.dispose();
     frameProperties = FrameProperties.fromFrameDetails(
       captureWidth: camera!.width,
       captureHeight: camera!.height,
@@ -50,7 +49,6 @@ class OpenCVCameraIsolate extends CameraIsolate {
         newDetails.diagonalFov != frameProperties!.diagonalFoV ||
         frameProperties!.captureWidth != camera!.width ||
         frameProperties!.captureHeight != camera!.height) {
-      frameProperties?.dispose();
       frameProperties = FrameProperties.fromFrameDetails(
         captureWidth: camera!.width,
         captureHeight: camera!.height,
@@ -66,6 +64,8 @@ class OpenCVCameraIsolate extends CameraIsolate {
     if (!success) return;
     final detectedMarkers = await detectAndProcessMarkers(matrix, frameProperties!);
     sendToParent(ArucoDetectionPayload(camera: name, tags: detectedMarkers));
+
+    await matrix.drawCrosshair(center: frameProperties!.center);
 
     if (details.resolutionWidth != matrix.width ||
         details.resolutionHeight != matrix.height) {

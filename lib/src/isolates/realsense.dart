@@ -25,8 +25,6 @@ extension on CameraDetails {
 class RealSenseIsolate extends CameraIsolate {
   /// The native RealSense object. MUST be `late` so it isn't initialized on the parent isolate.
   late final RealSenseInterface camera = RealSenseInterface.forPlatform();
-  /// Frame properties used for target tracking calculations
-  FrameProperties? frameProperties;
   /// Creates an isolate to read from the RealSense camera.
   RealSenseIsolate({required super.details});
 

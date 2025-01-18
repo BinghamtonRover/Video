@@ -1,8 +1,9 @@
 import "dart:convert";
 import "dart:io";
-import "dart:math";
+import "dart:math" hide Point;
 
 import "package:burt_network/protobuf.dart";
+import "package:dartcv4/dartcv.dart" show Point;
 import "package:video/src/targeting/calibration_coefficients.dart";
 import "package:video/video.dart";
 
@@ -23,6 +24,9 @@ class FrameProperties {
 
   /// The y coordinate of the center point of the image
   late final double centerY;
+
+  /// The center of the image represented as a [Point]
+  late final Point center = Point(centerX.toInt(), centerY.toInt());
 
   /// The focal length of the camera
   late final double focalLength;
@@ -115,10 +119,9 @@ class FrameProperties {
   }) {
     final calibrationFile = File("${CameraIsolate.baseDirectory}/calibrations/${details.name}/${captureWidth}x$captureHeight.json");
     if (calibrationFile.existsSync()) {
-      CalibrationCoefficients? calibrationCoefficients;
       try {
         final calibrationJson = jsonDecode(calibrationFile.readAsStringSync());
-        calibrationCoefficients = CalibrationCoefficients.fromJson(json: calibrationJson);
+        final calibrationCoefficients = CalibrationCoefficients.fromJson(json: calibrationJson);
 
         if (calibrationCoefficients.intrinsics != null &&
             calibrationCoefficients.distCoefficients != null) {
@@ -129,7 +132,6 @@ class FrameProperties {
           );
         }
       } catch (e) {
-        calibrationCoefficients?.dispose();
         collection.videoServer.logger.error(
           "Error while trying to read calibration data for ${details.name.name} at $captureWidth x $captureHeight",
           body: e.toString(),
@@ -190,10 +192,5 @@ class FrameProperties {
     final focalLength = captureWidth / (2 * tan(horizontalFoVRad/ 2));
 
     return (diagonal: diagonalFoV, focal: focalLength);
-  }
-
-  /// Disposes native objects created by the frame properties
-  void dispose() {
-    calibrationData?.dispose();
   }
 }
