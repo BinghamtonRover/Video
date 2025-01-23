@@ -58,62 +58,11 @@ extension VideoCaptureUtils on VideoCapture {
 
 /// Useful methods on OpenCV images.
 extension MatrixUtils on Mat {
-  static final _crosshairColor = Scalar.fromRgb(0, 255, 0);
-
-  /*
-  // Vertical segment
-  await lineAsync(matrix, Point(center.x, center.y - 25), Point(center.x, center.y + 25), _crosshairColor, thickness: 2);
-  // Horizontal segment
-  await lineAsync(matrix, Point(center.x - 25, center.y), Point(center.x + 25, center.y), _crosshairColor, thickness: 2);
-  */
-
   /// Encodes this image as a JPG with the given quality.
   Uint8List? encodeJpg({required int quality}) {
     final params = VecI32.fromList([IMWRITE_JPEG_QUALITY, quality]);
     final (success, frame) = imencode(".jpg", this, params: params);
     return success ? frame : null;
-  }
-
-  /// Draws a crosshair on the image
-  Future<void> drawCrosshair({
-    Point? center,
-    int thickness = 2,
-  }) async {
-    center ??= Point(width ~/ 2, height ~/ 2);
-    
-    // Vertical segment
-    await lineAsync(
-      this,
-      Point(center.x, center.y - 25),
-      Point(center.x, center.y - 5),
-      _crosshairColor,
-      thickness: thickness,
-    );
-
-    await lineAsync(
-      this,
-      Point(center.x, center.y + 5),
-      Point(center.x, center.y + 25),
-      _crosshairColor,
-      thickness: thickness,
-    );
-
-    // Horizontal segment
-    await lineAsync(
-      this,
-      Point(center.x - 25, center.y),
-      Point(center.x - 5, center.y),
-      _crosshairColor,
-      thickness: thickness,
-    );
-
-    await lineAsync(
-      this,
-      Point(center.x + 5, center.y),
-      Point(center.x + 25, center.y),
-      _crosshairColor,
-      thickness: thickness,
-    );
   }
 }
 
