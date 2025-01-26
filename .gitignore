@@ -13,3 +13,5 @@ src/build
 src/*.so
 dist/
 *.dll
+
+build
