@@ -65,8 +65,14 @@ class CameraManager extends Service {
   /// - If a [LogPayload] comes, logs the message using [logger].
   void onData(IsolatePayload data) {
     switch (data) {
-      case FramePayload(:final image, :final details):
-        collection.videoServer.sendMessage(VideoData(frame: image, details: details));
+      case FramePayload(:final details, :final image, :final screenshotPath):
+        collection.videoServer.sendMessage(
+          VideoData(
+            frame: image,
+            details: details,
+            imagePath: screenshotPath,
+          ),
+        );
       case DepthFramePayload():
         collection.videoServer.sendMessage(VideoData(frame: data.frame.depthFrame), destination: autonomySocket);
         data.dispose();

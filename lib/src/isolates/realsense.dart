@@ -88,7 +88,7 @@ class RealSenseIsolate extends CameraIsolate {
   }
 
   @override
-  Uint8List? getJpegData() {
+  Future<Uint8List?> getScreenshotJpeg() async {
     // Get frames from RealSense
     final frames = camera.getFrames();
     if (frames == nullptr) return null;

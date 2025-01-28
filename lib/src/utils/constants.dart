@@ -12,9 +12,11 @@ Map<CameraName, String> cameraNames = {
   CameraName.ROVER_FRONT: "/dev/rover-cam_realsense_rgb",
   CameraName.ROVER_REAR: "/dev/rover-cam_subsystem_3",
   CameraName.AUTONOMY_DEPTH: "/dev/rover-cam_realsense_depth",
-  CameraName.SUBSYSTEM1: "/dev/rover-cam_subsystem_1",
-  CameraName.SUBSYSTEM2: "/dev/rover-cam_subsystem_2",
-  CameraName.SUBSYSTEM3: "/dev/rover-cam_subsystem_3",
+  CameraName.SUBSYSTEM1: "/dev/video1",
+  CameraName.SUBSYSTEM2: "/dev/video2",
+  CameraName.SUBSYSTEM3: "/dev/video5",
+  CameraName.BOTTOM_LEFT: "/dev/rover-cam_bottom_left",
+  CameraName.BOTTOM_RIGHT: "/dev/rover-cam_bottom_right",
 };
 
 /// Map for WINDOWS devices
@@ -41,8 +43,8 @@ VideoCapture getCamera(CameraName name) => Platform.isWindows
 /// Used when first creating the camera objects
 CameraDetails getDefaultDetails(CameraName name) => CameraDetails(
   name: name,
-  resolutionWidth: 600,
-  resolutionHeight: 600,
+  resolutionWidth: 300,
+  resolutionHeight: 300,
   quality: 75,
   fps: 24,
   status: CameraStatus.CAMERA_ENABLED,
