@@ -97,7 +97,7 @@ class RealSenseIsolate extends CameraIsolate {
     if (rawRGB == nullptr) return;
     final rgbMatrix = rawRGB.toOpenCVMat(camera.rgbResolution);
     final detectedMarkers = await detectAndProcessMarkers(CameraName.ROVER_FRONT, rgbMatrix, frameProperties!);
-    sendToParent(ObjectDetectionPayload(tags: detectedMarkers));
+    sendToParent(ObjectDetectionPayload(details: details, tags: detectedMarkers));
 
     if (details.resolutionWidth != rgbMatrix.width ||
         details.resolutionHeight != rgbMatrix.height) {
@@ -124,10 +124,19 @@ class RealSenseIsolate extends CameraIsolate {
       updateDetails(CameraDetails(streamWidth: streamWidth, streamHeight: streamHeight));
     }
 
-    await resizeAsync(rgbMatrix, (streamWidth, streamHeight), dst: rgbMatrix);
+    final resizedMatrix = Mat.create(cols: streamWidth, rows: streamHeight);
+
+    // No idea why fx and fy are needed, but if they aren't present then sometimes it will crash
+    await resizeAsync(
+      rgbMatrix,
+      (streamWidth, streamHeight),
+      dst: resizedMatrix,
+      fx: streamWidth / rgbMatrix.width,
+      fy: streamHeight / rgbMatrix.height,
+    );
 
     // Compress the RGB frame into a JPG
-    final rgbJpg = rgbMatrix.encodeJpg(quality: details.quality);
+    final rgbJpg = resizedMatrix.encodeJpg(quality: details.quality);
     if (rgbJpg == null) {
       sendLog(LogLevel.debug, "Could not encode RGB frame");
     } else {
@@ -135,6 +144,7 @@ class RealSenseIsolate extends CameraIsolate {
       sendFrame(rgbJpg, detailsOverride: newDetails);
     }
 
+    resizedMatrix.dispose();
     rgbMatrix.dispose();
   }
 }
