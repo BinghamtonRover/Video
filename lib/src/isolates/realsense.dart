@@ -96,8 +96,8 @@ class RealSenseIsolate extends CameraIsolate {
   Future<void> sendRgbFrame(Pointer<Uint8> rawRGB) async {
     if (rawRGB == nullptr) return;
     final rgbMatrix = rawRGB.toOpenCVMat(camera.rgbResolution);
-    final detectedMarkers = await detectAndProcessMarkers(rgbMatrix, frameProperties!);
-    sendToParent(ArucoDetectionPayload(camera: name, tags: detectedMarkers));
+    final detectedMarkers = await detectAndProcessMarkers(CameraName.ROVER_FRONT, rgbMatrix, frameProperties!);
+    sendToParent(ObjectDetectionPayload(tags: detectedMarkers));
 
     if (details.resolutionWidth != rgbMatrix.width ||
         details.resolutionHeight != rgbMatrix.height) {

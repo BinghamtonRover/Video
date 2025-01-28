@@ -62,8 +62,8 @@ class OpenCVCameraIsolate extends CameraIsolate {
     if (camera == null) return;
     final (success, matrix) = camera!.read();
     if (!success) return;
-    final detectedMarkers = await detectAndProcessMarkers(matrix, frameProperties!);
-    sendToParent(ArucoDetectionPayload(camera: name, tags: detectedMarkers));
+    final detectedMarkers = await detectAndProcessMarkers(details.name, matrix, frameProperties!);
+    sendToParent(ObjectDetectionPayload(tags: detectedMarkers));
 
     await matrix.drawCrosshair(center: frameProperties!.center);
 

@@ -53,14 +53,11 @@ class DepthFramePayload extends IsolatePayload {
 }
 
 /// A container for data for the detected aruco tags
-class ArucoDetectionPayload extends IsolatePayload {
-  /// The camera that the detection is from
-  final CameraName camera;
-
+class ObjectDetectionPayload extends IsolatePayload {
   /// The list of all the tags that were detected in the frame
-  final List<TrackedTarget> tags;
+  final List<DetectedObject> tags;
 
   /// Const constructor for detection payload, initializes
   /// the list of detected tags
-  ArucoDetectionPayload({required this.camera, required this.tags});
+  ObjectDetectionPayload({required this.tags});
 }

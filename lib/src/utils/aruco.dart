@@ -38,7 +38,8 @@ final _objectPoints = Mat.fromVec(
     );
 
 /// Detects and processes Aruco markers as a target message list, optionally draws them to the image
-Future<List<TrackedTarget>> detectAndProcessMarkers(
+Future<List<DetectedObject>> detectAndProcessMarkers(
+  CameraName camera,
   Mat image,
   FrameProperties frameProperties, {
   bool draw = true,
@@ -49,7 +50,7 @@ Future<List<TrackedTarget>> detectAndProcessMarkers(
     await arucoDrawDetectedMarkersAsync(image, corners, ids, _arucoColor);
   }
 
-  final detectedMarkers = <TrackedTarget>[];
+  final detectedMarkers = <DetectedObject>[];
   for (int i = 0; i < ids.length; i++) {
     var centerX = 0.0;
     var centerY = 0.0;
@@ -102,29 +103,24 @@ Future<List<TrackedTarget>> detectAndProcessMarkers(
 
     cornerVec.dispose();
 
-    Aruco3DTargetResult? pnpResultProto;
+    PnpResult? pnpResultProto;
     if (bestCameraToTarget != null) {
-      pnpResultProto = Aruco3DTargetResult(
-        bestCameraToTarget: bestCameraToTarget,
-        bestReprojectionError: bestReprojectionError,
+      pnpResultProto = PnpResult(
+        cameraToTarget: bestCameraToTarget,
+        reprojectionError: bestReprojectionError,
       );
     }
 
     detectedMarkers.add(
-      TrackedTarget(
-        detectionType: TargetDetectionType.ARUCO,
-        tagId: ids[i],
+      DetectedObject(
+        objectType: DetectedObjectType.ARUCO,
+        arucoTagId: ids[i],
         yaw: yaw,
         pitch: pitch,
-        area: area,
-        areaPercent: area / (image.width * image.height),
         centerX: centerX.toInt(),
         centerY: centerY.toInt(),
-        corners: corners[i].expand((corner) sync* {
-          yield corner.x.toInt();
-          yield corner.y.toInt();
-        }),
-        pnpResult: pnpResultProto,
+        relativeSize: area / (image.width * image.height),
+        bestPnpResult: pnpResultProto,
       ),
     );
 
