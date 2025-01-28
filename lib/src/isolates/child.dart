@@ -4,7 +4,6 @@ import "dart:io";
 import "dart:typed_data";
 
 import "package:burt_network/burt_network.dart";
-import "package:protobuf/protobuf.dart";
 import "package:typed_isolate/typed_isolate.dart";
 import "package:video/src/targeting/frame_properties.dart";
 import "package:video/video.dart";
@@ -99,31 +98,25 @@ abstract class CameraIsolate extends IsolateChild<IsolatePayload, VideoCommand> 
   /// Handles the incoming [VideoCommand]
   Future<void> handleCommand(VideoCommand command) async {
     if (command.takeSnapshot) {
-      final originalDetails = details.deepCopy();
-      final highResolution = CameraDetails(
-        status: CameraStatus.CAMERA_ENABLED,
-        resolutionWidth: 10000,
-        resolutionHeight: 10000,
-        quality: 100,
-        fps: 0,
-      );
-      updateDetails(highResolution);
       isReadingFrame = true;
-      final jpegData = getJpegData();
+      final jpegData = await getScreenshotJpeg();
       isReadingFrame = false;
-      updateDetails(originalDetails);
       if (jpegData != null) {
-        Directory directory;
-        if (!Platform.isLinux) {
-          directory = Directory("screenshots/${name.name}");
-        } else {
-          directory = Directory("/home/pi/shared/screenshots/${name.name}");
-        }
+        final baseDirectory = Platform.isLinux ? "/home/pi/shared" : "";
+        final screenshotDirectory = "/screenshots/${name.name}";
+        final directory = Directory(baseDirectory + screenshotDirectory);
+
         directory.createSync(recursive: true);
         final files = directory.listSync();
-        final number = files.length + 1;
+        final number = files.length;
         File("${directory.path}/screenshot_$number.jpg").writeAsBytesSync(jpegData);
         sendLog(Level.info, "Saved Screenshot");
+        sendToParent(
+          FramePayload(
+            details: details,
+            screenshotPath: "$screenshotDirectory/screenshot_$number.jpg",
+          ),
+        );
       } else {
         sendLog(Level.error, "Failed to take screenshot");
       }
@@ -180,7 +173,12 @@ abstract class CameraIsolate extends IsolateChild<IsolatePayload, VideoCommand> 
   Future<void> sendFrames();
 
   /// Reads a frame and returns the data in jpeg format
-  Uint8List? getJpegData();
+  /// 
+  /// The image this returns is intended to be taken at maximum quality
+  /// and get saved as a screenshot
+  /// 
+  /// Most likely, this image will be too big to send over the network
+  Future<Uint8List?> getScreenshotJpeg();
 
   /// Sends an individual frame to the dashboard.
   ///

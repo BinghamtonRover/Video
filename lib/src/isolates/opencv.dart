@@ -24,6 +24,11 @@ class OpenCVCameraIsolate extends CameraIsolate {
       captureHeight: camera!.height,
       details: details,
     );
+    if (details.hasFps()) camera?.fps = details.fps;
+    if (details.hasZoom()) camera?.zoom = details.zoom;
+    if (details.hasFocus()) camera?.focus = details.focus;
+    camera?.autofocus = details.autofocus;
+
     if (!camera!.isOpened) {
       sendLog(LogLevel.warning, "Camera $name is not connected");
       updateDetails(CameraDetails(status: CameraStatus.CAMERA_DISCONNECTED), save: false);
@@ -57,8 +62,8 @@ class OpenCVCameraIsolate extends CameraIsolate {
     if (details.hasFocus() && details.focus != camera!.focus) {
       camera!.focus = details.focus;
     }
-    if (details.hasAutofocus() && details.autofocus != (camera!.autofocus == 1)) {
-      camera!.autofocus = details.focus;
+    if (details.hasAutofocus() && details.autofocus != camera!.autofocus) {
+      camera!.autofocus = details.autofocus;
     }
     if (frameProperties == null ||
         (newDetails.hasDiagonalFov() && newDetails.diagonalFov != frameProperties!.diagonalFoV) ||
@@ -152,15 +157,51 @@ class OpenCVCameraIsolate extends CameraIsolate {
   }
 
   @override
-  Uint8List? getJpegData() {
+  Future<Uint8List?> getScreenshotJpeg() async {
     if (camera == null) {
       return null;
     }
-    camera!.grab();
-    final (success, matrix) = camera!.read();
+    final originalWidth = camera!.get(CAP_PROP_FRAME_WIDTH).toInt();
+    final originalHeight = camera!.get(CAP_PROP_FRAME_HEIGHT).toInt();
+
+    final originalFps = camera!.fps;
+
+    final originalExposure = camera!.get(CAP_PROP_EXPOSURE);
+    final originalAutoExposure = camera!.get(CAP_PROP_AUTO_EXPOSURE);
+
+    final originalWbTemp = camera!.get(CAP_PROP_WB_TEMPERATURE);
+    final originalAutoWb = camera!.get(CAP_PROP_AUTO_WB);
+
+    camera!.setResolution(width: 10000, height: 10000);
+
+    camera!.fps = 0;
+    if (details.hasZoom()) camera!.zoom = details.zoom;
+    if (details.hasFocus()) camera!.focus = details.focus;
+    camera!.autofocus = details.autofocus;
+
+    camera!.set(CAP_PROP_AUTO_EXPOSURE, 3);
+    camera!.set(CAP_PROP_EXPOSURE, originalExposure);
+
+    camera!.set(CAP_PROP_AUTO_WB, 1);
+    camera!.set(CAP_PROP_WB_TEMPERATURE, originalWbTemp);
+
+    for (int i = 0; i < 3; i++) {
+      camera!.grab();
+    }
+
+    final (success, matrix) = await camera!.readAsync();
+
+    camera!.setResolution(width: originalWidth, height: originalHeight);
+    camera!.fps = originalFps;
+    if (details.hasZoom()) camera!.zoom = details.zoom;
+    if (details.hasFocus()) camera!.focus = details.focus;
+    camera!.autofocus = details.autofocus;
+    camera!.set(CAP_PROP_AUTO_EXPOSURE, originalAutoExposure);
+    camera!.set(CAP_PROP_AUTO_WB, originalAutoWb);
+
     if (!success) return null;
 
-    final frame = matrix.encodeJpg(quality: details.quality);
+    final frame = matrix.encodeJpg(quality: 100);
     matrix.dispose();
 
     return frame;
