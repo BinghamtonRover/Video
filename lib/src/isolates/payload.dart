@@ -33,8 +33,10 @@ class LogPayload extends IsolatePayload {
   final LogLevel level;
   /// The message to log.
   final String message;
+  /// The body of the message
+  final String? body;
   /// A const constructor.
-  const LogPayload({required this.level, required this.message});
+  const LogPayload({required this.level, required this.message, this.body});
 }
 
 /// A depth frame to be sent to the Autonomy program.

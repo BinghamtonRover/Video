@@ -60,7 +60,14 @@ abstract class CameraIsolate extends IsolateChild<IsolatePayload, VideoCommand> 
   ///
   /// Note: it is important to _not_ log this message directly in _this_ isolate, as it will
   /// not be configurable by the parent isolate and will not be sent to the Dashboard.
-  void sendLog(LogLevel level, String message) => sendToParent(LogPayload(level: level, message: message));
+  void sendLog(LogLevel level, String message, {String? body}) =>
+    sendToParent(
+      LogPayload(
+        level: level,
+        message: message,
+        body: body,
+      ),
+    );
 
   @override
   Future<void> onSpawn() async {
