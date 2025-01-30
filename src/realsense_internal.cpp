@@ -46,7 +46,6 @@ const char* burt_rs::RealSense::getDeviceName() {
 }
 
 // -------------------- Stream methods --------------------
-
 BurtRsStatus burt_rs::RealSense::startStream() {
   rs2::config rs_config;
   rs_config.enable_stream(RS2_STREAM_DEPTH, DEPTH_WIDTH, HEIGHT);
@@ -62,8 +61,7 @@ BurtRsStatus burt_rs::RealSense::startStream() {
 
   streaming = hasDevice;
 
-  // if (rgb_width == 0 || rgb_height == 0 || depth_width == 0 || depth_height == 0) {
-  if (depth_width == 0 || depth_height == 0) {
+  if (rgb_width == 0 || rgb_height == 0 || depth_width == 0 || depth_height == 0) {
     return BurtRsStatus::BurtRsStatus_resolution_unknown;
   } else {
     config.depth_width = depth_width;
@@ -91,9 +89,6 @@ NativeFrames* burt_rs::RealSense::getDepthFrame() {
   if (!pipeline.poll_for_frames(&frames)) return nullptr;
   rs2::depth_frame depth_frame = frames.get_depth_frame();
   rs2::frame colorized_frame = colorizer.colorize(depth_frame);
-
-  rs2::frameset aligned_frames = align.process(frames);
-  rs2::depth_frame aligned_depth_frame = aligned_frames.get_depth_frame();
   rs2::frame rgb_frame = frames.get_color_frame();
 
   // Copy frames into a new uint8_t[]
