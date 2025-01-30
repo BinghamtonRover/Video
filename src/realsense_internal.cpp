@@ -33,6 +33,11 @@ BurtRsStatus burt_rs::RealSense::init() {
   } else {
     config.scale = scale;
   }
+  // disable IR lasers (for safety purposes)
+  if (sensor.supports(RS2_OPTION_LASER_POWER)) {
+    sensor.set_option(RS2_OPTION_LASER_POWER, 0.f);
+  }
+
   return BurtRsStatus::BurtRsStatus_ok;
 }
 
@@ -49,6 +54,7 @@ BurtRsStatus burt_rs::RealSense::startStream() {
   rs2::config rs_config;
   rs_config.enable_stream(RS2_STREAM_DEPTH, DEPTH_WIDTH, HEIGHT);
   rs_config.enable_stream(RS2_STREAM_COLOR, RGB_WIDTH, HEIGHT, RS2_FORMAT_BGR8);
+
   auto profile = pipeline.start(rs_config);
   auto frames = pipeline.wait_for_frames();
   auto depth_frame = frames.get_depth_frame();
@@ -73,6 +79,9 @@ BurtRsStatus burt_rs::RealSense::startStream() {
 
 void burt_rs::RealSense::stopStream() {
   pipeline.stop();
+  for (auto sensor : device.query_sensors()) {
+    sensor.close();
+  }
   streaming = false;
   hasDevice = false;
 }

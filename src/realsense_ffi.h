@@ -66,5 +66,5 @@ FFI_PLUGIN_EXPORT NativeFrames* RealSense_getDepthFrame(NativeRealSense* ptr);
 FFI_PLUGIN_EXPORT void NativeFrames_free(NativeFrames* ptr);
 
 #ifdef __cplusplus
-}
+} // extern "C"
 #endif

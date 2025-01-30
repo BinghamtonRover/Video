@@ -1,4 +1,5 @@
 import "dart:async";
+import "dart:io";
 
 import "package:burt_network/burt_network.dart";
 import "package:video/src/lidar.dart";
@@ -33,6 +34,7 @@ class Collection extends Service {
     await cameras.dispose();
     await lidar.dispose();
     await videoServer.dispose();
+    exit(0);
   }
 }
 
