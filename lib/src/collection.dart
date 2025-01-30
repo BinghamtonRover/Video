@@ -1,4 +1,5 @@
 import "dart:async";
+import "dart:io";
 
 import "package:burt_network/burt_network.dart";
 
@@ -27,6 +28,7 @@ class Collection extends Service {
   Future<void> dispose() async {
     await cameras.dispose();
     await videoServer.dispose();
+    exit(0);
   }
 }
 
