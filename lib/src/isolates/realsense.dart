@@ -67,11 +67,24 @@ class RealSenseIsolate extends CameraIsolate {
     final frames = camera.getFrames();
     if (frames == nullptr) return;
 
-    // Compress colorized frame
-    final Pointer<Uint8> rawColorized = frames.ref.colorized_data;
+    sendColorizedFrame(frames);
+    await sendRgbFrame(frames);
+
+    fpsCount++;
+    // send(DepthFramePayload(frames.address));  // For autonomy
+    frames.dispose();
+  }
+
+  /// Sends the colorized RealSense depth frame
+  void sendColorizedFrame(Pointer<NativeFrames> rawFrames) {
+    final rawColorized = rawFrames.ref.colorized_data;
     if (rawColorized == nullptr) return;
-    final colorizedMatrix = rawColorized.toOpenCVMat(camera.depthResolution, length: frames.ref.colorized_length);
-    final colorizedJpg = colorizedMatrix.encodeJpg(quality: details.quality);
+
+    final colorizedImage = rawColorized.toOpenCVMat(
+      camera.depthResolution,
+      length: rawFrames.ref.colorized_length,
+    );
+    final colorizedJpg = colorizedImage.encodeJpg(quality: details.quality);
 
     if (colorizedJpg == null) {
       sendLog(LogLevel.debug, "Could not encode colorized frame");
@@ -79,40 +92,18 @@ class RealSenseIsolate extends CameraIsolate {
       sendFrame(colorizedJpg);
     }
 
-    sendRgbFrame(frames.ref.rgb_data);
-
-    fpsCount++;
-    // send(DepthFramePayload(frames.address));  // For autonomy
-    colorizedMatrix.dispose();
-    frames.dispose();
-  }
-
-  @override
-  Future<Uint8List?> getScreenshotJpeg() async {
-    // Get frames from RealSense
-    final frames = camera.getFrames();
-    if (frames == nullptr) return null;
-
-    // Compress colorized frame
-    final Pointer<Uint8> rawColorized = frames.ref.colorized_data;
-    if (rawColorized == nullptr) return null;
-    final colorizedMatrix = rawColorized.toOpenCVMat(camera.depthResolution, length: frames.ref.colorized_length);
-    final colorizedJpg = colorizedMatrix.encodeJpg(quality: details.quality);
-
-    colorizedMatrix.dispose();
-    frames.dispose();
-
-    return colorizedJpg;
+    colorizedImage.dispose();
   }
 
   /// Sends the RealSense's RGB frame and optionally detects ArUco tags.
-  void sendRgbFrame(Pointer<Uint8> rawRGB) {
+  Future<void> sendRgbFrame(Pointer<NativeFrames> rawFrames) async {
+    final rawRGB = rawFrames.ref.rgb_data;
     if (rawRGB == nullptr) return;
-    final rgbMatrix = rawRGB.toOpenCVMat(camera.rgbResolution);
-    //detectAndAnnotateFrames(rgbMatrix);  // detect ArUco tags
+    final rgbImage = rawRGB.toOpenCVMat(camera.rgbResolution, length: rawFrames.ref.rgb_length);
+    await detectAndAnnotateFrames(rgbImage);  // detect ArUco tags
 
     // Compress the RGB frame into a JPG
-    final rgbJpg = rgbMatrix.encodeJpg(quality: details.quality);
+    final rgbJpg = rgbImage.encodeJpg(quality: details.quality);
     if (rgbJpg == null) {
       sendLog(LogLevel.debug, "Could not encode RGB frame");
     } else {
@@ -120,6 +111,22 @@ class RealSenseIsolate extends CameraIsolate {
       sendFrame(rgbJpg, detailsOverride: newDetails);
     }
 
-    rgbMatrix.dispose();
+    rgbImage.dispose();
+  }
+
+  @override
+  Future<Uint8List?> getScreenshotJpeg() async {
+    final frames = camera.getFrames();
+    if (frames == nullptr) return null;
+
+    final Pointer<Uint8> rgbData = frames.ref.rgb_data;
+    if (rgbData == nullptr) return null;
+    final rgbImage = rgbData.toOpenCVMat(camera.rgbResolution, length: frames.ref.rgb_length);
+    final colorizedJpg = rgbImage.encodeJpg(quality: 100);
+
+    rgbImage.dispose();
+    frames.dispose();
+
+    return colorizedJpg;
   }
 }
