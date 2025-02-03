@@ -28,7 +28,6 @@ class Collection extends Service {
   Future<void> dispose() async {
     await cameras.dispose();
     await videoServer.dispose();
-    exit(0);
   }
 }
 
