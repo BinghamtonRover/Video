@@ -34,7 +34,6 @@ class Collection extends Service {
     await cameras.dispose();
     await lidar.dispose();
     await videoServer.dispose();
-    exit(0);
   }
 }
 
