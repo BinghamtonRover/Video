@@ -1,4 +1,5 @@
 import "dart:ffi";
+import "dart:typed_data";
 
 import "package:burt_network/burt_network.dart";
 import "package:dartcv4/dartcv.dart";
@@ -72,11 +73,24 @@ class RealSenseIsolate extends CameraIsolate {
     final frames = camera.getFrames();
     if (frames == nullptr) return;
 
-    // Compress colorized frame
-    final Pointer<Uint8> rawColorized = frames.ref.colorized_data;
+    sendColorizedFrame(frames);
+    await sendRgbFrame(frames);
+
+    fpsCount++;
+    // send(DepthFramePayload(frames.address));  // For autonomy
+    frames.dispose();
+  }
+
+  /// Sends the colorized RealSense depth frame
+  void sendColorizedFrame(Pointer<NativeFrames> rawFrames) {
+    final rawColorized = rawFrames.ref.colorized_data;
     if (rawColorized == nullptr) return;
-    final colorizedMatrix = rawColorized.toOpenCVMat(camera.depthResolution, length: frames.ref.colorized_length);
-    final colorizedJpg = colorizedMatrix.encodeJpg(quality: details.quality);
+
+    final colorizedImage = rawColorized.toOpenCVMat(
+      camera.depthResolution,
+      length: rawFrames.ref.colorized_length,
+    );
+    final colorizedJpg = colorizedImage.encodeJpg(quality: details.quality);
 
     if (colorizedJpg == null) {
       sendLog(LogLevel.debug, "Could not encode colorized frame");
@@ -84,18 +98,13 @@ class RealSenseIsolate extends CameraIsolate {
       sendFrame(colorizedJpg);
     }
 
-    await sendRgbFrame(frames.ref.rgb_data);
-
-    fpsCount++;
-    // send(DepthFramePayload(frames.address));  // For autonomy
-    colorizedMatrix.dispose();
-    frames.dispose();
+    colorizedImage.dispose();
   }
-
   /// Sends the RealSense's RGB frame and optionally detects ArUco tags.
-  Future<void> sendRgbFrame(Pointer<Uint8> rawRGB) async {
+  Future<void> sendRgbFrame(Pointer<NativeFrames> rawFrames) async {
+    final rawRGB = rawFrames.ref.rgb_data;
     if (rawRGB == nullptr) return;
-    final rgbMatrix = rawRGB.toOpenCVMat(camera.rgbResolution);
+    final rgbMatrix = rawRGB.toOpenCVMat(camera.rgbResolution, length: rawFrames.ref.rgb_length);
     final detectedMarkers = await detectAndProcessMarkers(CameraName.ROVER_FRONT, rgbMatrix, frameProperties!);
     sendToParent(ObjectDetectionPayload(details: details, tags: detectedMarkers));
 
@@ -115,36 +124,52 @@ class RealSenseIsolate extends CameraIsolate {
     if (details.hasStreamWidth() && details.streamWidth > 0) {
       streamWidth = details.streamWidth;
     }
-
     if (details.hasStreamHeight() && details.streamHeight > 0) {
       streamHeight = details.streamHeight;
+    }
+    // don't enlarge image
+    if (streamWidth > rgbMatrix.width || streamHeight > rgbMatrix.height) {
+      streamWidth = rgbMatrix.width;
+      streamHeight = rgbMatrix.height;
     }
     if (details.streamWidth != streamWidth ||
         details.streamHeight != streamHeight) {
       updateDetails(CameraDetails(streamWidth: streamWidth, streamHeight: streamHeight));
     }
 
-    final resizedMatrix = Mat.create(cols: streamWidth, rows: streamHeight);
-
-    // No idea why fx and fy are needed, but if they aren't present then sometimes it will crash
-    await resizeAsync(
-      rgbMatrix,
-      (streamWidth, streamHeight),
-      dst: resizedMatrix,
-      fx: streamWidth / rgbMatrix.width,
-      fy: streamHeight / rgbMatrix.height,
-    );
+    Uint8List? frame;
+    if (streamWidth < rgbMatrix.width || streamHeight < rgbMatrix.height) {
+      try {
+        // No idea why fx and fy are needed, but if they aren't present then
+        // sometimes it will throw errors
+        final resizedMatrix = resize(
+          rgbMatrix,
+          (streamWidth, streamHeight),
+          fx: streamWidth / rgbMatrix.width,
+          fy: streamHeight / rgbMatrix.height,
+          interpolation: INTER_AREA,
+        );
+        frame = resizedMatrix.encodeJpg(quality: details.quality);
+        resizedMatrix.dispose();
+      } catch (e) {
+        sendLog(
+          LogLevel.error,
+          "Error when resizing RGB frame",
+          body: e.toString(),
+        );
+        return;
+      }
+    } else {
+      frame = rgbMatrix.encodeJpg(quality: details.quality);
+    }
+    rgbMatrix.dispose();
 
     // Compress the RGB frame into a JPG
-    final rgbJpg = resizedMatrix.encodeJpg(quality: details.quality);
-    if (rgbJpg == null) {
+    if (frame == null) {
       sendLog(LogLevel.debug, "Could not encode RGB frame");
     } else {
       final newDetails = details.deepCopy()..name = CameraName.ROVER_FRONT;
-      sendFrame(rgbJpg, detailsOverride: newDetails);
+      sendFrame(frame, detailsOverride: newDetails);
     }
-
-    resizedMatrix.dispose();
-    rgbMatrix.dispose();
   }
 }
