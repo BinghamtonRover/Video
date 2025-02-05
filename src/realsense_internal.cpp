@@ -107,9 +107,7 @@ NativeFrames* burt_rs::RealSense::getDepthFrame() {
   }
 
   const uint8_t* aligned_depth_data = static_cast<const uint8_t*>(aligned_depth_frame.get_data());
-  for (int i = 0; i < aligned_depth_length; i++) {
-    aligned_depth_copy[i] = aligned_depth_data[i];
-  }
+  std::copy(aligned_depth_data, aligned_depth_data + aligned_depth_length, aligned_depth_copy);
 
   // Copy all the data in the colorized frame
   const uint8_t* colorized_data = static_cast<const uint8_t*>(colorized_frame.get_data());
@@ -127,12 +125,12 @@ NativeFrames* burt_rs::RealSense::getDepthFrame() {
   return new NativeFrames {
     depth_data: depth_copy,
     depth_length: depth_length,
-    aligned_depth_data: aligned_depth_copy,
-    aligned_depth_length: aligned_depth_length,
     colorized_data: colorized_copy,
     colorized_length: colorized_length,
     rgb_data: nullptr,
     rgb_length: 0,
+    aligned_depth_data: aligned_depth_copy,
+    aligned_depth_length: aligned_depth_length,
   };
 }
 

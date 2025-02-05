@@ -193,17 +193,10 @@ final class BurtRsConfig extends ffi.Struct {
 }
 
 final class NativeFrames extends ffi.Struct {
-  ///
   external ffi.Pointer<ffi.Uint8> depth_data;
 
   @ffi.Int()
   external int depth_length;
-
-  /// The depth frame aligned to the RGB frame
-  external ffi.Pointer<ffi.Uint8> aligned_depth_data;
-
-  @ffi.Int()
-  external int aligned_depth_length;
 
   /// The depth frame colorized to visually show depth
   /// This frame does not contain depth data
@@ -217,6 +210,12 @@ final class NativeFrames extends ffi.Struct {
 
   @ffi.Int()
   external int rgb_length;
+
+  /// The depth frame aligned to the RGB frame
+  external ffi.Pointer<ffi.Uint8> aligned_depth_data;
+
+  @ffi.Int()
+  external int aligned_depth_length;
 }
 
 /// A fake ("opaque") C-friendly struct that we'll use a pointer to.
