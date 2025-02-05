@@ -80,8 +80,8 @@ CameraDetails getDefaultDetails(CameraName name) => CameraDetails(
 /// These settings are balanced between autonomy depth and normal RGB.
 CameraDetails getRealsenseDetails(CameraName name) => CameraDetails(
   name: name,
-  resolutionWidth: 300,
-  resolutionHeight: 300,
+  resolutionWidth: 640,
+  resolutionHeight: 480,
   quality: 50,
   fps: 0,
   horizontalFov: 69,
