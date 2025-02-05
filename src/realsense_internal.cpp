@@ -33,7 +33,6 @@ BurtRsStatus burt_rs::RealSense::init() {
   } else {
     config.scale = scale;
   }
-
   return BurtRsStatus::BurtRsStatus_ok;
 }
 
