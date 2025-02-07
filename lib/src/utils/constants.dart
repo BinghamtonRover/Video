@@ -31,6 +31,9 @@ Map<CameraName, int> cameraIndexes = {
   CameraName.BOTTOM_RIGHT: 7,
 };
 
+/// Frames from this camera will be send to the vision program for further analysis.
+const findObjectsInCameraFeed = CameraName.ROVER_FRONT;
+
 /// Returns the camera depending on device program is running
 ///
 /// Uses [cameraNames] or [cameraIndexes]
