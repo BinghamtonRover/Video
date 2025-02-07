@@ -1,3 +1,5 @@
+// ignore_for_file: avoid_print
+
 import "dart:io";
 import "dart:typed_data";
 
@@ -8,7 +10,7 @@ void main() async {
 	await socket.init();
 	socket.stream.listen(temp);
 	while (true) {
-		await Future<void>.delayed(Duration(seconds: 1));
+		await Future<void>.delayed(const Duration(seconds: 1));
 	}
 }
 
