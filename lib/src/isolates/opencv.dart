@@ -8,6 +8,7 @@ import "child.dart";
 class OpenCVCameraIsolate extends CameraIsolate {
   /// The native camera object from OpenCV.
   VideoCapture? camera;
+
   /// Creates a new manager for the given camera and default details.
   OpenCVCameraIsolate({required super.details});
 

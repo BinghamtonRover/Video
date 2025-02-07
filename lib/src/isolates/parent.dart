@@ -9,6 +9,9 @@ import "package:video/video.dart";
 /// The socket to send autonomy data to.
 final autonomySocket = SocketInfo(address: InternetAddress("192.168.1.30"), port: 8003);
 
+/// The socket to send frames that need to be analyzed to.
+final cvSocket = SocketInfo(address: InternetAddress.loopbackIPv4, port: 8006);
+
 /// A parent isolate that spawns [CameraIsolate]s to manage the cameras.
 ///
 /// With one isolate per camera, each camera can read in parallel. This class sends [VideoCommand]s
@@ -21,6 +24,7 @@ class CameraManager extends Service {
   final parent = IsolateParent<VideoCommand, IsolatePayload>();
 
   StreamSubscription<VideoCommand>? _commands;
+  StreamSubscription<VideoData>? _vision;
   StreamSubscription<IsolatePayload>? _data;
 
   @override
@@ -29,6 +33,11 @@ class CameraManager extends Service {
       name: VideoCommand().messageName,
       constructor: VideoCommand.fromBuffer,
       callback: _handleCommand,
+    );
+    _vision = collection.videoServer.messages.onMessage<VideoData>(
+      name: VideoData().messageName,
+      constructor: VideoData.fromBuffer,
+      callback: _handleVision,
     );
     parent.init();
     _data = parent.stream.listen(onData);
@@ -54,6 +63,7 @@ class CameraManager extends Service {
   Future<void> dispose() async {
     stopAll();
     await _commands?.cancel();
+    await _vision?.cancel();
     await _data?.cancel();
     await parent.dispose();
   }
@@ -66,7 +76,14 @@ class CameraManager extends Service {
   void onData(IsolatePayload data) {
     switch (data) {
       case FramePayload(:final image, :final details):
-        collection.videoServer.sendMessage(VideoData(frame: image, details: details));
+        if (data.details.name == findObjectsInCameraFeed) {
+          // Feeds from this camera get sent to the vision program.
+          // The vision program will detect objects and send metadata to Autonomy.
+          // The frames will be annotated and sent back here. See [_handleVision].
+          collection.videoServer.sendMessage(VideoData(frame: image, details: details), destination: cvSocket);
+        } else {
+          collection.videoServer.sendMessage(VideoData(frame: image, details: details));
+        }
       case DepthFramePayload():
         collection.videoServer.sendMessage(VideoData(frame: data.frame.depthFrame), destination: autonomySocket);
         data.dispose();
@@ -95,6 +112,16 @@ class CameraManager extends Service {
   void _handleCommand(VideoCommand command) {
     collection.videoServer.sendMessage(command);  // echo the request
     parent.sendToChild(data: command, id: command.details.name);
+  }
+
+  void _handleVision(VideoData data) {
+    // The vision program doesn't have proper integration with the Dashboard. We can either add
+    // that, or send the annotated frames back to Video to then send back to the Dashboard.
+    //
+    // We chose this option because the Dashboard is already managing a lot of connections as it is,
+    // we're extremely short on time, it leaves analysis as an implementation detail of Video, and
+    // it doesn't add much latency (from 24 FPS on the camera to 23 FPS on the Dashboard).
+    collection.videoServer.sendMessage(data);
   }
 
   /// Stops all the cameras managed by this class.
