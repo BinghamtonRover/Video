@@ -21,7 +21,7 @@ class FramePayload extends IsolatePayload {
   final CameraDetails details;
 
   /// The image to send.
-  Uint8List? image;
+  final Uint8List? image;
 
   /// A const constructor.
   FramePayload({required this.details, this.image});

@@ -27,6 +27,7 @@ const maxPacketLength = 60000;
 abstract class CameraIsolate extends IsolateChild<IsolatePayload, VideoCommand> {
   /// Holds the current details of the camera.
   final CameraDetails details;
+
   /// A constructor with initial details.
   CameraIsolate({required this.details}) : super(id: details.name);
 

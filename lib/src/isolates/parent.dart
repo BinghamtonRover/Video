@@ -76,7 +76,14 @@ class CameraManager extends Service {
   void onData(IsolatePayload data) {
     switch (data) {
       case FramePayload(:final image, :final details):
-        collection.videoServer.sendMessage(VideoData(frame: image, details: details), destination: cvSocket);
+        if (data.details.name == findObjectsInCameraFeed) {
+          // Feeds from this camera get sent to the vision program.
+          // The vision program will detect objects and send metadata to Autonomy.
+          // The frames will be annotated and sent back here. See [_handleVision].
+          collection.videoServer.sendMessage(VideoData(frame: image, details: details), destination: cvSocket);
+        } else {
+          collection.videoServer.sendMessage(VideoData(frame: image, details: details));
+        }
       case DepthFramePayload():
         collection.videoServer.sendMessage(VideoData(frame: data.frame.depthFrame), destination: autonomySocket);
         data.dispose();
