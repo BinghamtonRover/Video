@@ -8,6 +8,7 @@ import "package:video/video.dart";
 
 /// The socket to send autonomy data to.
 final autonomySocket = SocketInfo(address: InternetAddress("192.168.1.30"), port: 8003);
+final cvSocket = SocketInfo(address: InternetAddress.loopbackIPv4, port: 8006);
 
 /// A parent isolate that spawns [CameraIsolate]s to manage the cameras.
 ///
@@ -21,6 +22,7 @@ class CameraManager extends Service {
   final parent = IsolateParent<VideoCommand, IsolatePayload>();
 
   StreamSubscription<VideoCommand>? _commands;
+  StreamSubscription<VideoData>? _vision;
   StreamSubscription<IsolatePayload>? _data;
 
   @override
@@ -29,6 +31,11 @@ class CameraManager extends Service {
       name: VideoCommand().messageName,
       constructor: VideoCommand.fromBuffer,
       callback: _handleCommand,
+    );
+    _vision = collection.videoServer.messages.onMessage<VideoData>(
+      name: VideoData().messageName,
+      constructor: VideoData.fromBuffer,
+      callback: _handleVision,
     );
     parent.init();
     _data = parent.stream.listen(onData);
@@ -54,6 +61,7 @@ class CameraManager extends Service {
   Future<void> dispose() async {
     stopAll();
     await _commands?.cancel();
+    await _vision?.cancel();
     await _data?.cancel();
     await parent.dispose();
   }
@@ -66,7 +74,7 @@ class CameraManager extends Service {
   void onData(IsolatePayload data) {
     switch (data) {
       case FramePayload(:final image, :final details):
-        collection.videoServer.sendMessage(VideoData(frame: image, details: details));
+        collection.videoServer.sendMessage(VideoData(frame: image, details: details), destination: cvSocket);
       case DepthFramePayload():
         collection.videoServer.sendMessage(VideoData(frame: data.frame.depthFrame), destination: autonomySocket);
         data.dispose();
@@ -95,6 +103,11 @@ class CameraManager extends Service {
   void _handleCommand(VideoCommand command) {
     collection.videoServer.sendMessage(command);  // echo the request
     parent.sendToChild(data: command, id: command.details.name);
+  }
+
+  void _handleVision(VideoData data) {
+    // TODO: Frame might be bigger than UDP packet
+    collection.videoServer.sendMessage(data);
   }
 
   /// Stops all the cameras managed by this class.
