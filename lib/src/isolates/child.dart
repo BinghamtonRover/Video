@@ -12,7 +12,7 @@ const maxPacketLength = 60000;
 ///
 /// This class can represent any combination of hardware and software, such as regular USB cameras
 /// driven by OpenCV or a depth camera read with the RealSense SDK. To use, override [initCamera]
-/// and [disposeCamera], then override [sendFrames] to retreive and send images. Override
+/// and [disposeCamera], then override [sendFrames] to retrieve and send images. Override
 /// [updateDetails] to be notified when the current [CameraDetails] have changed, but the common
 /// cases such as stopping and starting the camera will be handled for you.
 ///

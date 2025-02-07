@@ -8,6 +8,8 @@ import "package:video/video.dart";
 
 /// The socket to send autonomy data to.
 final autonomySocket = SocketInfo(address: InternetAddress("192.168.1.30"), port: 8003);
+
+/// The socket to send frames that need to be analyzed to.
 final cvSocket = SocketInfo(address: InternetAddress.loopbackIPv4, port: 8006);
 
 /// A parent isolate that spawns [CameraIsolate]s to manage the cameras.
@@ -106,7 +108,12 @@ class CameraManager extends Service {
   }
 
   void _handleVision(VideoData data) {
-    // TODO: Frame might be bigger than UDP packet
+    // The vision program doesn't have proper integration with the Dashboard. We can either add
+    // that, or send the annotated frames back to Video to then send back to the Dashboard.
+    //
+    // We chose this option because the Dashboard is already managing a lot of connections as it is,
+    // we're extremely short on time, it leaves analysis as an implementation detail of Video, and
+    // it doesn't add much latency (from 24 FPS on the camera to 23 FPS on the Dashboard).
     collection.videoServer.sendMessage(data);
   }
 
