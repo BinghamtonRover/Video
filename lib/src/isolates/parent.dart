@@ -106,7 +106,11 @@ class CameraManager extends Service {
         case LogLevel.off: logger.info(data.message, body: data.body);
       }
       case ObjectDetectionPayload(:final details, :final tags):
-        final visionResult = VisionResult(name: details.name, objects: tags);
+        final visionResult = VideoData(
+          details: details,
+          detectedObjects: tags,
+          version: Version(major: 1, minor: 2),
+        );
         collection.videoServer.sendMessage(visionResult);
         collection.videoServer.sendMessage(visionResult, destination: autonomySocket);
     }
