@@ -4,6 +4,7 @@ import "dart:math";
 import "dart:typed_data";
 
 import "package:burt_network/burt_network.dart";
+import "package:dartcv4/dartcv.dart";
 import "package:video/src/collection.dart";
 import "package:video/src/isolates/parent.dart";
 
@@ -13,7 +14,7 @@ import "package:video/src/isolates/parent.dart";
 /// the Lidar protobuf messages to send to the dashboard and Autonomy
 class LidarManager extends Service {
   /// The port the Lidar program will be sending data to
-  static const lidarPort = 8020;
+  static const lidarPort = 8004;
 
   /// The UDP socket to listen to incoming data from the lidar program
   final UdpSocket lidarSocket = UdpSocket(port: lidarPort);
@@ -22,9 +23,10 @@ class LidarManager extends Service {
 
   /// Handles an incoming packet from the Lidar stream
   void handleLidarData(Datagram packet) {
-    final isCartesian = packet.data[0] == 0x01;
-    final data = Float64List.sublistView(packet.data, 1);
-
+    print("We have data of size ${packet.data.length}");
+    final isCartesian = Float64List.sublistView(packet.data, 0, 8)[0] == 0x01;
+    final data = Float64List.sublistView(packet.data, 8);
+    
     List<LidarCartesianPoint>? cartesian;
     List<LidarPolarPoint>? polar;
 
@@ -39,7 +41,7 @@ class LidarManager extends Service {
       polar: polar,
       version: Version(major: 1, minor: 0),
     );
-    collection.videoServer.sendMessage(lidarMessage);
+    collection.videoServer.sendMessage(lidarMessage); //, destination: SocketInfo(address: InternetAddress("192.168.1.229"), port: 8020));
     collection.videoServer.sendMessage(
       lidarMessage,
       destination: autonomySocket,
@@ -49,13 +51,13 @@ class LidarManager extends Service {
   List<LidarCartesianPoint> _processCartesianPoints(List<double> data) {
     final points = <LidarCartesianPoint>[];
 
-    for (int i = 0; i < data.length ~/ 2; i += 2) {
+    for (int i = 0; i < data.length; i += 2) {
       final x = data[i];
       final y = data[i + 1];
 
-      if (sqrt(pow(x, 2) + pow(y, 2)) < 0.005) {
-        continue;
-      }
+      //if (sqrt(pow(x, 2) + pow(y, 2)) < 0.005) {
+      //  continue;
+      //}
 
       points.add(LidarCartesianPoint(x: x, y: y));
     }
