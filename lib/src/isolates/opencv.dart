@@ -133,6 +133,7 @@ class OpenCVCameraIsolate extends CameraIsolate {
           "Error when resizing image for camera ${details.name.name}",
           body: e.toString(),
         );
+        matrix.dispose();
         return;
       }
     } else {
