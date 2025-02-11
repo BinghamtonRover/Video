@@ -1,10 +1,8 @@
 import "dart:async";
 import "dart:io";
-import "dart:math";
 import "dart:typed_data";
 
 import "package:burt_network/burt_network.dart";
-import "package:dartcv4/dartcv.dart";
 import "package:video/src/collection.dart";
 import "package:video/src/isolates/parent.dart";
 
@@ -51,13 +49,9 @@ class LidarManager extends Service {
   List<LidarCartesianPoint> _processCartesianPoints(List<double> data) {
     final points = <LidarCartesianPoint>[];
 
-    for (int i = 0; i < data.length; i += 2) {
+    for (int i = 0; i < data.length - 1; i += 2) {
       final x = data[i];
       final y = data[i + 1];
-
-      //if (sqrt(pow(x, 2) + pow(y, 2)) < 0.005) {
-      //  continue;
-      //}
 
       points.add(LidarCartesianPoint(x: x, y: y));
     }
