@@ -157,6 +157,7 @@ class RealSenseIsolate extends CameraIsolate {
           "Error when resizing RGB frame",
           body: e.toString(),
         );
+        rgbMatrix.dispose();
         return;
       }
     } else {
