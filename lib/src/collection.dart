@@ -1,6 +1,7 @@
 import "dart:async";
 
 import "package:burt_network/burt_network.dart";
+import "package:video/src/lidar.dart";
 
 import "package:video/video.dart";
 
@@ -12,11 +13,15 @@ class Collection extends Service {
   /// Main parent isolate
   final cameras = CameraManager();
 
+  /// The lidar manager
+  final lidar = LidarManager();
+
   /// Function to initialize cameras
   @override
   Future<bool> init() async {
     logger..trace("Running in trace mode")..debug("Running in debug mode");
     await cameras.init();
+    await lidar.init();
     await videoServer.init();
     logger.info("Video program initialized");
     return true;
@@ -26,6 +31,7 @@ class Collection extends Service {
   @override
   Future<void> dispose() async {
     await cameras.dispose();
+    await lidar.dispose();
     await videoServer.dispose();
   }
 }
