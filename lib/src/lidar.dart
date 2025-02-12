@@ -21,7 +21,6 @@ class LidarManager extends Service {
 
   /// Handles an incoming packet from the Lidar stream
   void handleLidarData(Datagram packet) {
-    print("We have data of size ${packet.data.length}");
     final isCartesian = Float64List.sublistView(packet.data, 0, 8)[0] == 0x01;
     final data = Float64List.sublistView(packet.data, 8);
     
@@ -39,7 +38,8 @@ class LidarManager extends Service {
       polar: polar,
       version: Version(major: 1, minor: 0),
     );
-    collection.videoServer.sendMessage(lidarMessage); //, destination: SocketInfo(address: InternetAddress("192.168.1.229"), port: 8020));
+
+    collection.videoServer.sendMessage(lidarMessage);
     collection.videoServer.sendMessage(
       lidarMessage,
       destination: autonomySocket,

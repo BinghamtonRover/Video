@@ -20,7 +20,7 @@ class Collection extends Service {
   @override
   Future<bool> init() async {
     logger..trace("Running in trace mode")..debug("Running in debug mode");
-    // await cameras.init();
+    await cameras.init();
     await lidar.init();
     await videoServer.init();
     logger.info("Video program initialized");
@@ -30,7 +30,7 @@ class Collection extends Service {
   /// Stops all cameras and disconnects from the hardware.
   @override
   Future<void> dispose() async {
-    // await cameras.dispose();
+    await cameras.dispose();
     await lidar.dispose();
     await videoServer.dispose();
   }
