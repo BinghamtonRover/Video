@@ -19,6 +19,7 @@ namespace burt_rs {
     private:
       rs2::device device;
       rs2::pipeline pipeline;
+      bool streaming;
   };
 }
 
