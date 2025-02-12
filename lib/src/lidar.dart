@@ -23,7 +23,7 @@ class LidarManager extends Service {
   void handleLidarData(Datagram packet) {
     final isCartesian = Float64List.sublistView(packet.data, 0, 8)[0] == 0x01;
     final data = Float64List.sublistView(packet.data, 8);
-    
+
     List<LidarCartesianPoint>? cartesian;
     List<LidarPolarPoint>? polar;
 
@@ -46,39 +46,23 @@ class LidarManager extends Service {
     );
   }
 
-  List<LidarCartesianPoint> _processCartesianPoints(List<double> data) {
-    final points = <LidarCartesianPoint>[];
+  List<LidarCartesianPoint> _processCartesianPoints(List<double> data) => [
+    for (int i = 0; i < data.length - 1; i += 2)
+      LidarCartesianPoint(
+        x: data[i],
+        y: data[i + 1],
+      ),
+  ];
 
-    for (int i = 0; i < data.length - 1; i += 2) {
-      final x = data[i];
-      final y = data[i + 1];
-
-      points.add(LidarCartesianPoint(x: x, y: y));
-    }
-
-    return points;
-  }
-
-  List<LidarPolarPoint> _processPolarPoints(List<double> data) {
-    final points = <LidarPolarPoint>[];
-
-    for (int i = 0; i < data.length; i++) {
-      final distance = data[i];
-
-      if (distance <= 0.0) {
-        continue;
-      }
-
-      points.add(
+  List<LidarPolarPoint> _processPolarPoints(List<double> data) => [
+    for (int theta = 0; theta < data.length; theta++)
+      if (data[theta] > 0.0)
         LidarPolarPoint(
-          angle: (i - 135).toDouble(),
-          distance: distance,
+          // The range of the lidar isn't [0, 270], it's [-135, +135].
+          angle: (theta - 135).toDouble(),
+          distance: data[theta],
         ),
-      );
-    }
-
-    return points;
-  }
+  ];
 
   @override
   Future<bool> init() async {
