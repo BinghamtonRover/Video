@@ -17,6 +17,7 @@ then
   mkdir -p build
   cd build
   cmake .. -DFORCE_LIBUVC=true -DCMAKE_POSITION_INDEPENDENT_CODE=true -DBUILD_EXAMPLES=true -DBUILD_GRAPHICAL_EXAMPLES=true -DBUILD_GLSL_EXTENSIONS=true -DBUILD_TOOLS=true -DBUILD_WITH_OPENMP=true -DBUILD_SHARED_LIBS=true -DCMAKE_BUILD_TYPE=Release
+  echo "Building RealSense with $(nproc) processors"
   cmake --build . -j$(nproc)
   sudo make install
   cd ../../..
