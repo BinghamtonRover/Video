@@ -18,6 +18,7 @@ class OpenCVCameraIsolate extends CameraIsolate {
   @override
   void initCamera() {
     camera = getCamera(name);
+    camera!.set(CAP_PROP_FOURCC, VideoCapture.toCodec("MJPG"));
     camera?.setResolution(width: details.resolutionWidth, height: details.resolutionHeight);
     frameProperties = FrameProperties.fromFrameDetails(
       captureWidth: camera!.width,
@@ -167,6 +168,7 @@ class OpenCVCameraIsolate extends CameraIsolate {
     camera!.dispose();
     camera = getCamera(name);
 
+    camera!.set(CAP_PROP_FOURCC, VideoCapture.toCodec("MJPG"));
     camera!.setResolution(width: 10000, height: 10000);
 
     camera!.fps = 0;
@@ -189,6 +191,7 @@ class OpenCVCameraIsolate extends CameraIsolate {
     camera!.dispose();
     camera = getCamera(name);
 
+    camera!.set(CAP_PROP_FOURCC, VideoCapture.toCodec("MJPG"));
     camera!.setResolution(width: originalWidth, height: originalHeight);
     camera!.fps = details.fps;
     if (details.hasZoom()) camera!.zoom = details.zoom;
