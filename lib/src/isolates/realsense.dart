@@ -1,11 +1,13 @@
 import "dart:ffi";
+import "dart:typed_data";
 
 import "package:burt_network/burt_network.dart";
+import "package:dartcv4/dartcv.dart";
 import "package:protobuf/protobuf.dart";
+import "package:video/src/targeting/frame_properties.dart";
 
 import "package:video/utils.dart";
-import "package:video/realsense.dart";
-import "child.dart";
+import "package:video/video.dart";
 
 extension on CameraDetails {
   bool get interferesWithAutonomy => hasResolutionHeight()
@@ -40,7 +42,7 @@ class RealSenseIsolate extends CameraIsolate {
   void initCamera() {
     if (!camera.init()) {
       final details = CameraDetails(status: CameraStatus.CAMERA_DISCONNECTED);
-      updateDetails(details);
+      updateDetails(details, save: false);
       return sendLog(LogLevel.warning, "Could not open RealSense");
     }
     sendLog(LogLevel.debug, "RealSense connected");
@@ -48,9 +50,14 @@ class RealSenseIsolate extends CameraIsolate {
     sendLog(LogLevel.trace, "RealSense model: $name");
     if (!camera.startStream()) {
       final details = CameraDetails(status: CameraStatus.CAMERA_NOT_RESPONDING);
-      updateDetails(details);
+      updateDetails(details, save: false);
       return sendLog(LogLevel.warning, "Could not start RealSense");
     }
+    frameProperties = FrameProperties.fromFrameDetails(
+      captureWidth: camera.rgbResolution.width,
+      captureHeight: camera.rgbResolution.height,
+      details: details,
+    );
     sendLog(LogLevel.debug, "Started streaming from RealSense");
   }
 
@@ -66,11 +73,24 @@ class RealSenseIsolate extends CameraIsolate {
     final frames = camera.getFrames();
     if (frames == nullptr) return;
 
-    // Compress colorized frame
-    final Pointer<Uint8> rawColorized = frames.ref.colorized_data;
+    sendColorizedFrame(frames);
+    await sendRgbFrame(frames);
+
+    fpsCount++;
+    // send(DepthFramePayload(frames.address));  // For autonomy
+    frames.dispose();
+  }
+
+  /// Sends the colorized RealSense depth frame
+  void sendColorizedFrame(Pointer<NativeFrames> rawFrames) {
+    final rawColorized = rawFrames.ref.colorized_data;
     if (rawColorized == nullptr) return;
-    final colorizedMatrix = rawColorized.toOpenCVMat(camera.depthResolution, length: frames.ref.colorized_length);
-    final colorizedJpg = colorizedMatrix.encodeJpg(quality: details.quality);
+
+    final colorizedImage = rawColorized.toOpenCVMat(
+      camera.depthResolution,
+      length: rawFrames.ref.colorized_length,
+    );
+    final colorizedJpg = colorizedImage.encodeJpg(quality: details.quality);
 
     if (colorizedJpg == null) {
       sendLog(LogLevel.debug, "Could not encode colorized frame");
@@ -78,29 +98,84 @@ class RealSenseIsolate extends CameraIsolate {
       sendFrame(colorizedJpg);
     }
 
-    sendRgbFrame(frames.ref.rgb_data);
-
-    fpsCount++;
-    // send(DepthFramePayload(frames.address));  // For autonomy
-    colorizedMatrix.dispose();
-    frames.dispose();
+    colorizedImage.dispose();
   }
-
   /// Sends the RealSense's RGB frame and optionally detects ArUco tags.
-  void sendRgbFrame(Pointer<Uint8> rawRGB) {
+  Future<void> sendRgbFrame(Pointer<NativeFrames> rawFrames) async {
+    final rawRGB = rawFrames.ref.rgb_data;
     if (rawRGB == nullptr) return;
-    final rgbMatrix = rawRGB.toOpenCVMat(camera.rgbResolution);
-    //detectAndAnnotateFrames(rgbMatrix);  // detect ArUco tags
+    final rgbMatrix = rawRGB.toOpenCVMat(camera.rgbResolution, length: rawFrames.ref.rgb_length);
+    final detectedMarkers = await detectAndProcessMarkers(rgbMatrix, frameProperties!);
+    sendToParent(
+      ObjectDetectionPayload(
+        details: details.deepCopy()..name = CameraName.ROVER_FRONT,
+        tags: detectedMarkers,
+      ),
+    );
+
+    if (details.resolutionWidth != rgbMatrix.width ||
+        details.resolutionHeight != rgbMatrix.height) {
+      details.mergeFromMessage(
+        CameraDetails(
+          resolutionWidth: rgbMatrix.width,
+          resolutionHeight: rgbMatrix.height,
+        ),
+      );
+      saveDetails();
+    }
+
+    var streamWidth = rgbMatrix.width;
+    var streamHeight = rgbMatrix.height;
+    if (details.hasStreamWidth() && details.streamWidth > 0) {
+      streamWidth = details.streamWidth;
+    }
+    if (details.hasStreamHeight() && details.streamHeight > 0) {
+      streamHeight = details.streamHeight;
+    }
+    // don't enlarge image
+    if (streamWidth > rgbMatrix.width || streamHeight > rgbMatrix.height) {
+      streamWidth = rgbMatrix.width;
+      streamHeight = rgbMatrix.height;
+    }
+    if (details.streamWidth != streamWidth ||
+        details.streamHeight != streamHeight) {
+      updateDetails(CameraDetails(streamWidth: streamWidth, streamHeight: streamHeight));
+    }
+
+    Uint8List? frame;
+    if (streamWidth < rgbMatrix.width || streamHeight < rgbMatrix.height) {
+      try {
+        // No idea why fx and fy are needed, but if they aren't present then
+        // sometimes it will throw errors
+        final resizedMatrix = resize(
+          rgbMatrix,
+          (streamWidth, streamHeight),
+          fx: streamWidth / rgbMatrix.width,
+          fy: streamHeight / rgbMatrix.height,
+          interpolation: INTER_AREA,
+        );
+        frame = resizedMatrix.encodeJpg(quality: details.quality);
+        resizedMatrix.dispose();
+      } catch (e) {
+        sendLog(
+          LogLevel.error,
+          "Error when resizing RGB frame",
+          body: e.toString(),
+        );
+        rgbMatrix.dispose();
+        return;
+      }
+    } else {
+      frame = rgbMatrix.encodeJpg(quality: details.quality);
+    }
+    rgbMatrix.dispose();
 
     // Compress the RGB frame into a JPG
-    final rgbJpg = rgbMatrix.encodeJpg(quality: details.quality);
-    if (rgbJpg == null) {
+    if (frame == null) {
       sendLog(LogLevel.debug, "Could not encode RGB frame");
     } else {
       final newDetails = details.deepCopy()..name = CameraName.ROVER_FRONT;
-      sendFrame(rgbJpg, detailsOverride: newDetails);
+      sendFrame(frame, detailsOverride: newDetails);
     }
-
-    rgbMatrix.dispose();
   }
 }

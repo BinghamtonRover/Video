@@ -33,10 +33,16 @@ typedef struct {
 typedef struct {
 	const uint8_t* depth_data;
 	int depth_length;
+	// The depth frame colorized to visually show depth
+	// This frame does not contain depth data
 	const uint8_t* colorized_data;
 	int colorized_length;
+	// The color RGB frame, which does not represent depth
 	const uint8_t* rgb_data;
 	int rgb_length;
+	// The depth frame aligned to the RGB frame
+	const uint8_t* aligned_depth_data;
+	int aligned_depth_length;
 } NativeFrames;
 
 // A fake ("opaque") C-friendly struct that we'll use a pointer to.

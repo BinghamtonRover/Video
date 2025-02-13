@@ -19,8 +19,10 @@ namespace burt_rs {
     private:
       rs2::device device;
       rs2::pipeline pipeline;
+      bool streaming;
   };
 }
 
 static rs2::colorizer colorizer = rs2::colorizer();
+static rs2::align align = rs2::align(RS2_STREAM_COLOR);
 void freeFrame(NativeFrames* frames);
