@@ -78,7 +78,7 @@ class OpenCVCameraIsolate extends CameraIsolate {
     final (success, matrix) = camera!.read();
     if (!success || matrix.width <= 0 || matrix.height <= 0) return;
 
-    final detectedMarkers = await detectAndProcessMarkers(details.name, matrix, frameProperties!);
+    final detectedMarkers = await detectAndProcessMarkers(matrix, frameProperties!);
     sendToParent(ObjectDetectionPayload(details: details, tags: detectedMarkers));
 
     // await matrix.drawCrosshair(center: frameProperties!.center);

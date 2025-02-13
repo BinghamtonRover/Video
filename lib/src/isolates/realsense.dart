@@ -105,8 +105,13 @@ class RealSenseIsolate extends CameraIsolate {
     final rawRGB = rawFrames.ref.rgb_data;
     if (rawRGB == nullptr) return;
     final rgbMatrix = rawRGB.toOpenCVMat(camera.rgbResolution, length: rawFrames.ref.rgb_length);
-    final detectedMarkers = await detectAndProcessMarkers(CameraName.ROVER_FRONT, rgbMatrix, frameProperties!);
-    sendToParent(ObjectDetectionPayload(details: details, tags: detectedMarkers));
+    final detectedMarkers = await detectAndProcessMarkers(rgbMatrix, frameProperties!);
+    sendToParent(
+      ObjectDetectionPayload(
+        details: details.deepCopy()..name = CameraName.ROVER_FRONT,
+        tags: detectedMarkers,
+      ),
+    );
 
     if (details.resolutionWidth != rgbMatrix.width ||
         details.resolutionHeight != rgbMatrix.height) {

@@ -39,7 +39,6 @@ final _objectPoints = Mat.fromVec(
 
 /// Detects and processes Aruco markers as a target message list, optionally draws them to the image
 Future<List<DetectedObject>> detectAndProcessMarkers(
-  CameraName camera,
   Mat image,
   FrameProperties frameProperties, {
   bool draw = true,
