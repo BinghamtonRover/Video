@@ -67,8 +67,6 @@ BurtRsStatus burt_rs::RealSense::startStream() {
     config.depth_height = depth_height;
     config.rgb_width = rgb_width;
     config.rgb_height = rgb_height;
-    // config.rgb_width = 0;
-    // config.rgb_height = 0;
     return BurtRsStatus::BurtRsStatus_ok;
   }
 }
@@ -125,8 +123,6 @@ NativeFrames* burt_rs::RealSense::getDepthFrame() {
     colorized_length: colorized_length,
     rgb_data: rgb_copy,
     rgb_length: rgb_length,
-    // rgb_data: nullptr,
-    // rgb_length: 0,
     aligned_depth_data: aligned_depth_copy,
     aligned_depth_length: aligned_depth_length,
   };
