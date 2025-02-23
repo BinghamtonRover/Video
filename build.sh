@@ -22,7 +22,3 @@ then
   sudo make install
   cd ../../..
 fi
-
-# Build our FFI wrappers
-make -C src clean
-make -C src shared

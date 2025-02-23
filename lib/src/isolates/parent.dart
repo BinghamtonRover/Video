@@ -3,6 +3,7 @@ import "dart:io";
 
 import "package:typed_isolate/typed_isolate.dart";
 import "package:burt_network/burt_network.dart";
+import "package:video/src/isolates/realsense.dart";
 
 import "package:video/video.dart";
 
@@ -47,7 +48,7 @@ class CameraManager extends Service {
         case CameraName.CAMERA_NAME_UNDEFINED: continue;
         case CameraName.AUTONOMY_DEPTH:
           final details = getRealsenseDetails(name);
-          final isolate = RealSenseIsolate(details: details);
+          final isolate = RealsenseIsolate(details: details);
           await parent.spawn(isolate);
         // All other cameras share the same logic, even future cameras
         default:  // ignore: no_default_cases
@@ -128,7 +129,10 @@ class CameraManager extends Service {
   void stopAll() {
     final command = VideoCommand(details: CameraDetails(status: CameraStatus.CAMERA_DISABLED));
     for (final name in CameraName.values) {
-      if (name == CameraName.CAMERA_NAME_UNDEFINED) continue;
+      if (name == CameraName.CAMERA_NAME_UNDEFINED ||
+          name == CameraName.ROVER_FRONT) {
+        continue;
+      }
       parent.sendToChild(data: command, id: name);
     }
   }

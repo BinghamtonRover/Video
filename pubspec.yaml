@@ -22,25 +22,50 @@ dev_dependencies:
 
 ffigen:
   # Run with `dart run ffigen --config ffigen.yaml -v severe`.
-  name: LibRealSenseBindings
+  name: RealsenseBindings
   description: |
     Bindings for the RealSense SDK.
 
     Regenerate bindings with `dart run ffigen --config ffigen.yaml -v severe`.
-  output: "lib/src/generated/librealsense_ffi_bindings.dart"
+  output: "lib/src/generated/librealsense_bindings.dart"
   headers:
     entry-points:
-      - "src/realsense_ffi.h"
+      - "src/librealsense/include/librealsense2/rs.h"
+      - "src/librealsense/include/librealsense2/rsutil.h"
+      - "src/librealsense/include/librealsense2/h/rs_advanced_mode_command.h"
+      - "src/librealsense/include/librealsense2/h/rs_config.h"
+      - "src/librealsense/include/librealsense2/h/rs_context.h"
+      - "src/librealsense/include/librealsense2/h/rs_device.h"
+      - "src/librealsense/include/librealsense2/h/rs_frame.h"
+      - "src/librealsense/include/librealsense2/h/rs_option.h"
+      - "src/librealsense/include/librealsense2/h/rs_pipeline.h"
+      - "src/librealsense/include/librealsense2/h/rs_processing.h"
+      - "src/librealsense/include/librealsense2/h/rs_record_playback.h"
+      - "src/librealsense/include/librealsense2/h/rs_sensor.h"
+      - "src/librealsense/include/librealsense2/h/rs_types.h"
     include-directives:
-      - "src/realsense_ffi.h"
+      - "src/librealsense/include/librealsense2/rs.h"
+      - "src/librealsense/include/librealsense2/rsutil.h"
+      - "src/librealsense/include/librealsense2/h/rs_advanced_mode_command.h"
+      - "src/librealsense/include/librealsense2/h/rs_config.h"
+      - "src/librealsense/include/librealsense2/h/rs_context.h"
+      - "src/librealsense/include/librealsense2/h/rs_device.h"
+      - "src/librealsense/include/librealsense2/h/rs_frame.h"
+      - "src/librealsense/include/librealsense2/h/rs_option.h"
+      - "src/librealsense/include/librealsense2/h/rs_pipeline.h"
+      - "src/librealsense/include/librealsense2/h/rs_processing.h"
+      - "src/librealsense/include/librealsense2/h/rs_record_playback.h"
+      - "src/librealsense/include/librealsense2/h/rs_sensor.h"
+      - "src/librealsense/include/librealsense2/h/rs_types.h"
   comments:
     style: any
     length: full
-  type-map:
-    native-types:
-      'char':  # Converts `char` to `Utf8` instead of `Char`
-        'lib': 'pkg_ffi'
-        'c-type': 'Utf8'
-        'dart-type': 'Utf8'
+  # type-map:
+  #   native-types:
+  #     'char':  # Converts `char` to `Utf8` instead of `Char`
+  #       'lib': 'pkg_ffi'
+  #       'c-type': 'Utf8'
+  #       'dart-type': 'Utf8'
   compiler-opts:
     - '-Isrc/librealsense/include'
+    - '-Isrc/librealsense/include/h'
