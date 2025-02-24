@@ -3,7 +3,6 @@ import "dart:io";
 
 import "package:typed_isolate/typed_isolate.dart";
 import "package:burt_network/burt_network.dart";
-import "package:video/src/isolates/realsense.dart";
 
 import "package:video/video.dart";
 
@@ -88,6 +87,10 @@ class CameraManager extends Service {
       case DepthFramePayload():
         collection.videoServer.sendMessage(VideoData(frame: data.frame.depthFrame), destination: autonomySocket);
         data.dispose();
+      case PointCloudPayload(:final points):
+        // TODO: Send a point cloud message to autonomy
+        // TODO: Look into filtering the message if it's too large
+        break;
       case LogPayload(): switch (data.level) {
         // Turns out using deprecated members when you *have* to still results in a lint.
         // See https://github.com/dart-lang/linter/issues/4852 for why we ignore it.

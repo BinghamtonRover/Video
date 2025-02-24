@@ -33,6 +33,12 @@ final RealsenseBindings librealsense = RealsenseBindings(
 /// Since the RealSense is being used for autonomy, certain settings that could interfere with the
 /// autonomy program are not allowed to be changed, even for the RGB camera.
 class RealsenseIsolate extends CameraIsolate {
+  /// The frame queue for depth point clouds
+  late ffi.Pointer<rs2_frame_queue> pointCloudQueue;
+
+  /// The processing block for 3d point clouds
+  late ffi.Pointer<rs2_processing_block> pointCloud;
+
   /// The frame queue for the depth alignment process
   late ffi.Pointer<rs2_frame_queue> depthAlignQueue;
 
@@ -61,16 +67,18 @@ class RealsenseIsolate extends CameraIsolate {
   ffi.Pointer<rs2_config> config = ffi.nullptr;
 
   /// The resolution in pixels of the depth frame
-  ({int width, int height})? depthResolution;
+  Resolution? depthResolution;
 
   /// The resolution in pixels of the RGB frame
-  ({int width, int height})? rgbResolution;
+  Resolution? rgbResolution;
 
   /// Default constructor for the Realsense Isolate
   ///
   /// This will initialize the fields for alignmenet and processing queues,
   /// which do not rely on a specific device
   RealsenseIsolate({required super.details}) {
+    pointCloud = librealsense.rs2_create_pointcloud(ffi.nullptr);
+    pointCloudQueue = librealsense.rs2_create_frame_queue(1, ffi.nullptr);
     depthAlign = librealsense.rs2_create_align(
       rs2_stream.RS2_STREAM_COLOR,
       ffi.nullptr,
@@ -84,12 +92,15 @@ class RealsenseIsolate extends CameraIsolate {
   void onData(VideoCommand data) {
     final details = data.details;
     if (details.status == CameraStatus.CAMERA_DISABLED) {
+      librealsense.rs2_delete_frame_queue(pointCloudQueue);
       librealsense.rs2_delete_frame_queue(depthAlignQueue);
       librealsense.rs2_delete_frame_queue(colorizerQueue);
+
+      librealsense.rs2_delete_processing_block(pointCloud);
       librealsense.rs2_delete_processing_block(depthAlign);
       librealsense.rs2_delete_processing_block(colorizer);
 
-      disposeCamera();
+      stop();
     }
     updateDetails(
       CameraDetails(
@@ -119,17 +130,19 @@ class RealsenseIsolate extends CameraIsolate {
       "RealSense Error ${librealsense.rs2_exception_type_to_string(type)}",
       body: librealsense.rs2_get_error_message(error.value).toDartString(),
     );
-    releaseNative();
+
+    librealsense.rs2_free_error(error.value);
     calloc.free(error);
 
     updateDetails(CameraDetails(status: statusIfError));
+    stop();
 
     return true;
   }
 
   /// Extracts a depth frame from an [rs2_frame]
   ///
-  /// This assumes that the [frameset] is a composite frame, and has embedded frames within it
+  /// This assumes that [frameset] is a composite frame, and has embedded frames within it
   ffi.Pointer<rs2_frame> getDepthFrame(ffi.Pointer<rs2_frame> frameset) {
     final frameCount = librealsense.rs2_embedded_frames_count(
       frameset,
@@ -155,7 +168,7 @@ class RealsenseIsolate extends CameraIsolate {
 
   /// Extracts an RGB frame from an [rs2_frame]
   ///
-  /// This assumes that the [frameset] is a composite frame, and has embedded frames within it
+  /// This assumes that [frameset] is a composite frame, and has embedded frames within it
   ffi.Pointer<rs2_frame> getRGBFrame(ffi.Pointer<rs2_frame> frameset) {
     final frameCount = librealsense.rs2_embedded_frames_count(
       frameset,
@@ -195,13 +208,25 @@ class RealsenseIsolate extends CameraIsolate {
     if (checkError(error)) return;
 
     if (devicesCount == 0) {
-      sendLog(Level.warning, "No Realsense Devices found!");
+      sendLog(Level.warning, "No Realsense Devices found");
       updateDetails(CameraDetails(status: CameraStatus.CAMERA_DISCONNECTED));
       librealsense.rs2_delete_device_list(deviceList);
+
+      librealsense.rs2_free_error(error.value);
+      calloc.free(error);
+
+      stop();
       return;
     } else if (devicesCount > 1) {
+      updateDetails(CameraDetails(status: CameraStatus.CAMERA_DISCONNECTED));
+
       sendLog(Level.error, "Too many realsense devices found: $devicesCount");
       librealsense.rs2_delete_device_list(deviceList);
+
+      librealsense.rs2_free_error(error.value);
+      calloc.free(error);
+
+      stop();
       return;
     }
 
@@ -297,9 +322,7 @@ class RealsenseIsolate extends CameraIsolate {
     final depthFrame = getDepthFrame(frame);
     final colorFrame = getRGBFrame(frame);
 
-    if (checkError(error, statusIfError: CameraStatus.CAMERA_NOT_RESPONDING) ||
-        depthFrame == ffi.nullptr ||
-        colorFrame == ffi.nullptr) {
+    if (depthFrame == ffi.nullptr || colorFrame == ffi.nullptr) {
       if (depthFrame != ffi.nullptr) {
         librealsense.rs2_release_frame(depthFrame);
       }
@@ -307,6 +330,13 @@ class RealsenseIsolate extends CameraIsolate {
         librealsense.rs2_release_frame(colorFrame);
       }
       librealsense.rs2_release_frame(frame);
+
+      updateDetails(CameraDetails(status: CameraStatus.CAMERA_NOT_RESPONDING));
+
+      librealsense.rs2_free_error(error.value);
+      calloc.free(error);
+
+      stop();
       return;
     }
 
@@ -339,6 +369,11 @@ class RealsenseIsolate extends CameraIsolate {
     librealsense.rs2_release_frame(frame);
 
     librealsense.rs2_start_processing_queue(
+      pointCloud,
+      pointCloudQueue,
+      ffi.nullptr,
+    );
+    librealsense.rs2_start_processing_queue(
       depthAlign,
       depthAlignQueue,
       ffi.nullptr,
@@ -350,6 +385,8 @@ class RealsenseIsolate extends CameraIsolate {
     );
 
     updateDetails(CameraDetails(status: CameraStatus.CAMERA_ENABLED));
+    librealsense.rs2_free_error(error.value);
+    calloc.free(error);
   }
 
   @override
@@ -403,19 +440,20 @@ class RealsenseIsolate extends CameraIsolate {
     final depthFrame = getDepthFrame(outputFrame.value);
 
     if (depthFrame != ffi.nullptr) {
-      await sendDepthFrame(depthFrame);
+      sendDepthFrame(depthFrame);
+      processDepthPointCloud(depthFrame);
+      librealsense.rs2_release_frame(depthFrame);
     }
 
     final rgbFrame = getRGBFrame(outputFrame.value);
 
     if (rgbFrame != ffi.nullptr) {
       await sendRgbFrame(rgbFrame);
+      librealsense.rs2_release_frame(rgbFrame);
     }
 
     fpsCount++;
 
-    librealsense.rs2_release_frame(depthFrame);
-    librealsense.rs2_release_frame(rgbFrame);
     librealsense.rs2_release_frame(outputFrame.value);
 
     calloc.free(outputFrame);
@@ -426,7 +464,10 @@ class RealsenseIsolate extends CameraIsolate {
   /// The [rs2_frame] passed into this function will not be disposed
   /// inside of the method, after calling this method, [frame] should
   /// be disposed manually
-  Future<void> sendDepthFrame(ffi.Pointer<rs2_frame> frame) async {
+  void sendDepthFrame(ffi.Pointer<rs2_frame> frame) {
+    if (depthResolution == null) {
+      return;
+    }
     librealsense.rs2_frame_add_ref(frame, ffi.nullptr);
     librealsense.rs2_process_frame(depthAlign, frame, ffi.nullptr);
 
@@ -489,12 +530,66 @@ class RealsenseIsolate extends CameraIsolate {
     calloc.free(colorizedOutput);
   }
 
+  /// Transforms a depth frame into a 3d pointcloud
+  ///
+  /// This will send the point cloud to the parent isolate in the form of a [PointCloudPayload]
+  ///
+  /// The [rs2_frame] passed into this function will not be disposed
+  /// inside of the method, after calling this method, [frame] should
+  /// be disposed manually
+  void processDepthPointCloud(ffi.Pointer<rs2_frame> frame) {
+    librealsense.rs2_frame_add_ref(frame, ffi.nullptr);
+    librealsense.rs2_process_frame(pointCloud, frame, ffi.nullptr);
+
+    final pointCloudOutput = calloc<ffi.Pointer<rs2_frame>>();
+
+    if (librealsense.rs2_poll_for_frame(
+          pointCloudQueue,
+          pointCloudOutput,
+          ffi.nullptr,
+        ) ==
+        0) {
+      sendLog(Level.error, "Could not process point cloud");
+      calloc.free(pointCloudOutput);
+      return;
+    }
+
+    final points = <Coordinates>[];
+
+    final vertices = librealsense.rs2_get_frame_vertices(
+      pointCloudOutput.value,
+      ffi.nullptr,
+    );
+    final verticesLength = librealsense.rs2_get_frame_points_count(
+      pointCloudOutput.value,
+      ffi.nullptr,
+    );
+
+    for (int i = 0; i < verticesLength; i++) {
+      points.add(
+        Coordinates(
+          x: vertices[i].xyz[0],
+          y: vertices[i].xyz[1],
+          z: vertices[i].xyz[2],
+        ),
+      );
+    }
+
+    sendToParent(PointCloudPayload(points));
+
+    librealsense.rs2_release_frame(pointCloudOutput.value);
+    calloc.free(pointCloudOutput);
+  }
+
   /// Processes and sends an rgb frame
   ///
   /// The [rs2_frame] passed into this function will not be disposed
   /// inside of the method, after calling this method, [frame] should
   /// be disposed manually
   Future<void> sendRgbFrame(ffi.Pointer<rs2_frame> frame) async {
+    if (rgbResolution == null) {
+      return;
+    }
     final rgbLength = librealsense.rs2_get_frame_data_size(frame, ffi.nullptr);
     final rgbData =
         librealsense.rs2_get_frame_data(frame, ffi.nullptr).cast<ffi.Uint8>();
