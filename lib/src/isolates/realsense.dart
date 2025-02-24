@@ -40,6 +40,18 @@ class RealsenseIsolate extends CameraIsolate {
   /// The processing block for 3d point clouds
   late ffi.Pointer<rs2_processing_block> pointCloud;
 
+  /// The frame queue for the decimation filter
+  late ffi.Pointer<rs2_frame_queue> filterQueue;
+
+  /// The processing block for the decimation filter
+  late ffi.Pointer<rs2_processing_block> decimationFilter;
+
+  /// The processing block for the threshold filter
+  late ffi.Pointer<rs2_processing_block> thresholdFilter;
+
+  /// The processing block for the temporal filter
+  late ffi.Pointer<rs2_processing_block> temporalFilter;
+
   /// The frame queue for the depth alignment process
   late ffi.Pointer<rs2_frame_queue> depthAlignQueue;
 
@@ -79,12 +91,51 @@ class RealsenseIsolate extends CameraIsolate {
   /// which do not rely on a specific device
   RealsenseIsolate({required super.details}) {
     pointCloud = librealsense.rs2_create_pointcloud(ffi.nullptr);
+    decimationFilter = librealsense.rs2_create_decimation_filter_block(
+      ffi.nullptr,
+    );
+    thresholdFilter = librealsense.rs2_create_threshold(ffi.nullptr);
+    temporalFilter = librealsense.rs2_create_temporal_filter_block(ffi.nullptr);
+    // Decimation filter (magnitude: 3)
+    librealsense.rs2_set_option(
+      decimationFilter.cast<rs2_options>(),
+      rs2_option.RS2_OPTION_FILTER_MAGNITUDE,
+      3,
+      ffi.nullptr,
+    );
+    // Threshold filter (min: 0.1, max: 4)
+    librealsense.rs2_set_option(
+      thresholdFilter.cast<rs2_options>(),
+      rs2_option.RS2_OPTION_MIN_DISTANCE,
+      0.1,
+      ffi.nullptr,
+    );
+    librealsense.rs2_set_option(
+      thresholdFilter.cast<rs2_options>(),
+      rs2_option.RS2_OPTION_MAX_DISTANCE,
+      5,
+      ffi.nullptr,
+    );
+    // Temporal filter (alpha: 0.4, delta: 20)
+    librealsense.rs2_set_option(
+      temporalFilter.cast<rs2_options>(),
+      rs2_option.RS2_OPTION_FILTER_SMOOTH_ALPHA,
+      0.4,
+      ffi.nullptr,
+    );
+    librealsense.rs2_set_option(
+      temporalFilter.cast<rs2_options>(),
+      rs2_option.RS2_OPTION_FILTER_SMOOTH_DELTA,
+      20,
+      ffi.nullptr,
+    );
     pointCloudQueue = librealsense.rs2_create_frame_queue(1, ffi.nullptr);
     depthAlign = librealsense.rs2_create_align(
       rs2_stream.RS2_STREAM_COLOR,
       ffi.nullptr,
     );
     depthAlignQueue = librealsense.rs2_create_frame_queue(1, ffi.nullptr);
+    filterQueue = librealsense.rs2_create_frame_queue(1, ffi.nullptr);
     colorizer = librealsense.rs2_create_colorizer(ffi.nullptr);
     colorizerQueue = librealsense.rs2_create_frame_queue(1, ffi.nullptr);
   }
@@ -94,10 +145,12 @@ class RealsenseIsolate extends CameraIsolate {
     final details = data.details;
     if (details.status == CameraStatus.CAMERA_DISABLED) {
       librealsense.rs2_delete_frame_queue(pointCloudQueue);
+      librealsense.rs2_delete_frame_queue(filterQueue);
       librealsense.rs2_delete_frame_queue(depthAlignQueue);
       librealsense.rs2_delete_frame_queue(colorizerQueue);
 
       librealsense.rs2_delete_processing_block(pointCloud);
+      librealsense.rs2_delete_processing_block(decimationFilter);
       librealsense.rs2_delete_processing_block(depthAlign);
       librealsense.rs2_delete_processing_block(colorizer);
 
@@ -375,6 +428,21 @@ class RealsenseIsolate extends CameraIsolate {
       ffi.nullptr,
     );
     librealsense.rs2_start_processing_queue(
+      decimationFilter,
+      filterQueue,
+      ffi.nullptr,
+    );
+    librealsense.rs2_start_processing_queue(
+      thresholdFilter,
+      filterQueue,
+      ffi.nullptr,
+    );
+    librealsense.rs2_start_processing_queue(
+      temporalFilter,
+      filterQueue,
+      ffi.nullptr,
+    );
+    librealsense.rs2_start_processing_queue(
       depthAlign,
       depthAlignQueue,
       ffi.nullptr,
@@ -425,39 +493,52 @@ class RealsenseIsolate extends CameraIsolate {
       return;
     }
 
-    final outputFrame = calloc<ffi.Pointer<rs2_frame>>();
+    return using((Arena arena) async {
+      final outputFrame = arena<ffi.Pointer<rs2_frame>>();
 
-    final success = librealsense.rs2_pipeline_poll_for_frames(
-      pipeline,
-      outputFrame,
-      ffi.nullptr,
-    );
+      final success = librealsense.rs2_pipeline_poll_for_frames(
+        pipeline,
+        outputFrame,
+        ffi.nullptr,
+      );
 
-    if (success != 1) {
-      calloc.free(outputFrame);
-      return;
-    }
+      if (success != 1) {
+        return;
+      }
 
-    final depthFrame = getDepthFrame(outputFrame.value);
+      final processingFutures = <Future<void>>[];
 
-    if (depthFrame != ffi.nullptr) {
-      sendDepthFrame(depthFrame);
-      processDepthPointCloud(depthFrame);
-      librealsense.rs2_release_frame(depthFrame);
-    }
+      final depthFrame = getDepthFrame(outputFrame.value);
 
-    final rgbFrame = getRGBFrame(outputFrame.value);
+      if (depthFrame != ffi.nullptr) {
+        processingFutures.add(
+          Future(() async {
+            await Future.wait([
+              sendDepthFrame(depthFrame, arena),
+              // processDepthPointCloud(depthFrame, arena),
+            ]);
+            librealsense.rs2_release_frame(depthFrame);
+          }),
+        );
+      }
 
-    if (rgbFrame != ffi.nullptr) {
-      await sendRgbFrame(rgbFrame);
-      librealsense.rs2_release_frame(rgbFrame);
-    }
+      final rgbFrame = getRGBFrame(outputFrame.value);
 
-    fpsCount++;
+      if (rgbFrame != ffi.nullptr) {
+        processingFutures.add(
+          Future(() async {
+            await sendRgbFrame(rgbFrame);
+            librealsense.rs2_release_frame(rgbFrame);
+          }),
+        );
+      }
 
-    librealsense.rs2_release_frame(outputFrame.value);
+      await Future.wait(processingFutures);
 
-    calloc.free(outputFrame);
+      fpsCount++;
+
+      librealsense.rs2_release_frame(outputFrame.value);
+    });
   }
 
   /// Processes, colorizes, and sends a depth frame
@@ -465,14 +546,17 @@ class RealsenseIsolate extends CameraIsolate {
   /// The [rs2_frame] passed into this function will not be disposed
   /// inside of the method, after calling this method, [frame] should
   /// be disposed manually
-  void sendDepthFrame(ffi.Pointer<rs2_frame> frame) {
+  Future<void> sendDepthFrame(
+    ffi.Pointer<rs2_frame> frame,
+    ffi.Allocator arena,
+  ) async {
     if (depthResolution == null) {
       return;
     }
     librealsense.rs2_frame_add_ref(frame, ffi.nullptr);
     librealsense.rs2_process_frame(depthAlign, frame, ffi.nullptr);
 
-    final alignedOutput = calloc<ffi.Pointer<rs2_frame>>();
+    final alignedOutput = arena<ffi.Pointer<rs2_frame>>();
     if (librealsense.rs2_poll_for_frame(
           depthAlignQueue,
           alignedOutput,
@@ -480,14 +564,13 @@ class RealsenseIsolate extends CameraIsolate {
         ) ==
         0) {
       sendLog(Level.error, "Could not align depth frame.");
-      calloc.free(alignedOutput);
       return;
     }
 
     librealsense.rs2_frame_add_ref(alignedOutput.value, ffi.nullptr);
     librealsense.rs2_process_frame(colorizer, alignedOutput.value, ffi.nullptr);
 
-    final colorizedOutput = calloc<ffi.Pointer<rs2_frame>>();
+    final colorizedOutput = arena<ffi.Pointer<rs2_frame>>();
 
     if (librealsense.rs2_poll_for_frame(
           colorizerQueue,
@@ -497,8 +580,6 @@ class RealsenseIsolate extends CameraIsolate {
         0) {
       sendLog(Level.error, "Could not colorize depth frame.");
       librealsense.rs2_release_frame(alignedOutput.value);
-      calloc.free(alignedOutput);
-      calloc.free(colorizedOutput);
       return;
     }
 
@@ -527,8 +608,6 @@ class RealsenseIsolate extends CameraIsolate {
     colorizedImage.dispose();
     librealsense.rs2_release_frame(alignedOutput.value);
     librealsense.rs2_release_frame(colorizedFrame);
-    calloc.free(alignedOutput);
-    calloc.free(colorizedOutput);
   }
 
   /// Transforms a depth frame into a 3d pointcloud
@@ -538,11 +617,72 @@ class RealsenseIsolate extends CameraIsolate {
   /// The [rs2_frame] passed into this function will not be disposed
   /// inside of the method, after calling this method, [frame] should
   /// be disposed manually
-  void processDepthPointCloud(ffi.Pointer<rs2_frame> frame) {
+  Future<void> processDepthPointCloud(
+    ffi.Pointer<rs2_frame> frame,
+    ffi.Allocator arena,
+  ) async {
     librealsense.rs2_frame_add_ref(frame, ffi.nullptr);
-    librealsense.rs2_process_frame(pointCloud, frame, ffi.nullptr);
+    librealsense.rs2_process_frame(decimationFilter, frame, ffi.nullptr);
 
-    final pointCloudOutput = calloc<ffi.Pointer<rs2_frame>>();
+    final decimationOutput = arena<ffi.Pointer<rs2_frame>>();
+
+    if (librealsense.rs2_poll_for_frame(
+          filterQueue,
+          decimationOutput,
+          ffi.nullptr,
+        ) ==
+        0) {
+      sendLog(Level.error, "Could not apply decimation filter");
+      return;
+    }
+
+    librealsense.rs2_frame_add_ref(decimationOutput.value, ffi.nullptr);
+    librealsense.rs2_process_frame(
+      thresholdFilter,
+      decimationOutput.value,
+      ffi.nullptr,
+    );
+
+    final thresholdOutput = arena<ffi.Pointer<rs2_frame>>();
+
+    if (librealsense.rs2_poll_for_frame(
+          filterQueue,
+          thresholdOutput,
+          ffi.nullptr,
+        ) ==
+        0) {
+      sendLog(Level.error, "Could not apply threshold filter");
+      librealsense.rs2_release_frame(decimationOutput.value);
+      return;
+    }
+
+    librealsense.rs2_frame_add_ref(thresholdOutput.value, ffi.nullptr);
+    librealsense.rs2_process_frame(
+      temporalFilter,
+      thresholdOutput.value,
+      ffi.nullptr,
+    );
+
+    final temporalOutput = arena<ffi.Pointer<rs2_frame>>();
+    if (librealsense.rs2_poll_for_frame(
+          filterQueue,
+          temporalOutput,
+          ffi.nullptr,
+        ) ==
+        0) {
+      sendLog(Level.error, "Could not apply temporal filter");
+      librealsense.rs2_release_frame(decimationOutput.value);
+      librealsense.rs2_release_frame(thresholdOutput.value);
+      return;
+    }
+
+    librealsense.rs2_process_frame(
+      pointCloud,
+      temporalOutput.value,
+      ffi.nullptr,
+    );
+
+    final pointCloudOutput = arena<ffi.Pointer<rs2_frame>>();
 
     if (librealsense.rs2_poll_for_frame(
           pointCloudQueue,
@@ -551,7 +691,9 @@ class RealsenseIsolate extends CameraIsolate {
         ) ==
         0) {
       sendLog(Level.error, "Could not process point cloud");
-      calloc.free(pointCloudOutput);
+      librealsense.rs2_release_frame(decimationOutput.value);
+      librealsense.rs2_release_frame(thresholdOutput.value);
+      librealsense.rs2_release_frame(temporalOutput.value);
       return;
     }
 
@@ -575,29 +717,26 @@ class RealsenseIsolate extends CameraIsolate {
         continue;
       }
 
-      if (y.abs() > 0.1 || z.abs() > 4) {
-        continue;
-      }
-
-      if (points.any(
-        (point) => sqrt(pow(x - point.x, 2) + pow(z - point.z, 2)) < 0.1,
-      )) {
+      if ((y - 0.1).abs() > 0.1) {
         continue;
       }
 
       points.add(Coordinates(x: x, y: y, z: z));
     }
 
-    print(points.length);
+    double distance(Coordinates coordinates) =>
+        sqrt(pow(coordinates.x, 2) + pow(coordinates.z, 2));
 
-    points.sort((a, b) => a.x.abs().compareTo(b.x.abs()));
+    points.sort((a, b) => distance(a).compareTo(distance(b)));
 
     sendToParent(
       PointCloudPayload(points.sublist(0, min(points.length, 3500))),
     );
 
+    librealsense.rs2_release_frame(decimationOutput.value);
+    librealsense.rs2_release_frame(thresholdOutput.value);
+    librealsense.rs2_release_frame(temporalOutput.value);
     librealsense.rs2_release_frame(pointCloudOutput.value);
-    calloc.free(pointCloudOutput);
   }
 
   /// Processes and sends an rgb frame
