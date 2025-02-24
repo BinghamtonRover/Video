@@ -44,7 +44,9 @@ class CameraManager extends Service {
 
     for (final name in CameraName.values) {
       switch (name) {
-        case CameraName.CAMERA_NAME_UNDEFINED: continue;
+        case CameraName.CAMERA_NAME_UNDEFINED:
+        case CameraName.ROVER_FRONT:
+          continue;
         case CameraName.AUTONOMY_DEPTH:
           final details = getRealsenseDetails(name);
           final isolate = RealsenseIsolate(details: details);
@@ -115,7 +117,11 @@ class CameraManager extends Service {
   /// Forwards the command to the appropriate camera.
   void _handleCommand(VideoCommand command) {
     collection.videoServer.sendMessage(command);  // echo the request
-    parent.sendToChild(data: command, id: command.details.name);
+    var name = command.details.name;
+    if (name == CameraName.ROVER_FRONT) {
+      name = CameraName.AUTONOMY_DEPTH;
+    }
+    parent.sendToChild(data: command, id: name);
   }
 
   void _handleVision(VideoData data) {
