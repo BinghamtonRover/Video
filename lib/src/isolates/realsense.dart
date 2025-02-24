@@ -1,8 +1,9 @@
 import "dart:ffi" as ffi;
 import "dart:io";
+import "dart:math";
 
 import "package:burt_network/burt_network.dart";
-import "package:dartcv4/dartcv.dart";
+import "package:dartcv4/dartcv.dart" hide min, pow, sqrt;
 import "package:ffi/ffi.dart";
 import "package:protobuf/protobuf.dart";
 import "package:video/src/generated/librealsense_bindings.dart";
@@ -127,7 +128,7 @@ class RealsenseIsolate extends CameraIsolate {
 
     sendLog(
       Level.error,
-      "RealSense Error ${librealsense.rs2_exception_type_to_string(type)}",
+      "RealSense Error ${librealsense.rs2_exception_type_to_string(type).toDartString()}",
       body: librealsense.rs2_get_error_message(error.value).toDartString(),
     );
 
@@ -565,17 +566,35 @@ class RealsenseIsolate extends CameraIsolate {
       ffi.nullptr,
     );
 
-    for (int i = 0; i < verticesLength; i++) {
-      points.add(
-        Coordinates(
-          x: vertices[i].xyz[0],
-          y: vertices[i].xyz[1],
-          z: vertices[i].xyz[2],
-        ),
-      );
+    for (int i = 0; i < verticesLength; i += 2) {
+      final x = vertices[i].xyz[0];
+      final y = vertices[i].xyz[1];
+      final z = vertices[i].xyz[2];
+
+      if (x.abs() == 0 || z.abs() == 0) {
+        continue;
+      }
+
+      if (y.abs() > 0.1 || z.abs() > 4) {
+        continue;
+      }
+
+      if (points.any(
+        (point) => sqrt(pow(x - point.x, 2) + pow(z - point.z, 2)) < 0.1,
+      )) {
+        continue;
+      }
+
+      points.add(Coordinates(x: x, y: y, z: z));
     }
 
-    sendToParent(PointCloudPayload(points));
+    print(points.length);
+
+    points.sort((a, b) => a.x.abs().compareTo(b.x.abs()));
+
+    sendToParent(
+      PointCloudPayload(points.sublist(0, min(points.length, 3500))),
+    );
 
     librealsense.rs2_release_frame(pointCloudOutput.value);
     calloc.free(pointCloudOutput);
