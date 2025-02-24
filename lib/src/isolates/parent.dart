@@ -44,10 +44,12 @@ class CameraManager extends Service {
 
     for (final name in CameraName.values) {
       switch (name) {
-        case CameraName.CAMERA_NAME_UNDEFINED: continue;
+        case CameraName.CAMERA_NAME_UNDEFINED:
+        case CameraName.ROVER_FRONT:
+          continue;
         case CameraName.AUTONOMY_DEPTH:
           final details = getRealsenseDetails(name);
-          final isolate = RealSenseIsolate(details: details);
+          final isolate = RealsenseIsolate(details: details);
           await parent.spawn(isolate);
         // All other cameras share the same logic, even future cameras
         default:  // ignore: no_default_cases
@@ -87,6 +89,10 @@ class CameraManager extends Service {
       case DepthFramePayload():
         collection.videoServer.sendMessage(VideoData(frame: data.frame.depthFrame), destination: autonomySocket);
         data.dispose();
+      case PointCloudPayload(:final points):
+        // TODO: Send a point cloud message to autonomy
+        // TODO: Look into filtering the message if it's too large
+        break;
       case LogPayload(): switch (data.level) {
         // Turns out using deprecated members when you *have* to still results in a lint.
         // See https://github.com/dart-lang/linter/issues/4852 for why we ignore it.
@@ -111,7 +117,11 @@ class CameraManager extends Service {
   /// Forwards the command to the appropriate camera.
   void _handleCommand(VideoCommand command) {
     collection.videoServer.sendMessage(command);  // echo the request
-    parent.sendToChild(data: command, id: command.details.name);
+    var name = command.details.name;
+    if (name == CameraName.ROVER_FRONT) {
+      name = CameraName.AUTONOMY_DEPTH;
+    }
+    parent.sendToChild(data: command, id: name);
   }
 
   void _handleVision(VideoData data) {
@@ -128,7 +138,10 @@ class CameraManager extends Service {
   void stopAll() {
     final command = VideoCommand(details: CameraDetails(status: CameraStatus.CAMERA_DISABLED));
     for (final name in CameraName.values) {
-      if (name == CameraName.CAMERA_NAME_UNDEFINED) continue;
+      if (name == CameraName.CAMERA_NAME_UNDEFINED ||
+          name == CameraName.ROVER_FRONT) {
+        continue;
+      }
       parent.sendToChild(data: command, id: name);
     }
   }
