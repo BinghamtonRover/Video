@@ -172,6 +172,9 @@ class OpenCVCameraIsolate extends CameraIsolate {
     final originalWbTemp = camera!.get(CAP_PROP_WB_TEMPERATURE);
     final originalAutoWb = camera!.get(CAP_PROP_AUTO_WB);
 
+    camera!.dispose();
+    camera = getCamera(name);
+
     camera!.setResolution(width: 10000, height: 10000);
 
     camera!.fps = 0;
@@ -186,10 +189,13 @@ class OpenCVCameraIsolate extends CameraIsolate {
     camera!.set(CAP_PROP_WB_TEMPERATURE, originalWbTemp);
 
     for (int i = 0; i < 3; i++) {
-      camera!.grab();
+      await camera!.grabAsync();
     }
 
     final (success, matrix) = await camera!.readAsync();
+    
+    camera!.dispose();
+    camera = getCamera(name);
 
     camera!.setResolution(width: originalWidth, height: originalHeight);
     camera!.fps = originalFps;
