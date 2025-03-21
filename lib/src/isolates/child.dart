@@ -102,7 +102,7 @@ abstract class CameraIsolate extends IsolateChild<IsolatePayload, VideoCommand> 
       final jpegData = await getScreenshotJpeg();
       isReadingFrame = false;
       if (jpegData != null) {
-        final baseDirectory = Platform.isLinux ? "/home/pi/shared" : "";
+        final baseDirectory = Platform.isLinux ? "/home/pi/shared" : Directory.current.path;
         final screenshotDirectory = "/screenshots/${name.name}";
         final directory = Directory(baseDirectory + screenshotDirectory);
 
