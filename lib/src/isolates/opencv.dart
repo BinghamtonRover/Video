@@ -1,3 +1,4 @@
+import "dart:io";
 import "dart:typed_data";
 
 import "package:dartcv4/dartcv.dart";
@@ -182,14 +183,20 @@ class OpenCVCameraIsolate extends CameraIsolate {
     if (details.hasFocus()) camera!.focus = details.focus;
     camera!.autofocus = details.autofocus;
 
-    camera!.set(CAP_PROP_AUTO_EXPOSURE, 3);
+    camera!.set(CAP_PROP_AUTO_EXPOSURE, Platform.isWindows ? 1 : 3);
     camera!.set(CAP_PROP_EXPOSURE, originalExposure);
 
-    camera!.set(CAP_PROP_AUTO_WB, 1);
+    camera!.set(CAP_PROP_AUTO_WB, Platform.isWindows ? 0 : 1);
     camera!.set(CAP_PROP_WB_TEMPERATURE, originalWbTemp);
+
+    final captureStart = DateTime.timestamp();
 
     for (int i = 0; i < 3; i++) {
       await camera!.grabAsync();
+      if (DateTime.timestamp().difference(captureStart) >
+          const Duration(seconds: 3)) {
+        break;
+      }
     }
 
     final (success, matrix) = await camera!.readAsync();
@@ -202,8 +209,24 @@ class OpenCVCameraIsolate extends CameraIsolate {
     if (details.hasZoom()) camera!.zoom = details.zoom;
     if (details.hasFocus()) camera!.focus = details.focus;
     camera!.autofocus = details.autofocus;
-    camera!.set(CAP_PROP_AUTO_EXPOSURE, originalAutoExposure);
-    camera!.set(CAP_PROP_AUTO_WB, originalAutoWb);
+
+    // For some reason on windows the auto exposure and wb returns -1 which causes strange issues
+    camera!.set(
+      CAP_PROP_AUTO_EXPOSURE,
+      originalAutoExposure >= 0
+          ? originalAutoExposure
+          : Platform.isWindows
+              ? 1
+              : 3,
+    );
+    camera!.set(
+      CAP_PROP_AUTO_WB,
+      originalAutoWb >= 0
+          ? originalAutoWb
+          : Platform.isWindows
+              ? 1
+              : 3,
+    );
 
     if (!success) return null;
 
