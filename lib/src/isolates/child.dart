@@ -98,27 +98,32 @@ abstract class CameraIsolate extends IsolateChild<IsolatePayload, VideoCommand> 
   /// Handles the incoming [VideoCommand]
   Future<void> handleCommand(VideoCommand command) async {
     if (command.takeSnapshot) {
-      isReadingFrame = true;
-      final jpegData = await getScreenshotJpeg();
-      isReadingFrame = false;
-      if (jpegData != null) {
-        final baseDirectory = Platform.isLinux ? "/home/pi/shared" : Directory.current.path;
-        final screenshotDirectory = "/screenshots/${name.name}";
-        final directory = Directory(baseDirectory + screenshotDirectory);
+      try {
+        isReadingFrame = true;
+        final jpegData = await getScreenshotJpeg();
+        isReadingFrame = false;
+        if (jpegData != null) {
+          final screenshotDirectory = "/screenshots/${name.name}";
+          final directory = Directory(baseDirectory + screenshotDirectory);
 
-        directory.createSync(recursive: true);
-        final files = directory.listSync();
-        final number = files.length;
-        File("${directory.path}/screenshot_$number.jpg").writeAsBytesSync(jpegData);
-        sendLog(Level.info, "Saved Screenshot");
-        sendToParent(
-          FramePayload(
-            details: details,
-            screenshotPath: "$screenshotDirectory/screenshot_$number.jpg",
-          ),
-        );
-      } else {
-        sendLog(Level.error, "Failed to take screenshot");
+          directory.createSync(recursive: true);
+          final files = directory.listSync();
+          final number = files.length;
+          File(
+            "${directory.path}/screenshot_$number.jpg",
+          ).writeAsBytesSync(jpegData);
+          sendLog(Level.info, "Saved Screenshot");
+          sendToParent(
+            FramePayload(
+              details: details,
+              screenshotPath: "$screenshotDirectory/screenshot_$number.jpg",
+            ),
+          );
+        } else {
+          sendLog(Level.error, "Failed to take screenshot");
+        }
+      } catch (_) {
+        isReadingFrame = false;
       }
     } else {
       updateDetails(command.details);
