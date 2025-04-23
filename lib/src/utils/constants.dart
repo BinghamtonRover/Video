@@ -70,8 +70,8 @@ CameraDetails loadCameraDetails(CameraDetails baseDetails, CameraName name) {
 /// Used when first creating the camera objects
 CameraDetails getDefaultDetails(CameraName name) => CameraDetails(
   name: name,
-  resolutionWidth: 600,
-  resolutionHeight: 600,
+  resolutionWidth: 300,
+  resolutionHeight: 300,
   quality: 75,
   fps: 24,
   diagonalFov: 64.9826,

@@ -82,11 +82,6 @@ class FrameProperties {
     );
     diagonalFoV = diagonal;
     focalLength = focal;
-
-    print(horizontalFoV);
-    print(verticalFoV);
-    print(diagonalFoV);
-    print(focalLength);
   }
 
   /// Constructor for frame properties, initializes capture resolutions, FOV,
