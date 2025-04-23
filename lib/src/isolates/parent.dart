@@ -64,6 +64,10 @@ class CameraManager extends Service {
   @override
   Future<void> dispose() async {
     stopAll();
+
+    // Wait a bit after sending the stop command so the messages are received properly
+    await Future<void>.delayed(const Duration(milliseconds: 750));
+
     await _commands?.cancel();
     await _vision?.cancel();
     await _data?.cancel();

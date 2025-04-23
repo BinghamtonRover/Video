@@ -94,7 +94,8 @@ abstract class CameraIsolate extends IsolateChild<IsolatePayload, VideoCommand> 
   void updateDetails(CameraDetails newDetails, {bool save = true}) {
     final shouldRestart = (newDetails.hasFps() && newDetails.fps != details.fps)
       || (newDetails.hasResolutionHeight() && newDetails.resolutionHeight != details.resolutionHeight)
-      || (newDetails.hasResolutionWidth() && newDetails.resolutionWidth != details.resolutionWidth);
+      || (newDetails.hasResolutionWidth() && newDetails.resolutionWidth != details.resolutionWidth)
+      || newDetails.status == CameraStatus.CAMERA_DISABLED;
     details.mergeFromMessage(newDetails);
     if (shouldRestart) {
       stop();
