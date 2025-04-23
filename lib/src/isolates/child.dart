@@ -29,7 +29,9 @@ const maxPacketLength = 60000;
 /// - calling [updateDetails] when a new [VideoCommand] arrives.
 abstract class CameraIsolate extends IsolateChild<IsolatePayload, VideoCommand> {
   /// The root directory of the shared network folder
-  static final String baseDirectory = Platform.isLinux ? "/home/pi/shared" : Directory.current.path;
+  static final String baseDirectory = Platform.isLinux
+      ? "${Platform.environment["HOME"]}/shared"
+      : Directory.current.path;
 
   /// Holds the current details of the camera.
   final CameraDetails details;
