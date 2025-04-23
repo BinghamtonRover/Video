@@ -122,7 +122,12 @@ abstract class CameraIsolate extends IsolateChild<IsolatePayload, VideoCommand> 
         } else {
           sendLog(Level.error, "Failed to take screenshot");
         }
-      } catch (_) {
+      } catch (e) {
+        sendLog(
+          Level.error,
+          "Error while taking screenshot",
+          body: e.toString(),
+        );
         isReadingFrame = false;
       }
     } else {
