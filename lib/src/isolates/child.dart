@@ -98,40 +98,46 @@ abstract class CameraIsolate extends IsolateChild<IsolatePayload, VideoCommand> 
   /// Handles the incoming [VideoCommand]
   Future<void> handleCommand(VideoCommand command) async {
     if (command.takeSnapshot) {
-      try {
-        isReadingFrame = true;
-        final jpegData = await getScreenshotJpeg();
-        isReadingFrame = false;
-        if (jpegData != null) {
-          final screenshotDirectory = "/screenshots/${name.name}";
-          final directory = Directory(baseDirectory + screenshotDirectory);
-
-          directory.createSync(recursive: true);
-          final files = directory.listSync();
-          final number = files.length;
-          File(
-            "${directory.path}/screenshot_$number.jpg",
-          ).writeAsBytesSync(jpegData);
-          sendLog(Level.info, "Saved Screenshot");
-          sendToParent(
-            FramePayload(
-              details: details,
-              screenshotPath: "$screenshotDirectory/screenshot_$number.jpg",
-            ),
-          );
-        } else {
-          sendLog(Level.error, "Failed to take screenshot");
-        }
-      } catch (e) {
-        sendLog(
-          Level.error,
-          "Error while taking screenshot",
-          body: e.toString(),
-        );
-        isReadingFrame = false;
-      }
+      return takeSnapshot();
     } else {
       updateDetails(command.details);
+    }
+  }
+
+  /// Takes a high quality, onboard image and saves it to a shared folder
+  ///
+  /// This is highly blocking, calling the [getScreenshotJpeg] to get a high quality image,
+  /// and saves it to [baseDirectory]/shared
+  ///
+  /// This should only be called on command
+  Future<void> takeSnapshot() async {
+    try {
+      isReadingFrame = true;
+      final jpegData = await getScreenshotJpeg();
+      isReadingFrame = false;
+      if (jpegData != null) {
+        final screenshotDirectory = "/screenshots/${name.name}";
+        final directory = Directory(baseDirectory + screenshotDirectory);
+
+        directory.createSync(recursive: true);
+        final files = directory.listSync();
+        final number = files.length;
+        File(
+          "${directory.path}/screenshot_$number.jpg",
+        ).writeAsBytesSync(jpegData);
+        sendLog(Level.info, "Saved Screenshot");
+        sendToParent(
+          FramePayload(
+            details: details,
+            screenshotPath: "$screenshotDirectory/screenshot_$number.jpg",
+          ),
+        );
+      } else {
+        sendLog(Level.error, "Failed to take screenshot");
+      }
+    } catch (e) {
+      sendLog(Level.error, "Error while taking screenshot", body: e.toString());
+      isReadingFrame = false;
     }
   }
 
