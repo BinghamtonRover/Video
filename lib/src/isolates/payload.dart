@@ -54,6 +54,15 @@ class DepthFramePayload extends IsolatePayload {
   void dispose() => frame.dispose();
 }
 
+/// A Point Cloud from the realsense to be sent for obstacle detection
+class PointCloudPayload extends IsolatePayload {
+  /// The list of 3d points in the cloud
+  final List<Coordinates> points;
+
+  /// Save the list of points
+  PointCloudPayload(this.points);
+}
+
 /// A container for data for the detected aruco tags
 class ObjectDetectionPayload extends IsolatePayload {
   /// The details of the camera that sent the detection

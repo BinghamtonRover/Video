@@ -15,25 +15,35 @@ if errorlevel 1 (
 	echo You can also do this manually with ^"git submodule update --init --recursive^"
 )
 
-rem Build realsense_ffi
+rem Build realsense sdk
+cd librealsense
 if not exist build mkdir build
 cd build
-cmake -DCMAKE_BUILD_TYPE=Release ..
+cmake -DCMAKE_BUILD_TYPE=Release ^
+	-DBUILD_EXAMPLES=ON ^
+	-DBUILD_GRAPHICAL_EXAMPLES=ON ^
+	-DBUILD_TOOLS=ON ^
+	-DBUILD_WITH_OPENMP=ON ^
+	-DBUILD_SHARED_LIBS=ON ^
+	-DBUILD_EASY_LOGGINGPP=OFF ^
+	-DBUILD_WITH_TM2=OFF ^
+	-DIMPORT_DEPTH_CAM_FW=OFF ^
+	..
 if errorlevel 1 ( 
-	cd ..
+	cd ../..
 	exit /b 1
 )
 cmake --build .
 if errorlevel 1 ( 
-	cd ..
+	cd ../..
 	exit /b 1
 )
-cd ..
+cd ../..
 
 rem Copy DLLs to the dist directory
 if not exist ..\dist mkdir ..\dist
 @REM copy build\bin\Debug\*.dll ..\dist
-copy build\Debug\*.dll ..\dist
+copy librealsense\build\Debug\*.dll ..\dist
 
 echo:
 echo Done! Your files are in the dist folder. Add this directory to your PATH:

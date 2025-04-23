@@ -48,8 +48,8 @@ class CameraManager extends Service {
         case CameraName.ROVER_FRONT:
           continue;
         case CameraName.AUTONOMY_DEPTH:
-          final details = loadCameraDetails(getRealsenseDetails(name), name);
-          final isolate = RealSenseIsolate(details: details);
+          final details = getRealsenseDetails(name);
+          final isolate = RealsenseIsolate(details: details);
           await parent.spawn(isolate);
         // All other cameras share the same logic, even future cameras
         default:  // ignore: no_default_cases
@@ -89,6 +89,10 @@ class CameraManager extends Service {
       case DepthFramePayload():
         collection.videoServer.sendMessage(VideoData(frame: data.frame.depthFrame), destination: autonomySocket);
         data.dispose();
+      case PointCloudPayload(:final points):
+        // TODO: Send a point cloud message to autonomy
+        // TODO: Look into filtering the message if it's too large
+        break;
       case LogPayload(): switch (data.level) {
         // Turns out using deprecated members when you *have* to still results in a lint.
         // See https://github.com/dart-lang/linter/issues/4852 for why we ignore it.
@@ -121,11 +125,11 @@ class CameraManager extends Service {
   /// Forwards the command to the appropriate camera.
   void _handleCommand(VideoCommand command) {
     collection.videoServer.sendMessage(command);  // echo the request
-    var cameraName = command.details.name;
-    if (cameraName == CameraName.ROVER_FRONT) {
-      cameraName = CameraName.AUTONOMY_DEPTH;
+    var name = command.details.name;
+    if (name == CameraName.ROVER_FRONT) {
+      name = CameraName.AUTONOMY_DEPTH;
     }
-    parent.sendToChild(data: command, id: cameraName);
+    parent.sendToChild(data: command, id: name);
   }
 
   void _handleVision(VideoData data) {
