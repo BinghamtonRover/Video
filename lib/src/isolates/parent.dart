@@ -53,7 +53,7 @@ class CameraManager extends Service {
           await parent.spawn(isolate);
         // All other cameras share the same logic, even future cameras
         default:  // ignore: no_default_cases
-          final details = getDefaultDetails(name);
+          final details = loadCameraDetails(getDefaultDetails(name), name);
           final isolate = OpenCVCameraIsolate(details: details);
           await parent.spawn(isolate);
       }
@@ -96,21 +96,29 @@ class CameraManager extends Service {
       case LogPayload(): switch (data.level) {
         // Turns out using deprecated members when you *have* to still results in a lint.
         // See https://github.com/dart-lang/linter/issues/4852 for why we ignore it.
-        case LogLevel.all: logger.info(data.message);
+        case LogLevel.all: logger.info(data.message, body: data.body);
         // ignore: deprecated_member_use
-        case LogLevel.verbose: logger.trace(data.message);
-        case LogLevel.trace: logger.trace(data.message);
-        case LogLevel.debug: logger.debug(data.message);
-        case LogLevel.info: logger.info(data.message);
-        case LogLevel.warning: logger.warning(data.message);
-        case LogLevel.error: logger.error(data.message);
+        case LogLevel.verbose: logger.trace(data.message, body: data.body);
+        case LogLevel.trace: logger.trace(data.message, body: data.body);
+        case LogLevel.debug: logger.debug(data.message, body: data.body);
+        case LogLevel.info: logger.info(data.message, body: data.body);
+        case LogLevel.warning: logger.warning(data.message, body: data.body);
+        case LogLevel.error: logger.error(data.message, body: data.body);
         // ignore: deprecated_member_use
-        case LogLevel.wtf: logger.info(data.message);
-        case LogLevel.fatal: logger.critical(data.message);
+        case LogLevel.wtf: logger.info(data.message, body: data.body);
+        case LogLevel.fatal: logger.critical(data.message, body: data.body);
         // ignore: deprecated_member_use
-        case LogLevel.nothing: logger.info(data.message);
-        case LogLevel.off: logger.info(data.message);
+        case LogLevel.nothing: logger.info(data.message, body: data.body);
+        case LogLevel.off: logger.info(data.message, body: data.body);
       }
+      case ObjectDetectionPayload(:final details, :final tags):
+        final visionResult = VideoData(
+          details: details,
+          detectedObjects: tags,
+          version: Version(major: 1, minor: 2),
+        );
+        collection.videoServer.sendMessage(visionResult);
+        collection.videoServer.sendMessage(visionResult, destination: autonomySocket);
     }
   }
 

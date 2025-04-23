@@ -1,12 +1,14 @@
 import "dart:ffi" as ffi;
 import "dart:io";
 import "dart:math";
+import "dart:typed_data";
 
 import "package:burt_network/burt_network.dart";
 import "package:dartcv4/dartcv.dart" hide min, pow, sqrt;
 import "package:ffi/ffi.dart";
 import "package:protobuf/protobuf.dart";
 import "package:video/src/generated/librealsense_bindings.dart";
+import "package:video/src/targeting/frame_properties.dart";
 import "package:video/utils.dart";
 import "package:video/video.dart";
 
@@ -456,6 +458,14 @@ class RealsenseIsolate extends CameraIsolate {
     updateDetails(CameraDetails(status: CameraStatus.CAMERA_ENABLED));
     librealsense.rs2_free_error(error.value);
     calloc.free(error);
+
+    frameProperties = FrameProperties.fromFrameDetails(
+      captureWidth: rgbResolution!.width,
+      captureHeight: rgbResolution!.height,
+      details: details,
+    );
+
+    sendLog(LogLevel.debug, "Started streaming from RealSense");
   }
 
   @override
@@ -754,7 +764,61 @@ class RealsenseIsolate extends CameraIsolate {
 
     final rgbImage = rgbData.toOpenCVMat(rgbResolution!, length: rgbLength);
 
-    final jpegImage = rgbImage.encodeJpg(quality: details.quality);
+    if (details.resolutionWidth != rgbImage.width ||
+        details.resolutionHeight != rgbImage.height) {
+      details.mergeFromMessage(
+        CameraDetails(
+          resolutionWidth: rgbImage.width,
+          resolutionHeight: rgbImage.height,
+        ),
+      );
+      saveDetails();
+    }
+
+    var streamWidth = rgbImage.width;
+    var streamHeight = rgbImage.height;
+    if (details.hasStreamWidth() && details.streamWidth > 0) {
+      streamWidth = details.streamWidth;
+    }
+    if (details.hasStreamHeight() && details.streamHeight > 0) {
+      streamHeight = details.streamHeight;
+    }
+    // don't enlarge image
+    if (streamWidth > rgbImage.width || streamHeight > rgbImage.height) {
+      streamWidth = rgbImage.width;
+      streamHeight = rgbImage.height;
+    }
+    if (details.streamWidth != streamWidth ||
+        details.streamHeight != streamHeight) {
+      updateDetails(CameraDetails(streamWidth: streamWidth, streamHeight: streamHeight));
+    }
+
+    Uint8List? jpegImage;
+    if (streamWidth < rgbImage.width || streamHeight < rgbImage.height) {
+      try {
+        // No idea why fx and fy are needed, but if they aren't present then
+        // sometimes it will throw errors
+        final resizedMatrix = resize(
+          rgbImage,
+          (streamWidth, streamHeight),
+          fx: streamWidth / rgbImage.width,
+          fy: streamHeight / rgbImage.height,
+          interpolation: INTER_AREA,
+        );
+        jpegImage = resizedMatrix.encodeJpg(quality: details.quality);
+        resizedMatrix.dispose();
+      } catch (e) {
+        sendLog(
+          LogLevel.error,
+          "Error when resizing RGB frame",
+          body: e.toString(),
+        );
+        rgbImage.dispose();
+        return;
+      }
+    } else {
+      jpegImage = rgbImage.encodeJpg(quality: details.quality);
+    }
 
     if (jpegImage == null) {
       sendLog(LogLevel.debug, "Could not encode RGB frame");

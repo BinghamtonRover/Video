@@ -33,8 +33,10 @@ class LogPayload extends IsolatePayload {
   final LogLevel level;
   /// The message to log.
   final String message;
+  /// The body of the message
+  final String? body;
   /// A const constructor.
-  const LogPayload({required this.level, required this.message});
+  const LogPayload({required this.level, required this.message, this.body});
 }
 
 /// A depth frame to be sent to the Autonomy program.
@@ -59,4 +61,17 @@ class PointCloudPayload extends IsolatePayload {
 
   /// Save the list of points
   PointCloudPayload(this.points);
+}
+
+/// A container for data for the detected aruco tags
+class ObjectDetectionPayload extends IsolatePayload {
+  /// The details of the camera that sent the detection
+  final CameraDetails details;
+
+  /// The list of all the tags that were detected in the frame
+  final List<DetectedObject> tags;
+
+  /// Const constructor for detection payload, initializes
+  /// the list of detected tags
+  ObjectDetectionPayload({required this.details, required this.tags});
 }
