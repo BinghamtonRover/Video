@@ -18,9 +18,11 @@ BurtRsStatus burt_rs::RealSense::init() {
   rs2::device_list devices = context.query_devices();
   if (devices.size() == 0) {
     std::cout << "[BurtRS] No devices found" << std::endl;
+    hasDevice = false;
     return BurtRsStatus::BurtRsStatus_no_device;
   } else if (devices.size() > 1) {
     std::cout << "[BurtRS] Multiple devices found!" << std::endl;
+    hasDevice = false;
     return BurtRsStatus::BurtRsStatus_too_many_devices;
   }
   device = devices[0];
@@ -57,7 +59,7 @@ BurtRsStatus burt_rs::RealSense::startStream() {
   auto rgb_width = rgb_frame.get_width();
   auto rgb_height = rgb_frame.get_height();
 
-  streaming = true;
+  streaming = hasDevice;
 
   // if (rgb_width == 0 || rgb_height == 0 || depth_width == 0 || depth_height == 0) {
   if (depth_width == 0 || depth_height == 0) {
@@ -74,6 +76,7 @@ BurtRsStatus burt_rs::RealSense::startStream() {
 void burt_rs::RealSense::stopStream() {
   pipeline.stop();
   streaming = false;
+  hasDevice = false;
 }
 
 // -------------------- Frame methods --------------------
