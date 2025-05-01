@@ -94,6 +94,9 @@ NativeFrames* burt_rs::RealSense::getDepthFrame() {
   if (!pipeline.poll_for_frames(&frames)) return nullptr;
   rs2::depth_frame depth_frame = frames.get_depth_frame();
   rs2::frame colorized_frame = colorizer.colorize(depth_frame);
+
+  rs2::frameset aligned_frames = align.process(frames);
+  rs2::depth_frame aligned_depth_frame = aligned_frames.get_depth_frame();
   rs2::frame rgb_frame = frames.get_color_frame();
 
   // Copy frames into a new uint8_t[]
