@@ -33,6 +33,7 @@ BurtRsStatus burt_rs::RealSense::init() {
   } else {
     config.scale = scale;
   }
+  hasDevice = true;
   return BurtRsStatus::BurtRsStatus_ok;
 }
 
