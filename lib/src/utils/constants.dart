@@ -34,7 +34,7 @@ Map<CameraName, int> cameraIndexes = {
 };
 
 /// Frames from this camera will be send to the vision program for further analysis.
-const findObjectsInCameraFeed = CameraName.CAMERA_NAME_UNDEFINED;
+final List<CameraName> findObjectsInCameraFeed = [];
 
 /// Returns the camera depending on device program is running
 ///

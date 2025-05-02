@@ -82,7 +82,7 @@ class CameraManager extends Service {
   void onData(IsolatePayload data) {
     switch (data) {
       case FramePayload(:final image, :final details):
-        if (data.details.name == findObjectsInCameraFeed) {
+        if (findObjectsInCameraFeed.contains(data.details.name)) {
           // Feeds from this camera get sent to the vision program.
           // The vision program will detect objects and send metadata to Autonomy.
           // The frames will be annotated and sent back here. See [_handleVision].
