@@ -29,12 +29,14 @@ const maxPacketLength = 60000;
 /// - calling [updateDetails] when a new [VideoCommand] arrives.
 abstract class CameraIsolate extends IsolateChild<IsolatePayload, VideoCommand> {
   // Jetson has 6 cores, Pi has 4
-  static String get _userHomeFolder => Platform.numberOfProcessors == 6 ? "/home/rover" : "/home/pi";
+  static final String _linuxUserHomeFolder =
+      Platform.numberOfProcessors == 6 ? "/home/rover" : "/home/pi";
 
   /// The root directory of the shared network folder
-  static final String baseDirectory = Platform.isLinux
-      ? "$_userHomeFolder/shared"
-      : Directory.current.path;
+  static final String baseDirectory =
+      Platform.isLinux
+          ? "$_linuxUserHomeFolder/shared"
+          : Directory.current.path;
 
   /// Holds the current details of the camera.
   final CameraDetails details;
