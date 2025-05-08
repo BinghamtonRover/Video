@@ -18,3 +18,5 @@ dist/
 camera_details/
 # Camera calibrations
 calibrations/
+# Screenshots
+screenshots/
