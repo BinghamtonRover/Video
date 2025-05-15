@@ -75,7 +75,9 @@ BurtRsStatus burt_rs::RealSense::startStream() {
 }
 
 void burt_rs::RealSense::stopStream() {
-  pipeline.stop();
+  if (streaming) {
+    pipeline.stop();
+  }
   streaming = false;
   hasDevice = false;
 }
