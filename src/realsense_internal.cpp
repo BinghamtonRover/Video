@@ -34,10 +34,6 @@ BurtRsStatus burt_rs::RealSense::init() {
     config.scale = scale;
   }
   hasDevice = true;
-  // disable IR lasers (for safety purposes)
-  if (sensor.supports(RS2_OPTION_LASER_POWER)) {
-    sensor.set_option(RS2_OPTION_LASER_POWER, 0.f);
-  }
 
   return BurtRsStatus::BurtRsStatus_ok;
 }
