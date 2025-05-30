@@ -104,12 +104,12 @@ abstract class CameraIsolate extends IsolateChild<IsolatePayload, VideoCommand> 
     }
   }
 
-  /// Takes a high quality, onboard image and saves it to a shared folder
+  /// Takes a high quality onboard image and saves it to a shared folder
   ///
-  /// This is highly blocking, calling the [getScreenshotJpeg] to get a high quality image,
+  /// This calls the [getScreenshotJpeg] obtain a high quality image,
   /// and saves it to [baseDirectory]/shared
   ///
-  /// This should only be called on command
+  /// This is highly blocking, and should only be called when a command is received
   Future<void> takeSnapshot() async {
     if (isReadingFrame) {
       sendLog(
