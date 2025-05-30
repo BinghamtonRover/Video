@@ -40,6 +40,12 @@ abstract class CameraIsolate extends IsolateChild<IsolatePayload, VideoCommand> 
 
   /// Holds the current details of the camera.
   final CameraDetails details;
+
+  /// The Aruco detector for detecting markers in an RGB video image
+  late final RoverArucoDetector arucoDetector = RoverArucoDetector(
+    config: defaultArucoConfig,
+  );
+
   /// Frame properties used for target tracking calculations
   FrameProperties? frameProperties;
 
