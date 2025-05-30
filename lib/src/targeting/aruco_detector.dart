@@ -81,6 +81,9 @@ class RoverArucoDetector {
   /// Calculations for the tag's 2d (or 3d) position will be made using the camera
   /// intrinsics from the provided [frameProperties]
   ///
+  /// 3D calculations are made using the SolvePnP Algorithm,
+  /// documentation of which can be found here: https://docs.opencv.org/4.x/d5/d1f/calib3d_solvePnP.html
+  ///
   /// If the [config] specifies to draw, an indicator will be drawn around the detected markers
   Future<List<DetectedObject>> process(
     Mat image,
