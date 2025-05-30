@@ -111,20 +111,28 @@ abstract class CameraIsolate extends IsolateChild<IsolatePayload, VideoCommand> 
   ///
   /// This should only be called on command
   Future<void> takeSnapshot() async {
+    if (isReadingFrame) {
+      sendLog(
+        Level.warning,
+        "Ignoring Screenshot Request",
+        body: "Request was received while reading frame",
+      );
+      return;
+    }
     try {
       isReadingFrame = true;
       final jpegData = await getScreenshotJpeg();
       isReadingFrame = false;
       if (jpegData != null) {
         final screenshotDirectory = "/screenshots/${name.name}";
-        final directory = Directory(baseDirectory + screenshotDirectory);
+        final cameraDirectory = Directory(baseDirectory + screenshotDirectory);
 
-        directory.createSync(recursive: true);
-        final files = directory.listSync();
+        await cameraDirectory.create(recursive: true);
+        final files = cameraDirectory.listSync();
         final number = files.length;
-        File(
-          "${directory.path}/screenshot_$number.jpg",
-        ).writeAsBytesSync(jpegData);
+        await File(
+          "${cameraDirectory.path}/screenshot_$number.jpg",
+        ).writeAsBytes(jpegData);
         sendLog(Level.info, "Saved Screenshot");
         sendToParent(
           FramePayload(
@@ -133,7 +141,7 @@ abstract class CameraIsolate extends IsolateChild<IsolatePayload, VideoCommand> 
           ),
         );
       } else {
-        sendLog(Level.error, "Failed to take screenshot");
+        sendLog(Level.error, "Failed to take screenshot, jpeg data is null");
       }
     } catch (e) {
       sendLog(Level.error, "Error while taking screenshot", body: e.toString());
