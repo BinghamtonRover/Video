@@ -5,7 +5,6 @@ import "dart:typed_data";
 
 import "package:burt_network/burt_network.dart";
 import "package:typed_isolate/typed_isolate.dart";
-import "package:video/src/targeting/frame_properties.dart";
 import "package:video/video.dart";
 
 /// The maximum size of a UDP packet, in bytes (minus a few to be safe).

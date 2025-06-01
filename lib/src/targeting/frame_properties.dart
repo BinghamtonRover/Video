@@ -4,7 +4,6 @@ import "dart:math" hide Point;
 
 import "package:burt_network/protobuf.dart";
 import "package:dartcv4/dartcv.dart" show Point;
-import "package:video/src/targeting/calibration_coefficients.dart";
 import "package:video/video.dart";
 
 /// A class to store the intrinsics of a camera, such as the FoV, focal length, and calibration data.
