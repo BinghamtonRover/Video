@@ -1,5 +1,4 @@
 import "dart:ffi";
-import "dart:typed_data";
 
 import "package:dartcv4/dartcv.dart";
 import "package:video/realsense.dart";
@@ -61,9 +60,9 @@ extension MatrixUtils on Mat {
   static final _crosshairColor = Scalar.fromRgb(0, 255, 0);
 
   /// Encodes this image as a JPG with the given quality.
-  Uint8List? encodeJpg({required int quality}) {
+  VecUChar? encodeJpg({required int quality}) {
     final params = VecI32.fromList([IMWRITE_JPEG_QUALITY, quality]);
-    final (success, frame) = imencode(".jpg", this, params: params);
+    final (success, frame) = imencodeVec(".jpg", this, params: params);
     return success ? frame : null;
   }
 
