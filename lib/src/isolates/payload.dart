@@ -31,7 +31,7 @@ class FramePayload extends IsolatePayload {
   /// This pointer will not be automatically freed from memory, call dispose()
   /// when this will no longer be accessed
   VecUChar? get image => address != null
-      ? VecUChar.fromPointer(Pointer.fromAddress(address!), false)
+      ? VecUChar.fromPointer(Pointer.fromAddress(address!), attach: false)
       : null;
 
   /// Frees the native image from memory, after this is called,
