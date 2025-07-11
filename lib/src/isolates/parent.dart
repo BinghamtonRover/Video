@@ -73,6 +73,12 @@ class CameraManager extends Service {
     // Dispose the parent isolate and kill all children before canceling
     // data subscription, just in case if one last native frame is received
     await parent.dispose();
+
+    // Wait just a little bit to ensure any remaining messages get sent
+    // otherwise, if a message contained native memory, it will never
+    // be disposed
+    await Future<void>.delayed(const Duration(milliseconds: 50));
+
     await _data?.cancel();
   }
 
