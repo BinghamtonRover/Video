@@ -23,8 +23,11 @@ class FramePayload extends IsolatePayload {
   /// The native address of the image in memory
   final int? address;
 
+  /// The path of the screenshot
+  String? screenshotPath;
+
   /// Const constructor for [FramePayload.
-  FramePayload({required this.details, this.address});
+  FramePayload({required this.details, this.address, this.screenshotPath});
 
   /// The native image being sent from the pointer address
   ///
