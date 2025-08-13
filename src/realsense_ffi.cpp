@@ -38,6 +38,7 @@ BurtRsConfig RealSense_getDeviceConfig(NativeRealSense* ptr) {
 BurtRsStatus RealSense_startStream(NativeRealSense* ptr) {
   return reinterpret_cast<burt_rs::RealSense*>(ptr)->startStream();
 }
+
 void RealSense_stopStream(NativeRealSense* ptr) {
   reinterpret_cast<burt_rs::RealSense*>(ptr)->stopStream();
 }

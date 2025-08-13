@@ -18,12 +18,18 @@ class OpenCVCameraIsolate extends CameraIsolate {
   @override
   void initCamera() {
     camera = getCamera(name);
+    camera!.set(CAP_PROP_FOURCC, VideoCapture.toCodec("MJPG"));
     camera?.setResolution(width: details.resolutionWidth, height: details.resolutionHeight);
     frameProperties = FrameProperties.fromFrameDetails(
       captureWidth: camera!.width,
       captureHeight: camera!.height,
       details: details,
     );
+    if (details.hasFps()) camera?.fps = details.fps;
+    if (details.hasZoom()) camera?.zoom = details.zoom;
+    if (details.hasFocus()) camera?.focus = details.focus;
+    camera?.autofocus = details.autofocus;
+
     if (!camera!.isOpened) {
       sendLog(LogLevel.warning, "Camera $name is not connected");
       updateDetails(CameraDetails(status: CameraStatus.CAMERA_DISCONNECTED), save: false);
@@ -57,8 +63,8 @@ class OpenCVCameraIsolate extends CameraIsolate {
     if (details.hasFocus() && details.focus != camera!.focus) {
       camera!.focus = details.focus;
     }
-    if (details.hasAutofocus() && details.autofocus != (camera!.autofocus == 1)) {
-      camera!.autofocus = details.focus;
+    if (details.hasAutofocus() && details.autofocus != camera!.autofocus) {
+      camera!.autofocus = details.autofocus;
     }
     if (frameProperties == null ||
         (newDetails.hasDiagonalFov() && newDetails.diagonalFov != frameProperties!.diagonalFoV) ||
@@ -149,5 +155,54 @@ class OpenCVCameraIsolate extends CameraIsolate {
 
     sendFrame(frame);
     fpsCount++;
+  }
+
+  @override
+  Future<Uint8List?> getScreenshotJpeg() async {
+    if (camera == null) {
+      return null;
+    }
+    final originalWidth = camera!.get(CAP_PROP_FRAME_WIDTH).toInt();
+    final originalHeight = camera!.get(CAP_PROP_FRAME_HEIGHT).toInt();
+
+    camera!.dispose();
+    camera = getCamera(name);
+
+    camera!.set(CAP_PROP_FOURCC, VideoCapture.toCodec("MJPG"));
+    camera!.setResolution(width: 10000, height: 10000);
+
+    camera!.fps = 0;
+    if (details.hasZoom()) camera!.zoom = details.zoom;
+    if (details.hasFocus()) camera!.focus = details.focus;
+    camera!.autofocus = details.autofocus;
+
+    final captureStart = DateTime.timestamp();
+
+    for (int i = 0; i < 3; i++) {
+      await camera!.grabAsync();
+      if (DateTime.timestamp().difference(captureStart) >
+          const Duration(seconds: 3)) {
+        break;
+      }
+    }
+
+    final (success, matrix) = await camera!.readAsync();
+    
+    camera!.dispose();
+    camera = getCamera(name);
+
+    camera!.set(CAP_PROP_FOURCC, VideoCapture.toCodec("MJPG"));
+    camera!.setResolution(width: originalWidth, height: originalHeight);
+    camera!.fps = details.fps;
+    if (details.hasZoom()) camera!.zoom = details.zoom;
+    if (details.hasFocus()) camera!.focus = details.focus;
+    camera!.autofocus = details.autofocus;
+
+    if (!success) return null;
+
+    final frame = matrix.encodeJpg(quality: 100);
+    matrix.dispose();
+
+    return frame;
   }
 }
