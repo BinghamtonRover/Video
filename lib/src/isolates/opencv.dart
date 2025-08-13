@@ -156,7 +156,7 @@ class OpenCVCameraIsolate extends CameraIsolate {
   }
 
   @override
-  Future<Uint8List?> getScreenshotJpeg() async {
+  Future<VecUChar?> getScreenshotJpeg() async {
     if (camera == null) {
       return null;
     }

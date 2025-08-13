@@ -132,7 +132,7 @@ abstract class CameraIsolate extends IsolateChild<IsolatePayload, VideoCommand> 
         final number = files.length;
         await File(
           "${cameraDirectory.path}/screenshot_$number.jpg",
-        ).writeAsBytes(jpegData);
+        ).writeAsBytes(jpegData.toU8List());
         sendLog(Level.info, "Saved Screenshot");
         sendToParent(
           FramePayload(
@@ -202,7 +202,7 @@ abstract class CameraIsolate extends IsolateChild<IsolatePayload, VideoCommand> 
   /// and get saved as a screenshot
   /// 
   /// Most likely, this image will be too big to send over the network
-  Future<Uint8List?> getScreenshotJpeg();
+  Future<VecUChar?> getScreenshotJpeg();
 
   /// Sends an individual frame to the dashboard.
   ///
