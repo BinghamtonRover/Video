@@ -1,9 +1,9 @@
 import "dart:async";
 import "dart:convert";
 import "dart:io";
-import "dart:typed_data";
 
 import "package:burt_network/burt_network.dart";
+import "package:dartcv4/dartcv.dart";
 import "package:typed_isolate/typed_isolate.dart";
 import "package:video/video.dart";
 
@@ -137,7 +137,7 @@ abstract class CameraIsolate extends IsolateChild<IsolatePayload, VideoCommand> 
         final number = files.length;
         await File(
           "${cameraDirectory.path}/screenshot_$number.jpg",
-        ).writeAsBytes(jpegData);
+        ).writeAsBytes(jpegData.toU8List());
         sendLog(Level.info, "Saved Screenshot");
         sendToParent(
           FramePayload(
@@ -207,17 +207,23 @@ abstract class CameraIsolate extends IsolateChild<IsolatePayload, VideoCommand> 
   /// and get saved as a screenshot
   /// 
   /// Most likely, this image will be too big to send over the network
-  Future<Uint8List?> getScreenshotJpeg();
+  Future<VecUChar?> getScreenshotJpeg();
 
   /// Sends an individual frame to the dashboard.
   ///
   /// This function also checks if the frame is too big to send, and if so,
   /// lowers the JPG quality by 1%. If the quality reaches 25% (visually noticeable),
   /// an error is logged instead.
-  void sendFrame(Uint8List image, {CameraDetails? detailsOverride}) {
+  void sendFrame(VecUChar image, {CameraDetails? detailsOverride}) {
     final details = detailsOverride ?? this.details;
-    if (image.length < maxPacketLength) {  // Frame can be sent
-      sendToParent(FramePayload(details: details, image: image));
+    // Frame can be sent
+    if (image.length < maxPacketLength) {
+      // Since we're sending the image's pointer address over an isolate, we don't
+      // want the image to be automatically released from memory since it will cause
+      // a segfault, we detach it from the finalizer and will release the memory manually
+      // from the parent isolate
+      VecUChar.finalizer.detach(image);
+      sendToParent(FramePayload(details: details, address: image.ptr.address));
     } else if (details.quality > 25) {  // Frame too large, lower quality
       sendLog(LogLevel.debug, "Lowering quality for $name from ${details.quality}");
       details.quality -= 1;  // maybe next frame can send

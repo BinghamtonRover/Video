@@ -1,5 +1,3 @@
-import "dart:typed_data";
-
 import "package:dartcv4/dartcv.dart";
 import "package:burt_network/burt_network.dart";
 
@@ -123,7 +121,7 @@ class OpenCVCameraIsolate extends CameraIsolate {
       updateDetails(CameraDetails(streamWidth: streamWidth, streamHeight: streamHeight));
     }
 
-    Uint8List? frame;
+    VecUChar? frame;
     // don't resize unless if the stream is different from the capture
     if (streamWidth < matrix.width || streamHeight < matrix.height) {
       try {
@@ -163,7 +161,7 @@ class OpenCVCameraIsolate extends CameraIsolate {
   }
 
   @override
-  Future<Uint8List?> getScreenshotJpeg() async {
+  Future<VecUChar?> getScreenshotJpeg() async {
     if (camera == null) {
       return null;
     }

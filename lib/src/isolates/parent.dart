@@ -70,8 +70,16 @@ class CameraManager extends Service {
 
     await _commands?.cancel();
     await _vision?.cancel();
-    await _data?.cancel();
+    // Dispose the parent isolate and kill all children before canceling
+    // data subscription, just in case if one last native frame is received
     await parent.dispose();
+
+    // Wait just a little bit to ensure any remaining messages get sent
+    // otherwise, if a message contained native memory, it will never
+    // be disposed
+    await Future<void>.delayed(const Duration(milliseconds: 50));
+
+    await _data?.cancel();
   }
 
   /// Handles data coming from the child isolates.
@@ -81,7 +89,9 @@ class CameraManager extends Service {
   /// - If a [LogPayload] comes, logs the message using [logger].
   void onData(IsolatePayload data) {
     switch (data) {
-      case FramePayload(:final details, :final image, :final screenshotPath):
+      case FramePayload(:final details, :final screenshotPath):
+        final image = data.image?.toU8List();
+        data.dispose();
         if (data.details.name == findObjectsInCameraFeed) {
           // Feeds from this camera get sent to the vision program.
           // The vision program will detect objects and send metadata to Autonomy.

@@ -1,7 +1,7 @@
 import "dart:ffi";
-import "dart:typed_data";
 
 import "package:burt_network/burt_network.dart";
+import "package:dartcv4/dartcv.dart";
 import "package:video/video.dart";
 
 /// A payload containing some data to report back to the parent isolate.
@@ -20,14 +20,26 @@ class FramePayload extends IsolatePayload {
   /// The details of the camera this frame came from.
   final CameraDetails details;
 
-  /// The image to send.
-  final Uint8List? image;
+  /// The native address of the image in memory
+  final int? address;
 
   /// The path of the screenshot
   String? screenshotPath;
 
-  /// A const constructor.
-  FramePayload({required this.details, this.image, this.screenshotPath});
+  /// Const constructor for [FramePayload.
+  FramePayload({required this.details, this.address, this.screenshotPath});
+
+  /// The native image being sent from the pointer address
+  ///
+  /// This pointer will not be automatically freed from memory, call dispose()
+  /// when this will no longer be accessed
+  VecUChar? get image => address != null
+      ? VecUChar.fromPointer(Pointer.fromAddress(address!), attach: false)
+      : null;
+
+  /// Frees the native image from memory, after this is called,
+  /// [image] should no longer be accessed
+  void dispose() => image?.dispose();
 }
 
 /// A class to send log messages across isolates. The parent isolate is responsible for logging.
