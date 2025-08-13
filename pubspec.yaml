@@ -16,7 +16,7 @@ dependencies:
   dartcv4: ^1.1.4
 
 dev_dependencies:
-  ffigen: ^16.0.0
+  ffigen: ^19.1.0
   test: ^1.21.0
   very_good_analysis: ^6.0.0
 
@@ -44,3 +44,4 @@ ffigen:
         'dart-type': 'Utf8'
   compiler-opts:
     - '-Isrc/librealsense/include'
+
