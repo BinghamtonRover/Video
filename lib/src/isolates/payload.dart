@@ -23,8 +23,11 @@ class FramePayload extends IsolatePayload {
   /// The image to send.
   final Uint8List? image;
 
+  /// The path of the screenshot
+  String? screenshotPath;
+
   /// A const constructor.
-  FramePayload({required this.details, this.image});
+  FramePayload({required this.details, this.image, this.screenshotPath});
 }
 
 /// A class to send log messages across isolates. The parent isolate is responsible for logging.

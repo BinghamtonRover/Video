@@ -52,8 +52,8 @@ extension VideoCaptureUtils on VideoCapture {
   set roll(int value) => set(35, value.toDouble());
 
   /// Determines whether autofocus is on or off
-  int get autofocus => get(39).toInt();
-  set autofocus(int value) => set(39, value.toDouble());
+  bool get autofocus => get(39) == 1;
+  set autofocus(bool value) => set(39, value ? 1 : 0);
 }
 
 /// Useful methods on OpenCV images.
