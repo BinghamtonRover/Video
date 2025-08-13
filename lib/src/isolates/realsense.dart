@@ -1,5 +1,4 @@
 import "dart:ffi";
-import "dart:typed_data";
 
 import "package:burt_network/burt_network.dart";
 import "package:dartcv4/dartcv.dart";
@@ -112,7 +111,7 @@ class RealSenseIsolate extends CameraIsolate {
   }
 
   @override
-  Future<Uint8List?> getScreenshotJpeg() async {
+  Future<VecUChar?> getScreenshotJpeg() async {
     // Get frames from RealSense
     final frames = camera.getFrames();
     if (frames == nullptr) return null;
@@ -171,7 +170,7 @@ class RealSenseIsolate extends CameraIsolate {
       updateDetails(CameraDetails(streamWidth: streamWidth, streamHeight: streamHeight));
     }
 
-    Uint8List? frame;
+    VecUChar? frame;
     if (streamWidth < rgbMatrix.width || streamHeight < rgbMatrix.height) {
       try {
         // No idea why fx and fy are needed, but if they aren't present then
