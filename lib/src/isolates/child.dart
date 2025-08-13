@@ -26,16 +26,17 @@ const maxPacketLength = 60000;
 /// - periodically logging how many frames were successfully read
 /// - periodically calling [sendFrames] to read the camera
 /// - calling [updateDetails] when a new [VideoCommand] arrives.
-abstract class CameraIsolate extends IsolateChild<IsolatePayload, VideoCommand> {
+abstract class CameraIsolate
+    extends IsolateChild<IsolatePayload, VideoCommand> {
   // Jetson has 6 cores, Pi has 4
-  static final String _linuxUserHomeFolder =
-      Platform.numberOfProcessors == 6 ? "/home/rover" : "/home/pi";
+  static final String _linuxUserHomeFolder = Platform.numberOfProcessors == 6
+      ? "/home/rover"
+      : "/home/pi";
 
   /// The root directory of the shared network folder
-  static final String baseDirectory =
-      Platform.isLinux
-          ? "$_linuxUserHomeFolder/shared"
-          : Directory.current.path;
+  static final String baseDirectory = Platform.isLinux
+      ? "$_linuxUserHomeFolder/shared"
+      : Directory.current.path;
 
   /// Holds the current details of the camera.
   final CameraDetails details;
@@ -53,10 +54,13 @@ abstract class CameraIsolate extends IsolateChild<IsolatePayload, VideoCommand> 
 
   /// A timer to periodically send the camera status to the dashboard.
   Timer? statusTimer;
+
   /// A timer to read from the camera at an FPS given by [details].
   Timer? frameTimer;
+
   /// A timer to log out the [fpsCount] every 5 seconds using [sendLog].
   Timer? fpsTimer;
+
   /// Records how many FPS this camera is actually running at.
   int fpsCount = 0;
 
@@ -74,13 +78,7 @@ abstract class CameraIsolate extends IsolateChild<IsolatePayload, VideoCommand> 
   /// Note: it is important to _not_ log this message directly in _this_ isolate, as it will
   /// not be configurable by the parent isolate and will not be sent to the Dashboard.
   void sendLog(LogLevel level, String message, {String? body}) =>
-    sendToParent(
-      LogPayload(
-        level: level,
-        message: message,
-        body: body,
-      ),
-    );
+      sendToParent(LogPayload(level: level, message: message, body: body));
 
   @override
   Future<void> onSpawn() async {
@@ -156,10 +154,13 @@ abstract class CameraIsolate extends IsolateChild<IsolatePayload, VideoCommand> 
 
   /// Updates the camera's [details], which will take effect on the next [sendFrame] call.
   void updateDetails(CameraDetails newDetails, {bool save = true}) {
-    final shouldRestart = (newDetails.hasFps() && newDetails.fps != details.fps)
-      || (newDetails.hasResolutionHeight() && newDetails.resolutionHeight != details.resolutionHeight)
-      || (newDetails.hasResolutionWidth() && newDetails.resolutionWidth != details.resolutionWidth)
-      || newDetails.status == CameraStatus.CAMERA_DISABLED;
+    final shouldRestart =
+        (newDetails.hasFps() && newDetails.fps != details.fps) ||
+        (newDetails.hasResolutionHeight() &&
+            newDetails.resolutionHeight != details.resolutionHeight) ||
+        (newDetails.hasResolutionWidth() &&
+            newDetails.resolutionWidth != details.resolutionWidth) ||
+        newDetails.status == CameraStatus.CAMERA_DISABLED;
     details.mergeFromMessage(newDetails);
     if (shouldRestart) {
       stop();
@@ -181,7 +182,10 @@ abstract class CameraIsolate extends IsolateChild<IsolatePayload, VideoCommand> 
       }
       configFile.writeAsStringSync(jsonEncode(details.toProto3Json()));
     } catch (e) {
-      logger.error("Failed to save details to ${configFile.path}", body: e.toString());
+      logger.error(
+        "Failed to save details to ${configFile.path}",
+        body: e.toString(),
+      );
     }
   }
 
@@ -202,10 +206,10 @@ abstract class CameraIsolate extends IsolateChild<IsolatePayload, VideoCommand> 
   Future<void> sendFrames();
 
   /// Reads a frame and returns the data in jpeg format
-  /// 
+  ///
   /// The image this returns is intended to be taken at maximum quality
   /// and get saved as a screenshot
-  /// 
+  ///
   /// Most likely, this image will be too big to send over the network
   Future<VecUChar?> getScreenshotJpeg();
 
@@ -224,12 +228,23 @@ abstract class CameraIsolate extends IsolateChild<IsolatePayload, VideoCommand> 
       // from the parent isolate
       VecUChar.finalizer.detach(image);
       sendToParent(FramePayload(details: details, address: image.ptr.address));
-    } else if (details.quality > 25) {  // Frame too large, lower quality
-      sendLog(LogLevel.debug, "Lowering quality for $name from ${details.quality}");
-      details.quality -= 1;  // maybe next frame can send
-    } else {  // Frame too large, quality cannot be lowered
-      sendLog(LogLevel.warning, "Frame from camera $name are too large (${image.length})");
-      updateDetails(CameraDetails(status: CameraStatus.FRAME_TOO_LARGE), save: false);
+    } else if (details.quality > 25) {
+      // Frame too large, lower quality
+      sendLog(
+        LogLevel.debug,
+        "Lowering quality for $name from ${details.quality}",
+      );
+      details.quality -= 1; // maybe next frame can send
+    } else {
+      // Frame too large, quality cannot be lowered
+      sendLog(
+        LogLevel.warning,
+        "Frame from camera $name are too large (${image.length})",
+      );
+      updateDetails(
+        CameraDetails(status: CameraStatus.FRAME_TOO_LARGE),
+        save: false,
+      );
     }
   }
 
@@ -237,7 +252,9 @@ abstract class CameraIsolate extends IsolateChild<IsolatePayload, VideoCommand> 
   void start() {
     if (details.status != CameraStatus.CAMERA_ENABLED) return;
     sendLog(LogLevel.debug, "Starting camera $name. Status=${details.status}");
-    final interval = details.fps == 0 ? Duration.zero : Duration(milliseconds: 1000 ~/ details.fps);
+    final interval = details.fps == 0
+        ? Duration.zero
+        : Duration(milliseconds: 1000 ~/ details.fps);
     frameTimer = Timer.periodic(interval, _frameCallback);
     fpsTimer = Timer.periodic(const Duration(seconds: 5), (_) {
       sendLog(LogLevel.trace, "Camera $name sent ${fpsCount ~/ 5} frames");

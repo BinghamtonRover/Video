@@ -9,7 +9,9 @@ import "package:video/video.dart";
 /// Instead of having nullable fields on this class, we subclass it and provide
 /// only the relevant fields for each subclass. That way, for example, you cannot
 /// accidentally send a frame without a [CameraDetails].
-sealed class IsolatePayload { const IsolatePayload(); }
+sealed class IsolatePayload {
+  const IsolatePayload();
+}
 
 /// A container for a pointer to a native buffer that can be sent across isolates.
 ///
@@ -46,10 +48,13 @@ class FramePayload extends IsolatePayload {
 class LogPayload extends IsolatePayload {
   /// The level to log this message.
   final LogLevel level;
+
   /// The message to log.
   final String message;
+
   /// The body of the message
   final String? body;
+
   /// A const constructor.
   const LogPayload({required this.level, required this.message, this.body});
 }
@@ -58,9 +63,9 @@ class LogPayload extends IsolatePayload {
 class DepthFramePayload extends IsolatePayload {
   /// The address of the data in memory, since pointers cannot be sent across isolates.
   final int address;
+
   /// Saves the address of the pointer to send across isolates.
-  DepthFramePayload(Pointer<NativeFrames> pointer) :
-    address = pointer.address;
+  DepthFramePayload(Pointer<NativeFrames> pointer) : address = pointer.address;
 
   /// The native frame being referenced by this pointer.
   Pointer<NativeFrames> get frame => Pointer<NativeFrames>.fromAddress(address);

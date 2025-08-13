@@ -32,6 +32,7 @@ extension on CameraDetails {
 class RealSenseIsolate extends CameraIsolate {
   /// The native RealSense object. MUST be `late` so it isn't initialized on the parent isolate.
   late final RealSenseInterface camera = RealSenseInterface.forPlatform();
+
   /// Creates an isolate to read from the RealSense camera.
   RealSenseIsolate({required super.details});
 
@@ -118,7 +119,10 @@ class RealSenseIsolate extends CameraIsolate {
     // Compress colorized frame
     final Pointer<Uint8> rawColorized = frames.ref.colorized_data;
     if (rawColorized == nullptr) return null;
-    final colorizedMatrix = rawColorized.toOpenCVMat(camera.depthResolution, length: frames.ref.colorized_length);
+    final colorizedMatrix = rawColorized.toOpenCVMat(
+      camera.depthResolution,
+      length: frames.ref.colorized_length,
+    );
     final colorizedJpg = colorizedMatrix.encodeJpg(quality: details.quality);
 
     colorizedMatrix.dispose();
@@ -172,7 +176,9 @@ class RealSenseIsolate extends CameraIsolate {
     }
     if (details.streamWidth != streamWidth ||
         details.streamHeight != streamHeight) {
-      updateDetails(CameraDetails(streamWidth: streamWidth, streamHeight: streamHeight));
+      updateDetails(
+        CameraDetails(streamWidth: streamWidth, streamHeight: streamHeight),
+      );
     }
 
     VecUChar? frame;

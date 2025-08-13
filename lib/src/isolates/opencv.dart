@@ -16,7 +16,10 @@ class OpenCVCameraIsolate extends CameraIsolate {
   void initCamera() {
     camera = getCamera(name);
     camera!.set(CAP_PROP_FOURCC, VideoCapture.toCodec("MJPG"));
-    camera?.setResolution(width: details.resolutionWidth, height: details.resolutionHeight);
+    camera?.setResolution(
+      width: details.resolutionWidth,
+      height: details.resolutionHeight,
+    );
     frameProperties = FrameProperties.fromFrameDetails(
       captureWidth: camera!.width,
       captureHeight: camera!.height,
@@ -29,7 +32,10 @@ class OpenCVCameraIsolate extends CameraIsolate {
 
     if (!camera!.isOpened) {
       sendLog(LogLevel.warning, "Camera $name is not connected");
-      updateDetails(CameraDetails(status: CameraStatus.CAMERA_DISCONNECTED), save: false);
+      updateDetails(
+        CameraDetails(status: CameraStatus.CAMERA_DISCONNECTED),
+        save: false,
+      );
       stop();
     }
   }
@@ -44,9 +50,14 @@ class OpenCVCameraIsolate extends CameraIsolate {
   void updateDetails(CameraDetails newDetails, {bool save = true}) {
     super.updateDetails(newDetails, save: save);
     if (details.status != CameraStatus.CAMERA_ENABLED || camera == null) return;
-    if ((details.hasResolutionWidth() && details.resolutionWidth != camera!.width) ||
-        details.hasResolutionHeight() && details.resolutionHeight != camera!.height) {
-      camera?.setResolution(width: details.resolutionWidth, height: details.resolutionHeight);
+    if ((details.hasResolutionWidth() &&
+            details.resolutionWidth != camera!.width) ||
+        details.hasResolutionHeight() &&
+            details.resolutionHeight != camera!.height) {
+      camera?.setResolution(
+        width: details.resolutionWidth,
+        height: details.resolutionHeight,
+      );
     }
     if (details.hasZoom() && details.zoom != camera!.zoom) {
       camera!.zoom = details.zoom;
@@ -64,7 +75,8 @@ class OpenCVCameraIsolate extends CameraIsolate {
       camera!.autofocus = details.autofocus;
     }
     if (frameProperties == null ||
-        (newDetails.hasDiagonalFov() && newDetails.diagonalFov != frameProperties!.diagonalFoV) ||
+        (newDetails.hasDiagonalFov() &&
+            newDetails.diagonalFov != frameProperties!.diagonalFoV) ||
         frameProperties!.captureWidth != camera!.width ||
         frameProperties!.captureHeight != camera!.height) {
       frameProperties = FrameProperties.fromFrameDetails(
@@ -118,7 +130,9 @@ class OpenCVCameraIsolate extends CameraIsolate {
     }
     if (details.streamWidth != streamWidth ||
         details.streamHeight != streamHeight) {
-      updateDetails(CameraDetails(streamWidth: streamWidth, streamHeight: streamHeight));
+      updateDetails(
+        CameraDetails(streamWidth: streamWidth, streamHeight: streamHeight),
+      );
     }
 
     VecUChar? frame;
@@ -150,9 +164,13 @@ class OpenCVCameraIsolate extends CameraIsolate {
     }
     matrix.dispose();
 
-    if (frame == null) {  // Error getting the frame
+    if (frame == null) {
+      // Error getting the frame
       sendLog(LogLevel.warning, "Camera $name didn't respond");
-      updateDetails(CameraDetails(status: CameraStatus.CAMERA_NOT_RESPONDING), save: false);
+      updateDetails(
+        CameraDetails(status: CameraStatus.CAMERA_NOT_RESPONDING),
+        save: false,
+      );
       return;
     }
 
@@ -190,7 +208,7 @@ class OpenCVCameraIsolate extends CameraIsolate {
     }
 
     final (success, matrix) = await camera!.readAsync();
-    
+
     camera!.dispose();
     camera = getCamera(name);
 

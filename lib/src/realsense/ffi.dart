@@ -11,7 +11,7 @@ extension NativeFramesUtils on Pointer<NativeFrames> {
   void dispose() => realsenseLib.NativeFrames_free(this);
 
   /// The depth frame, as raw bytes.
-  /// 
+  ///
   /// NOTE: The RealSense SDK returns [Uint16]s, but this is cast to a [Uint8] for UDP transfer. Be
   /// sure to re-cast it on the processing side!
   Uint8List get depthFrame {

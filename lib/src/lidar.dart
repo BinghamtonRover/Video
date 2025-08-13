@@ -48,10 +48,7 @@ class LidarManager extends Service {
 
   List<LidarCartesianPoint> _processCartesianPoints(List<double> data) => [
     for (int i = 0; i < data.length - 1; i += 2)
-      LidarCartesianPoint(
-        x: data[i],
-        y: data[i + 1],
-      ),
+      LidarCartesianPoint(x: data[i], y: data[i + 1]),
   ];
 
   List<LidarPolarPoint> _processPolarPoints(List<double> data) => [
