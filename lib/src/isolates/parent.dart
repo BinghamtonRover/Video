@@ -7,7 +7,10 @@ import "package:burt_network/burt_network.dart";
 import "package:video/video.dart";
 
 /// The socket to send autonomy data to.
-final autonomySocket = SocketInfo(address: InternetAddress("192.168.1.30"), port: 8003);
+final autonomySocket = SocketInfo(
+  address: InternetAddress("192.168.1.30"),
+  port: 8003,
+);
 
 /// The socket to send frames that need to be analyzed to.
 final cvSocket = SocketInfo(address: InternetAddress.loopbackIPv4, port: 8006);
@@ -52,7 +55,7 @@ class CameraManager extends Service {
           final isolate = RealSenseIsolate(details: details);
           await parent.spawn(isolate);
         // All other cameras share the same logic, even future cameras
-        default:  // ignore: no_default_cases
+        default: // ignore: no_default_cases
           final details = loadCameraDetails(getDefaultDetails(name), name);
           final isolate = OpenCVCameraIsolate(details: details);
           await parent.spawn(isolate);
@@ -97,10 +100,7 @@ class CameraManager extends Service {
           // The vision program will detect objects and send metadata to Autonomy.
           // The frames will be annotated and sent back here. See [_handleVision].
           collection.videoServer.sendMessage(
-            VideoData(
-              frame: image,
-              details: details,
-            ),
+            VideoData(frame: image, details: details),
             destination: cvSocket,
           );
         } else {
@@ -113,26 +113,41 @@ class CameraManager extends Service {
           );
         }
       case DepthFramePayload():
-        collection.videoServer.sendMessage(VideoData(frame: data.frame.depthFrame), destination: autonomySocket);
+        collection.videoServer.sendMessage(
+          VideoData(frame: data.frame.depthFrame),
+          destination: autonomySocket,
+        );
         data.dispose();
-      case LogPayload(): switch (data.level) {
-        // Turns out using deprecated members when you *have* to still results in a lint.
-        // See https://github.com/dart-lang/linter/issues/4852 for why we ignore it.
-        case LogLevel.all: logger.info(data.message, body: data.body);
-        // ignore: deprecated_member_use
-        case LogLevel.verbose: logger.trace(data.message, body: data.body);
-        case LogLevel.trace: logger.trace(data.message, body: data.body);
-        case LogLevel.debug: logger.debug(data.message, body: data.body);
-        case LogLevel.info: logger.info(data.message, body: data.body);
-        case LogLevel.warning: logger.warning(data.message, body: data.body);
-        case LogLevel.error: logger.error(data.message, body: data.body);
-        // ignore: deprecated_member_use
-        case LogLevel.wtf: logger.info(data.message, body: data.body);
-        case LogLevel.fatal: logger.critical(data.message, body: data.body);
-        // ignore: deprecated_member_use
-        case LogLevel.nothing: logger.info(data.message, body: data.body);
-        case LogLevel.off: logger.info(data.message, body: data.body);
-      }
+      case LogPayload():
+        switch (data.level) {
+          // Turns out using deprecated members when you *have* to still results in a lint.
+          // See https://github.com/dart-lang/linter/issues/4852 for why we ignore it.
+          case LogLevel.all:
+            logger.info(data.message, body: data.body);
+          // ignore: deprecated_member_use
+          case LogLevel.verbose:
+            logger.trace(data.message, body: data.body);
+          case LogLevel.trace:
+            logger.trace(data.message, body: data.body);
+          case LogLevel.debug:
+            logger.debug(data.message, body: data.body);
+          case LogLevel.info:
+            logger.info(data.message, body: data.body);
+          case LogLevel.warning:
+            logger.warning(data.message, body: data.body);
+          case LogLevel.error:
+            logger.error(data.message, body: data.body);
+          // ignore: deprecated_member_use
+          case LogLevel.wtf:
+            logger.info(data.message, body: data.body);
+          case LogLevel.fatal:
+            logger.critical(data.message, body: data.body);
+          // ignore: deprecated_member_use
+          case LogLevel.nothing:
+            logger.info(data.message, body: data.body);
+          case LogLevel.off:
+            logger.info(data.message, body: data.body);
+        }
       case ObjectDetectionPayload(:final details, :final tags):
         final visionResult = VideoData(
           details: details,
@@ -140,13 +155,16 @@ class CameraManager extends Service {
           version: Version(major: 1, minor: 2),
         );
         collection.videoServer.sendMessage(visionResult);
-        collection.videoServer.sendMessage(visionResult, destination: autonomySocket);
+        collection.videoServer.sendMessage(
+          visionResult,
+          destination: autonomySocket,
+        );
     }
   }
 
   /// Forwards the command to the appropriate camera.
   void _handleCommand(VideoCommand command) {
-    collection.videoServer.sendMessage(command);  // echo the request
+    collection.videoServer.sendMessage(command); // echo the request
     var cameraName = command.details.name;
     if (cameraName == CameraName.ROVER_FRONT) {
       cameraName = CameraName.AUTONOMY_DEPTH;
@@ -166,7 +184,9 @@ class CameraManager extends Service {
 
   /// Stops all the cameras managed by this class.
   void stopAll() {
-    final command = VideoCommand(details: CameraDetails(status: CameraStatus.CAMERA_DISABLED));
+    final command = VideoCommand(
+      details: CameraDetails(status: CameraStatus.CAMERA_DISABLED),
+    );
     for (final name in CameraName.values) {
       if (name == CameraName.CAMERA_NAME_UNDEFINED ||
           name == CameraName.ROVER_FRONT) {

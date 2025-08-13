@@ -8,7 +8,11 @@ import "package:video/video.dart";
 /// Class to contain all video devices
 class Collection extends Service {
   /// The [RoverSocket] to send messages through
-  late final videoServer = RoverSocket(port: 8002, device: Device.VIDEO, collection: this);
+  late final videoServer = RoverSocket(
+    port: 8002,
+    device: Device.VIDEO,
+    collection: this,
+  );
 
   /// Main parent isolate
   final cameras = CameraManager();
@@ -19,7 +23,9 @@ class Collection extends Service {
   /// Function to initialize cameras
   @override
   Future<bool> init() async {
-    logger..trace("Running in trace mode")..debug("Running in debug mode");
+    logger
+      ..trace("Running in trace mode")
+      ..debug("Running in debug mode");
     await cameras.init();
     await lidar.init();
     await videoServer.init();

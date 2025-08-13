@@ -5,12 +5,15 @@ import "package:video/video.dart";
 
 /// An FFI implementation of [RealSenseInterface] using [librealsense](https://github.com/IntelRealSense/librealsense).
 class RealSenseFFI extends RealSenseInterface {
-  /// The native FFI device. 
+  /// The native FFI device.
   final device = realsenseLib.RealSense_create();
-  @override late double scale;
-  @override Resolution depthResolution = (height: 0, width: 0);
-  @override Resolution rgbResolution = (height: 0, width: 0);
-  
+  @override
+  late double scale;
+  @override
+  Resolution depthResolution = (height: 0, width: 0);
+  @override
+  Resolution rgbResolution = (height: 0, width: 0);
+
   @override
   bool init() {
     final status = realsenseLib.RealSense_init(device);
@@ -18,7 +21,8 @@ class RealSenseFFI extends RealSenseInterface {
   }
 
   @override
-  String getName() => realsenseLib.RealSense_getDeviceName(device).toDartString();
+  String getName() =>
+      realsenseLib.RealSense_getDeviceName(device).toDartString();
 
   @override
   bool startStream() {
@@ -42,5 +46,6 @@ class RealSenseFFI extends RealSenseInterface {
   }
 
   @override
-  Pointer<NativeFrames> getFrames() => realsenseLib.RealSense_getDepthFrame(device);
+  Pointer<NativeFrames> getFrames() =>
+      realsenseLib.RealSense_getDepthFrame(device);
 }
