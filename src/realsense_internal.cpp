@@ -75,9 +75,8 @@ BurtRsStatus burt_rs::RealSense::startStream() {
 }
 
 void burt_rs::RealSense::stopStream() {
-  pipeline.stop();
-  for (auto sensor : device.query_sensors()) {
-    sensor.close();
+  if (streaming) {
+    pipeline.stop();
   }
   streaming = false;
   hasDevice = false;
