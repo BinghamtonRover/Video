@@ -5,7 +5,6 @@ import "dart:io";
 import "package:burt_network/burt_network.dart";
 import "package:dartcv4/dartcv.dart";
 import "package:typed_isolate/typed_isolate.dart";
-import "package:video/src/targeting/frame_properties.dart";
 import "package:video/video.dart";
 
 /// The maximum size of a UDP packet, in bytes (minus a few to be safe).
@@ -40,6 +39,12 @@ abstract class CameraIsolate extends IsolateChild<IsolatePayload, VideoCommand> 
 
   /// Holds the current details of the camera.
   final CameraDetails details;
+
+  /// The Aruco detector for detecting markers in an RGB video image
+  late final RoverArucoDetector arucoDetector = RoverArucoDetector(
+    config: defaultArucoConfig,
+  );
+
   /// Frame properties used for target tracking calculations
   FrameProperties? frameProperties;
 

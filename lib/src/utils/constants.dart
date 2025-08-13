@@ -40,23 +40,30 @@ const findObjectsInCameraFeed = CameraName.CAMERA_NAME_UNDEFINED;
 ///
 /// Uses [cameraNames] or [cameraIndexes]
 VideoCapture getCamera(CameraName name) => Platform.isWindows
-  ? VideoCapture.fromDevice(cameraIndexes[name]!)
-  : VideoCapture.fromFile(cameraNames[name]!);
+    ? VideoCapture.fromDevice(cameraIndexes[name]!)
+    : VideoCapture.fromFile(cameraNames[name]!);
 
 /// Loads camera details for a specific camera
-/// 
+///
 /// If there is no camera config file found or there were
 /// missing fields in the config json, it will return the value of [baseDetails]
 CameraDetails loadCameraDetails(CameraDetails baseDetails, CameraName name) {
   final cameraDetails = baseDetails;
-  final configFile = File("${CameraIsolate.baseDirectory}/camera_details/${name.name}.json");
+  final configFile = File(
+    "${CameraIsolate.baseDirectory}/camera_details/${name.name}.json",
+  );
   if (!configFile.existsSync()) {
     return cameraDetails;
   }
   try {
-    cameraDetails.mergeFromProto3Json(jsonDecode(configFile.readAsStringSync()));
+    cameraDetails.mergeFromProto3Json(
+      jsonDecode(configFile.readAsStringSync()),
+    );
   } catch (e) {
-    collection.videoServer.logger.error("Error while loading config for camera $name", body: e.toString());
+    collection.videoServer.logger.error(
+      "Error while loading config for camera $name",
+      body: e.toString(),
+    );
   }
 
   // Ignore the status specified in the json
@@ -92,4 +99,12 @@ CameraDetails getRealsenseDetails(CameraName name) => CameraDetails(
   horizontalFov: 69,
   verticalFov: 42,
   status: CameraStatus.CAMERA_ENABLED,
+);
+
+/// The default [RoverArucoConfig] for detecting Aruco markers
+final RoverArucoConfig defaultArucoConfig = RoverArucoConfig(
+  markerSize: 6.00 / 39.37,
+  dictionary: ArucoDictionary.predefined(PredefinedDictionaryType.DICT_4X4_50),
+  detectorParams: ArucoDetectorParameters.empty(),
+  arucoColor: Scalar.fromRgb(0, 255, 0),
 );
