@@ -34,6 +34,7 @@ BurtRsStatus burt_rs::RealSense::init() {
     config.scale = scale;
   }
   hasDevice = true;
+
   return BurtRsStatus::BurtRsStatus_ok;
 }
 
@@ -46,11 +47,11 @@ const char* burt_rs::RealSense::getDeviceName() {
 }
 
 // -------------------- Stream methods --------------------
-
 BurtRsStatus burt_rs::RealSense::startStream() {
   rs2::config rs_config;
   rs_config.enable_stream(RS2_STREAM_DEPTH, DEPTH_WIDTH, HEIGHT);
   rs_config.enable_stream(RS2_STREAM_COLOR, RGB_WIDTH, HEIGHT, RS2_FORMAT_BGR8);
+
   auto profile = pipeline.start(rs_config);
   auto frames = pipeline.wait_for_frames();
   auto depth_frame = frames.get_depth_frame();
@@ -62,8 +63,7 @@ BurtRsStatus burt_rs::RealSense::startStream() {
 
   streaming = hasDevice;
 
-  // if (rgb_width == 0 || rgb_height == 0 || depth_width == 0 || depth_height == 0) {
-  if (depth_width == 0 || depth_height == 0) {
+  if (rgb_width == 0 || rgb_height == 0 || depth_width == 0 || depth_height == 0) {
     return BurtRsStatus::BurtRsStatus_resolution_unknown;
   } else {
     config.depth_width = depth_width;
@@ -76,6 +76,9 @@ BurtRsStatus burt_rs::RealSense::startStream() {
 
 void burt_rs::RealSense::stopStream() {
   pipeline.stop();
+  for (auto sensor : device.query_sensors()) {
+    sensor.close();
+  }
   streaming = false;
   hasDevice = false;
 }
