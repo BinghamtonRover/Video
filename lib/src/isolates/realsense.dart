@@ -10,10 +10,18 @@ import "package:video/utils.dart";
 import "package:video/video.dart";
 
 extension on CameraDetails {
-  bool get interferesWithAutonomy => hasResolutionHeight()
-    || hasResolutionWidth()
-    || hasFps()
-    || hasStatus();
+  bool interferesWithAutonomy(CameraDetails current) {
+    if (hasResolutionWidth() && resolutionWidth != current.resolutionWidth) {
+      return true;
+    }
+    if (hasResolutionHeight() && resolutionHeight != current.resolutionHeight) {
+      return true;
+    }
+    if (hasFps() && fps != current.fps) {
+      return true;
+    }
+    return false;
+  }
 }
 
 /// An isolate to read RGB, depth, and colorized frames from the RealSense.
@@ -33,7 +41,7 @@ class RealSenseIsolate extends CameraIsolate {
   void onData(VideoCommand data) {
     if (data.details.status == CameraStatus.CAMERA_DISABLED) {
       stop();
-    } else if (data.details.interferesWithAutonomy) {
+    } else if (data.details.interferesWithAutonomy(details)) {
       sendLog(LogLevel.error, "That would break autonomy");
     } else {
       super.onData(data);
