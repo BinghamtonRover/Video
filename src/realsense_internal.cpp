@@ -78,9 +78,6 @@ void burt_rs::RealSense::stopStream() {
   if (streaming) {
     pipeline.stop();
   }
-  for (auto sensor : device.query_sensors()) {
-    sensor.close();
-  }
   streaming = false;
   hasDevice = false;
 }
